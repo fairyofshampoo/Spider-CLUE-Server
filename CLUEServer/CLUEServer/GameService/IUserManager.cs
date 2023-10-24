@@ -22,6 +22,9 @@ namespace GameService
         [OperationContract]
         bool AuthenticateAccount(string gamertag, string password);
 
+        [OperationContract]
+        string RequestGuessPlayer();
+
     }
 
 
