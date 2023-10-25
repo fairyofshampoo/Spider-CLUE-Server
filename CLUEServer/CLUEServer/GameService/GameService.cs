@@ -68,6 +68,29 @@ namespace GameService
             }
         }
 
+        public string RequestGuessPlayer()
+        {
+            return CreateRandomUserName();
+        }
+
+        private string CreateRandomUserName()
+        {
+            int length = 8;
+            const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            Random random = new Random();
+            StringBuilder username = new StringBuilder();
+
+            for (int i = 0; i < length; i++)
+            {
+                int index = random.Next(validChars.Length);
+                username.Append(validChars[index]);
+            }
+
+            string randomUsername = username.ToString();
+
+            return randomUsername;
+        }
+
         public bool IsAccountExisting(string email)
         {
             using (var dataBaseContext = new SpiderClueEntities())
