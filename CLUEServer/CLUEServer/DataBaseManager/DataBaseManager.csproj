@@ -64,80 +64,75 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="accessAccount.cs">
-      <DependentUpon>Data Model.tt</DependentUpon>
+      <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
     </Compile>
     <Compile Include="article.cs">
-      <DependentUpon>Data Model.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Data Model.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Data Model.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Data Model.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Data Model.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Data Model.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Data Model.edmx</DependentUpon>
+      <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
     </Compile>
     <Compile Include="DataBaseMethods.cs" />
-    <Compile Include="database_firewall_rules.cs">
-      <DependentUpon>Data Model.tt</DependentUpon>
-    </Compile>
     <Compile Include="friendList.cs">
-      <DependentUpon>Data Model.tt</DependentUpon>
+      <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
     </Compile>
     <Compile Include="gamer.cs">
-      <DependentUpon>Data Model.tt</DependentUpon>
+      <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
     </Compile>
     <Compile Include="guessPlayer.cs">
-      <DependentUpon>Data Model.tt</DependentUpon>
+      <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
     </Compile>
     <Compile Include="inventory.cs">
-      <DependentUpon>Data Model.tt</DependentUpon>
+      <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
     </Compile>
     <Compile Include="match.cs">
-      <DependentUpon>Data Model.tt</DependentUpon>
+      <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
     </Compile>
     <Compile Include="matchResult.cs">
-      <DependentUpon>Data Model.tt</DependentUpon>
+      <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="report.cs">
-      <DependentUpon>Data Model.tt</DependentUpon>
+      <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spider Clue Data Model.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Spider Clue Data Model.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spider Clue Data Model.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spider Clue Data Model.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Spider Clue Data Model.edmx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EntityDeploy Include="Data Model.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>Data Model.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="App.Config" />
-    <None Include="Data Model.edmx.diagram">
-      <DependentUpon>Data Model.edmx</DependentUpon>
-    </None>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Data Model.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Data Model.Context.cs</LastGenOutput>
-      <DependentUpon>Data Model.edmx</DependentUpon>
-    </Content>
-    <Content Include="Data Model.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Data Model.edmx</DependentUpon>
-      <LastGenOutput>Data Model.cs</LastGenOutput>
-    </Content>
+    <EntityDeploy Include="Spider Clue Data Model.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Spider Clue Data Model.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Spider Clue Data Model.edmx.diagram">
+      <DependentUpon>Spider Clue Data Model.edmx</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Spider Clue Data Model.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Spider Clue Data Model.edmx</DependentUpon>
+      <LastGenOutput>Spider Clue Data Model.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Spider Clue Data Model.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Spider Clue Data Model.edmx</DependentUpon>
+      <LastGenOutput>Spider Clue Data Model.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

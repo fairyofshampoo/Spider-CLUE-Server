@@ -10,9 +10,9 @@ namespace DataBaseManager
     {
         public bool Authenticate(String email, String password)
         {
-            using (SpiderClueEntities context = new SpiderClueEntities())
+            using (SpiderClueDbEntities context = new SpiderClueDbEntities())
             {
-                var existingAccount = context.AccessAccounts.FirstOrDefault(accessAccount => accessAccount.email == email);
+                var existingAccount = context.accessAccounts.FirstOrDefault(accessAccount => accessAccount.email == email);
                 return existingAccount != null && BCrypt.Net.BCrypt.Verify(password, existingAccount.password);
             }
         }

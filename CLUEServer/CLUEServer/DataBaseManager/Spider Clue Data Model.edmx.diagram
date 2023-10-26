@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="84ba62b1cfcf4e0ea4c1a5c1b60b92fe" Name="Diagram1">
+      <Diagram DiagramId="fac43e3bac784704a3edcf225e508b7b" Name="Diagram1">
         <EntityTypeShape EntityType="SpiderClueDbModel.accessAccount" Width="1.5" PointX="3" PointY="4.375" IsExpanded="true" />
         <EntityTypeShape EntityType="SpiderClueDbModel.article" Width="1.5" PointX="0.75" PointY="11.5" IsExpanded="true" />
         <EntityTypeShape EntityType="SpiderClueDbModel.friendList" Width="1.5" PointX="3" PointY="7.125" IsExpanded="true" />
@@ -14,7 +14,6 @@
         <EntityTypeShape EntityType="SpiderClueDbModel.match" Width="1.5" PointX="3.75" PointY="1.5" IsExpanded="true" />
         <EntityTypeShape EntityType="SpiderClueDbModel.matchResult" Width="1.5" PointX="6" PointY="7.25" IsExpanded="true" />
         <EntityTypeShape EntityType="SpiderClueDbModel.report" Width="1.5" PointX="3" PointY="15.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="SpiderClueDbModel.database_firewall_rules" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
         <AssociationConnector Association="SpiderClueDbModel.FK_accessAccount_gamer" ManuallyRouted="false" />
         <AssociationConnector Association="SpiderClueDbModel.FK_inventory_article" ManuallyRouted="false" />
         <AssociationConnector Association="SpiderClueDbModel.FK_friend_gamer" ManuallyRouted="false" />
