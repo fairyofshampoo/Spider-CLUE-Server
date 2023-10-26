@@ -59,6 +59,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DataBaseManager\DataBaseManager.csproj">
+      <Project>{fc7520e6-06d0-47bd-99bb-f02c8a24547a}</Project>
+      <Name>DataBaseManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GameService\GameService.csproj">
       <Project>{1f5a7bdc-9c9c-4105-a7c3-7403a86e3c12}</Project>
       <Name>GameService</Name>

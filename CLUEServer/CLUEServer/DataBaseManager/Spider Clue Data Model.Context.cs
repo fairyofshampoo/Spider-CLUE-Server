@@ -13,10 +13,10 @@ namespace DataBaseManager
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class SpiderClueEntities : DbContext
+    public partial class SpiderClueDbEntities : DbContext
     {
-        public SpiderClueEntities()
-            : base("name=SpiderClueEntities")
+        public SpiderClueDbEntities()
+            : base("name=SpiderClueDbEntities")
         {
         }
     
@@ -25,15 +25,14 @@ namespace DataBaseManager
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<accessAccount> AccessAccounts { get; set; }
-        public virtual DbSet<article> Articles { get; set; }
-        public virtual DbSet<friendList> Friends { get; set; }
-        public virtual DbSet<gamer> Gamers { get; set; }
-        public virtual DbSet<guessPlayer> GuessPlayers { get; set; }
-        public virtual DbSet<inventory> Inventories { get; set; }
-        public virtual DbSet<match> Matches { get; set; }
+        public virtual DbSet<accessAccount> accessAccounts { get; set; }
+        public virtual DbSet<article> articles { get; set; }
+        public virtual DbSet<friendList> friendLists { get; set; }
+        public virtual DbSet<gamer> gamers { get; set; }
+        public virtual DbSet<guessPlayer> guessPlayers { get; set; }
+        public virtual DbSet<inventory> inventories { get; set; }
+        public virtual DbSet<match> matches { get; set; }
         public virtual DbSet<matchResult> matchResults { get; set; }
-        public virtual DbSet<report> Reports { get; set; }
-        public virtual DbSet<database_firewall_rules> database_firewall_rules { get; set; }
+        public virtual DbSet<report> reports { get; set; }
     }
 }

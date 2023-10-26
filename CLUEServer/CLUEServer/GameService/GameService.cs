@@ -19,7 +19,7 @@ namespace GameService
 
         public int AddUserTransaction(Gamer gamer)
         {
-            using (var dataBaseContext = new SpiderClueEntities())
+            using (var dataBaseContext = new SpiderClueDbEntities())
             {
                 using (var dataBaseContextTransaction = dataBaseContext.Database.BeginTransaction())
                 {
@@ -31,18 +31,19 @@ namespace GameService
                             password = gamer.Password,
                             gamertag = gamer.Gamertag,
                             email = gamer.Email,
-                            isbanned = gamer.IsBanned
+                            isbanned = 0
                         };
 
                         var newGamer = new DataBaseManager.gamer
                         {
                             firstName = gamer.FirstName,
                             lastName = gamer.LastName,
+                            gamertag = gamer.Gamertag,
                             level = gamer.Level
                         };
 
-                        dataBaseContext.AccessAccounts.Add(newAccessAccount);
-                        dataBaseContext.Gamers.Add(newGamer);
+                        dataBaseContext.accessAccounts.Add(newAccessAccount);
+                        dataBaseContext.gamers.Add(newGamer);
 
                         dataBaseContext.SaveChanges();
                         dataBaseContextTransaction.Commit();
@@ -61,9 +62,9 @@ namespace GameService
 
         public bool AuthenticateAccount(string gamertag, string password)
         {
-            using (var context = new SpiderClueEntities())
+            using (var context = new SpiderClueDbEntities())
             {
-                var existingAccount = context.AccessAccounts.FirstOrDefault(accessAccount => accessAccount.gamertag == gamertag);
+                var existingAccount = context.accessAccounts.FirstOrDefault(accessAccount => accessAccount.gamertag == gamertag);
                 return existingAccount != null && BCrypt.Net.BCrypt.Verify(password, existingAccount.password);
             }
         }
@@ -93,9 +94,9 @@ namespace GameService
 
         public bool IsAccountExisting(string email)
         {
-            using (var dataBaseContext = new SpiderClueEntities())
+            using (var dataBaseContext = new SpiderClueDbEntities())
             {
-                var existingAccount = dataBaseContext.AccessAccounts.FirstOrDefault(accessAccount => accessAccount.email == email);
+                var existingAccount = dataBaseContext.accessAccounts.FirstOrDefault(accessAccount => accessAccount.email == email);
                 return existingAccount != null;
             }
         }
