@@ -1,0 +1,8 @@
+# Ignorar la carpeta DataBaseManager\obj
+CLUEServer/CLUEServer/DataBaseManager/obj/
+CLUEServer/CLUEServer/DataBaseManager/bin/
+CLUEServer/CLUEServer/GameService/obj/
+CLUEServer/CLUEServer/GameService/bin/
+CLUEServer/CLUEServer/SpiderClueService/obj/
+CLUEServer/CLUEServer/SpiderClueService/bin/
+CLUEServer/CLUEServer/SpiderClueService/.vs/
