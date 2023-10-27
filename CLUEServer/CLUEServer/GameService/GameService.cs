@@ -100,5 +100,66 @@ namespace GameService
                 return existingAccount != null;
             }
         }
+
+        public int AuthenticateGamertag(string soughtGamertag)
+        {
+            using(var dataBaseContext = new SpiderClueDbEntities())
+            {
+                int coincidences = dataBaseContext.gamers.Count(gamer =>  gamer.gamertag == soughtGamertag);
+                return coincidences;
+            }
+        }
+
+        public int AuthenticateEmail(string soughtEmail)
+        {
+            using (var dataBaseContext = new SpiderClueDbEntities())
+            {
+                int coincidences = dataBaseContext.gamers.Count(gamer => gamer.gamertag == soughtEmail);
+                return coincidences;
+            }
+        }
+
+        public Boolean IsAccessAccountExisting (String user, String password)
+        {
+            using (var dataBaseContext = new SpiderClueDbEntities())
+            {
+                Boolean exist = false;
+                int coincidences = dataBaseContext.accessAccounts.Count(accessAccount => accessAccount.gamertag == user && accessAccount.password == password);
+                if (coincidences == 2)
+                {
+                    exist = true;
+                }
+                return exist;
+            }
+        }
+
+        public bool isEmailExisting(string email)
+        {
+            using(var dataBaseContext = new SpiderClueDbEntities())
+            {
+                Boolean exist = false;
+                int coincidences = dataBaseContext.accessAccounts.Count(accessAccount => accessAccount.email == email);
+                if (coincidences > 0)
+                {
+                    exist = true;   
+                }
+                return exist;
+            }
+        }
+
+        public bool isGamertagExisting(string gamertag)
+        {
+            using (var dataBaseContext = new SpiderClueDbEntities())
+            {
+                Boolean exists = false;
+                int coincidences = dataBaseContext.accessAccounts.Count(accessAccount => accessAccount.gamertag ==  gamertag);
+                if (coincidences > 0)
+                {
+                    exists = true;
+                }
+                return exists;
+            }
+           
+        }
     }
 }
