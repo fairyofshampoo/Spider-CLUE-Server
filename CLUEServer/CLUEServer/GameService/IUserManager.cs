@@ -25,6 +25,20 @@ namespace GameService
         [OperationContract]
         string RequestGuessPlayer();
 
+        [OperationContract]
+        int AuthenticateGamertag(String gamertag);
+
+        [OperationContract]
+        int AuthenticateEmail(String email);
+
+        [OperationContract]
+        Boolean IsAccessAccountExisting (String user, String Password);
+
+        [OperationContract]
+        Boolean isEmailExisting(String email);
+        
+        [OperationContract]
+        Boolean isGamertagExisting (String gamertag);
     }
 
 
