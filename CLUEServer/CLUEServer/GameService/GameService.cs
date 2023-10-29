@@ -25,7 +25,6 @@ namespace GameService
                 {
                     try
                     {
-                        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(gamer.Password, BCrypt.Net.BCrypt.GenerateSalt());
                         var newAccessAccount = new DataBaseManager.accessAccount
                         {
                             password = gamer.Password,
@@ -65,10 +64,13 @@ namespace GameService
             using (var context = new SpiderClueDbEntities())
             {
                 var existingAccount = context.accessAccounts.FirstOrDefault(accessAccount => accessAccount.gamertag == gamertag);
-                return existingAccount != null && BCrypt.Net.BCrypt.Verify(password, existingAccount.password);
+                return existingAccount != null && ComparePasswords(password, existingAccount.password);
             }
         }
-
+        private bool ComparePasswords(string passwordBase, string passwordToCompare)
+        {
+            return passwordBase == passwordToCompare;
+        }
         public string RequestGuessPlayer()
         {
             return CreateRandomUserName();
@@ -133,7 +135,7 @@ namespace GameService
             }
         }
 
-        public bool isEmailExisting(string email)
+        public bool IsEmailExisting(string email)
         {
             using(var dataBaseContext = new SpiderClueDbEntities())
             {
@@ -147,7 +149,7 @@ namespace GameService
             }
         }
 
-        public bool isGamertagExisting(string gamertag)
+        public bool IsGamertagExisting(string gamertag)
         {
             using (var dataBaseContext = new SpiderClueDbEntities())
             {

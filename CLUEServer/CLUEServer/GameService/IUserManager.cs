@@ -35,10 +35,10 @@ namespace GameService
         Boolean IsAccessAccountExisting (String user, String Password);
 
         [OperationContract]
-        Boolean isEmailExisting(String email);
+        Boolean IsEmailExisting(String email);
         
         [OperationContract]
-        Boolean isGamertagExisting (String gamertag);
+        Boolean IsGamertagExisting (String gamertag);
     }
 
 
