@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Mail;
+using GameService.Contracts;
 
-namespace GameService
+namespace GameService.Services
 {
-    internal class VerificationService : IEmailVerificationManager
+    public partial class GameService : IEmailVerificationManager
     {
         private Dictionary<string, VerificationData> verificationDictionary = new Dictionary<string, VerificationData>();
         private TimeSpan verificationCodeValidity = TimeSpan.FromMinutes(8);
@@ -52,20 +53,21 @@ namespace GameService
                 message.From = new MailAddress(fromMail);
                 message.Subject = "Code Verification from Spider Clue";
                 message.To.Add(new MailAddress(toEmail));
-                message.Body = "<html><body>\r\n    <p>Estimado/a Spider-Gamer,</p>\r\n" +
-                "    \r\n    <p>Hemos recibido una solicitud para verificar su cuenta" +
-                " en SpiderClue. Para completar este proceso de verificación, le hemos" +
-                " proporcionado un código de seguridad que debe utilizar en el siguiente" +
-                " paso.</p>\r\n    \r\n    <p>El código de verificación es:</p>\r\n    " +
-                "<p style=\"font-size: 24px; font-weight: bold;\"" +
-                ">{code}</p>\r\n    \r\n    <p>Por motivos de seguridad," +
-                " este código de verificación es válido por un período de 5 minutos. " +
-                "Por favor, utilícelo lo antes posible para completar la verificación " +
-                "de su cuenta.</p>\r\n    \r\n    <p>Si no ha realizado esta solicitud " +
-                "o tiene alguna pregunta, póngase en contacto con " +
-                "nuestro equipo de soporte en lalocel09@gmail.com</p>\r\n" +
-                "    \r\n    <p>Gracias por confiar en Spider-Clue.</p>\r\n    \r\n    " +
-                "<p>Atentamente,<br>\r\n    El equipo de Spider-Clue</p>\r\n</body></html>";
+                message.Body = $"<html><body>\r\n    <p>Estimado/a Spider-Gamer,</p>\r\n" +
+    "    \r\n    <p>Hemos recibido una solicitud para verificar su cuenta" +
+    " en SpiderClue. Para completar este proceso de verificación, le hemos" +
+    " proporcionado un código de seguridad que debe utilizar en el siguiente" +
+    " paso.</p>\r\n    \r\n    <p>El código de verificación es:</p>\r\n    " +
+    $"<p style=\"font-size: 24px; font-weight: bold;\">{code}</p>\r\n    \r\n" +
+    "    <p>Por motivos de seguridad," +
+    " este código de verificación es válido por un período de 5 minutos. " +
+    "Por favor, utilícelo lo antes posible para completar la verificación " +
+    "de su cuenta.</p>\r\n    \r\n    <p>Si no ha realizado esta solicitud " +
+    "o tiene alguna pregunta, póngase en contacto con " +
+    "nuestro equipo de soporte en lalocel09@gmail.com</p>\r\n" +
+    "    \r\n    <p>Gracias por confiar en Spider-Clue.</p>\r\n    \r\n    " +
+    "<p>Atentamente,<br>\r\n    El equipo de Spider-Clue</p>\r\n</body></html>";
+
                 message.IsBodyHtml = true;
 
                 var smtpClient = new SmtpClient("smtp.gmail.com")
