@@ -39,6 +39,12 @@ namespace GameService.Contracts
         
         [OperationContract]
         Boolean IsGamertagExisting (String gamertag);
+
+        [OperationContract]
+        Gamer GetGamer(string gamertag);
+
+        [OperationContract]
+        int GetBannedStatus(string gamertag);
     }
 
 

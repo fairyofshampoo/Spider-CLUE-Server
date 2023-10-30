@@ -155,5 +155,39 @@ namespace GameService.Services
             }
            
         }
+
+        public Gamer GetGamer(string gamertag)
+        {
+            using (var dataBaseContext = new SpiderClueDbEntities())
+            {
+                var gamerInformation = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == gamertag);
+                var accessAcountInformation = dataBaseContext.accessAccounts.FirstOrDefault(accessAccount => accessAccount.gamertag == gamertag);
+                Gamer gamer = new Gamer();
+                if (gamerInformation != null && accessAcountInformation != null)
+                {
+                    gamer.Gamertag = gamerInformation.gamertag;
+                    gamer.FirstName = gamerInformation.firstName;
+                    gamer.Level = gamerInformation.level;
+                    gamer.LastName = gamerInformation.lastName;
+                    gamer.Email = accessAcountInformation.email;
+
+                }
+                return gamer;
+            }
+        }
+
+        public int GetBannedStatus(string gamertag)
+        {
+            using (var dataBaseContext = new SpiderClueDbEntities())
+            {
+                int isBanned = dataBaseContext.accessAccounts
+                    .Where(accessAccount => accessAccount.gamertag == gamertag)
+                    .Select(accessAccount => accessAccount.isbanned)
+                    .FirstOrDefault();
+
+                return isBanned;
+            }
+        }
+
     }
 }
