@@ -64,13 +64,10 @@ namespace GameService
             using (var context = new SpiderClueDbEntities())
             {
                 var existingAccount = context.accessAccounts.FirstOrDefault(accessAccount => accessAccount.gamertag == gamertag);
-                return existingAccount != null && ComparePasswords(password, existingAccount.password);
+                return existingAccount != null && existingAccount.password == password;
             }
         }
-        private bool ComparePasswords(string passwordBase, string passwordToCompare)
-        {
-            return passwordBase == passwordToCompare;
-        }
+
         public string RequestGuessPlayer()
         {
             return CreateRandomUserName();
@@ -81,18 +78,13 @@ namespace GameService
             int length = 8;
             const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             Random random = new Random();
-            StringBuilder username = new StringBuilder();
 
-            for (int i = 0; i < length; i++)
-            {
-                int index = random.Next(validChars.Length);
-                username.Append(validChars[index]);
-            }
-
-            string randomUsername = username.ToString();
+            string randomUsername = new string(Enumerable.Repeat(validChars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
 
             return randomUsername;
         }
+
 
         public bool IsAccountExisting(string email)
         {
