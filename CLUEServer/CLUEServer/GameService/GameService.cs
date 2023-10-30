@@ -25,7 +25,6 @@ namespace GameService
                 {
                     try
                     {
-                        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(gamer.Password, BCrypt.Net.BCrypt.GenerateSalt());
                         var newAccessAccount = new DataBaseManager.accessAccount
                         {
                             password = gamer.Password,
@@ -65,7 +64,7 @@ namespace GameService
             using (var context = new SpiderClueDbEntities())
             {
                 var existingAccount = context.accessAccounts.FirstOrDefault(accessAccount => accessAccount.gamertag == gamertag);
-                return existingAccount != null && BCrypt.Net.BCrypt.Verify(password, existingAccount.password);
+                return existingAccount != null && existingAccount.password == password;
             }
         }
 
@@ -79,18 +78,13 @@ namespace GameService
             int length = 8;
             const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             Random random = new Random();
-            StringBuilder username = new StringBuilder();
 
-            for (int i = 0; i < length; i++)
-            {
-                int index = random.Next(validChars.Length);
-                username.Append(validChars[index]);
-            }
-
-            string randomUsername = username.ToString();
+            string randomUsername = new string(Enumerable.Repeat(validChars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
 
             return randomUsername;
         }
+
 
         public bool IsAccountExisting(string email)
         {
@@ -133,7 +127,7 @@ namespace GameService
             }
         }
 
-        public bool isEmailExisting(string email)
+        public bool IsEmailExisting(string email)
         {
             using(var dataBaseContext = new SpiderClueDbEntities())
             {
@@ -147,7 +141,7 @@ namespace GameService
             }
         }
 
-        public bool isGamertagExisting(string gamertag)
+        public bool IsGamertagExisting(string gamertag)
         {
             using (var dataBaseContext = new SpiderClueDbEntities())
             {

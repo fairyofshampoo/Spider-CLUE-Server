@@ -8,13 +8,5 @@ namespace DataBaseManager
 {
     public class DataBaseMethods
     {
-        public bool Authenticate(String email, String password)
-        {
-            using (SpiderClueDbEntities context = new SpiderClueDbEntities())
-            {
-                var existingAccount = context.accessAccounts.FirstOrDefault(accessAccount => accessAccount.email == email);
-                return existingAccount != null && BCrypt.Net.BCrypt.Verify(password, existingAccount.password);
-            }
-        }
     }
 }
