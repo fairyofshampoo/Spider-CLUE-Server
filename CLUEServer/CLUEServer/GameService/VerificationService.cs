@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Mail;
+using GameService.Contracts;
 
-namespace GameService
+namespace GameService.Services
 {
-    internal class VerificationService : IEmailVerificationManager
+    public partial class GameService : IEmailVerificationManager
     {
         private Dictionary<string, VerificationData> verificationDictionary = new Dictionary<string, VerificationData>();
         private TimeSpan verificationCodeValidity = TimeSpan.FromMinutes(8);

@@ -5,14 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using DataBaseManager;
 using BCrypt;
-using GameService;
+using GameService.Contracts;
 using System.Security.Cryptography;
 using System.ServiceModel.Configuration;
 using System.Data.SqlClient;
 
-namespace GameService
+namespace GameService.Services
 {
-    public class GameService : IUserManager
+    public partial class GameService : IUserManager
     {
         const int Error = -1;
         const int Success = 1;

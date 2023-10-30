@@ -68,8 +68,8 @@
   <ItemGroup>
     <Compile Include="VerificationService.cs" />
     <Compile Include="GameService.cs" />
-    <Compile Include="IEmailVerificationManager.cs" />
-    <Compile Include="IUserManager.cs" />
+    <Compile Include="Contracts\IEmailVerificationManager.cs" />
+    <Compile Include="Contracts\IUserManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

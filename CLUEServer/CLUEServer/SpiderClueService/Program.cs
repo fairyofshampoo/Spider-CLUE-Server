@@ -4,6 +4,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
+using GameService.Services;
 
 namespace SpiderClueService
 {
@@ -11,7 +12,7 @@ namespace SpiderClueService
     {
         static void Main(string[] args)
         {
-            using (ServiceHost host = new ServiceHost(typeof(GameService.GameService)))
+            using (ServiceHost host = new ServiceHost(typeof(GameService.Services.GameService)))
             {
                 host.Open();
                 Console.WriteLine("Server is running");
