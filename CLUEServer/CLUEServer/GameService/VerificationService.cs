@@ -50,7 +50,11 @@ namespace GameService.Services
                 string fromMail = "soobluving@gmail.com";
                 string fromPassword = "flmcnbzxpwcnxudz";
 
-                string emailTemplate = File.ReadAllText("Utilities/EmailTemplate-ES-MX.html");
+                string PathDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                string PathServerDirectory = Path.GetFullPath(Path.Combine(PathDirectory, "../../../"));
+                string templatePath = PathServerDirectory + "GameService/Utilities/EmailTemplate-ES-MX.html";
+
+                string emailTemplate = File.ReadAllText(templatePath);
 
                 string emailBody = emailTemplate.Replace("{code}", code);
 
