@@ -189,5 +189,22 @@ namespace GameService.Services
             }
         }
 
+        public int ModifyAccount(string gamertag, string firstName, string lastName)
+        {
+            using (var dataBaseContext = new SpiderClueDbEntities())
+            {
+                    var gamer = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == gamertag);
+                    if (gamer != null)
+                    {
+                        gamer.firstName = firstName;
+                        gamer.lastName = lastName;
+                        dataBaseContext.SaveChanges();
+                        return Success;
+                    }else 
+                    { 
+                    return Error; 
+                    }
+            }
+        }
     }
 }

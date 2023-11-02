@@ -45,6 +45,9 @@ namespace GameService.Contracts
 
         [OperationContract]
         int GetBannedStatus(string gamertag);
+
+        [OperationContract]
+        int ModifyAccount (String gamertag, String firstName, String lastName);
     }
 
 
