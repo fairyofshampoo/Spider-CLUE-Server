@@ -48,6 +48,15 @@ namespace GameService.Contracts
 
         [OperationContract]
         int ModifyAccount (String gamertag, String firstName, String lastName);
+
+        [OperationContract]
+        int ChangeIcon (string gamertag, String titleIcon);
+
+        [OperationContract]
+        void Connect (String gamertag);
+
+        [OperationContract]
+        void Disconnect (String gamertag);  
     }
 
 
@@ -57,6 +66,7 @@ namespace GameService.Contracts
         private string firstName;
         private string lastName;
         private int level;
+        private string imageCode;
 
         [DataMember]
         public string FirstName { get { return firstName; } set { firstName = value; } }
@@ -66,6 +76,9 @@ namespace GameService.Contracts
 
         [DataMember]
         public int Level { get { return level; } set { level = value; } }
+
+        [DataMember]
+        public string ImageCode { get { return imageCode; } set { imageCode = value; } }
     }
 
     [DataContract]
