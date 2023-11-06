@@ -16,6 +16,7 @@ namespace GameService.Services
     {
         const int Error = -1;
         const int Success = 1;
+        List<string> UsersConnected = new List<string>();
 
         public int AddUserTransaction(Gamer gamer)
         {
@@ -38,7 +39,8 @@ namespace GameService.Services
                             firstName = gamer.FirstName,
                             lastName = gamer.LastName,
                             gamertag = gamer.Gamertag,
-                            level = gamer.Level
+                            level = gamer.Level,
+                            imageCode = gamer.ImageCode
                         };
 
                         dataBaseContext.accessAccounts.Add(newAccessAccount);
@@ -170,6 +172,7 @@ namespace GameService.Services
                     gamer.Level = gamerInformation.level;
                     gamer.LastName = gamerInformation.lastName;
                     gamer.Email = accessAcountInformation.email;
+                    gamer.ImageCode = gamer.ImageCode;
 
                 }
                 return gamer;
@@ -204,6 +207,38 @@ namespace GameService.Services
                     { 
                     return Error; 
                     }
+            }
+        }
+
+        public int ChangeIcon(string gamertag, string titleIcon)
+        {
+            using (var dataBaseContext = new SpiderClueDbEntities() )
+            {
+                var gamer = dataBaseContext.gamers.FirstOrDefault (player => player.gamertag == gamertag); 
+                if(gamer != null)
+                {
+                    gamer.imageCode = titleIcon;
+                    dataBaseContext.SaveChanges();
+                    return Success;
+                } else
+                { 
+                    return Error; 
+                }
+            }
+        }
+
+        public void Connect(string gamertag)
+        {
+            UsersConnected.Add(gamertag);
+            Console.WriteLine("Usuario conectado" + UsersConnected.First());
+        }
+
+        public void Disconnect(string gamertag)
+        {
+            var user = UsersConnected.FirstOrDefault(nickName => nickName == gamertag);
+            if(user != null)
+            {
+                UsersConnected.Remove(user);
             }
         }
     }
