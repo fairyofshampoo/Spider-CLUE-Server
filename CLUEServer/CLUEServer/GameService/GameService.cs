@@ -179,6 +179,26 @@ namespace GameService.Services
             }
         }
 
+        public Gamer GetGamerByEmail(string email)
+        {
+            using (var dataBaseContext = new SpiderClueDbEntities())
+            {
+                var accessAcountInformation = dataBaseContext.accessAccounts.FirstOrDefault(accessAccount => accessAccount.email == email);
+                var gamerInformation = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == accessAcountInformation.gamertag);
+                Gamer gamer = new Gamer();
+                if (gamerInformation != null && accessAcountInformation != null)
+                {
+                    gamer.Gamertag = gamerInformation.gamertag;
+                    gamer.FirstName = gamerInformation.firstName;
+                    gamer.Level = gamerInformation.level;
+                    gamer.LastName = gamerInformation.lastName;
+                    gamer.Email = accessAcountInformation.email;
+
+                }
+                return gamer;
+            }
+        }
+
         public int GetBannedStatus(string gamertag)
         {
             using (var dataBaseContext = new SpiderClueDbEntities())
@@ -210,6 +230,43 @@ namespace GameService.Services
             }
         }
 
+        public int UpdateGamerTransaction(Gamer gamer)
+        {
+            using (var dataBaseContext = new SpiderClueDbEntities())
+            {
+                using (var dataBaseContextTransaction = dataBaseContext.Database.BeginTransaction())
+                {
+                    try
+                    {
+
+                        var existingGamer = dataBaseContext.gamers.First(player => player.gamertag == gamer.Gamertag);
+
+                        existingGamer.firstName = gamer.FirstName;
+                        existingGamer.lastName = gamer.LastName;
+                        existingGamer.level = gamer.Level;
+
+                        var existingAccessAccount = dataBaseContext.accessAccounts.FirstOrDefault(accpunt => accpunt.gamertag == gamer.Gamertag);
+
+                        if (existingAccessAccount != null)
+                        {
+                            existingAccessAccount.password = gamer.Password;
+                            existingAccessAccount.isbanned = 0;
+                        }
+
+                        dataBaseContext.SaveChanges();
+                        dataBaseContextTransaction.Commit();
+
+                        return Success;
+                    }
+                    catch (SqlException sQLException)
+                    {
+                        dataBaseContextTransaction.Rollback();
+                        return Error;
+                        throw sQLException;
+                    }
+                }
+            }
+        }
         public int ChangeIcon(string gamertag, string titleIcon)
         {
             using (var dataBaseContext = new SpiderClueDbEntities() )

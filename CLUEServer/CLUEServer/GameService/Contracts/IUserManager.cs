@@ -44,11 +44,17 @@ namespace GameService.Contracts
         Gamer GetGamer(string gamertag);
 
         [OperationContract]
+        Gamer GetGamerByEmail(string gamertag);
+
+        [OperationContract]
         int GetBannedStatus(string gamertag);
 
         [OperationContract]
         int ModifyAccount (String gamertag, String firstName, String lastName);
 
+        [OperationContract]
+        int UpdateGamerTransaction(Gamer gamer);
+        
         [OperationContract]
         int ChangeIcon (string gamertag, String titleIcon);
 
@@ -79,6 +85,8 @@ namespace GameService.Contracts
 
         [DataMember]
         public string ImageCode { get { return imageCode; } set { imageCode = value; } }
+
+        public OperationContext operationContext { get; set; }
     }
 
     [DataContract]
