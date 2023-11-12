@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
@@ -57,14 +58,7 @@ namespace GameService.Contracts
         
         [OperationContract]
         int ChangeIcon (string gamertag, String titleIcon);
-
-        [OperationContract]
-        void Connect (String gamertag);
-
-        [OperationContract]
-        void Disconnect (String gamertag);  
     }
-
 
     [DataContract]
     public class Gamer : AccessAccount
@@ -73,6 +67,7 @@ namespace GameService.Contracts
         private string lastName;
         private int level;
         private string imageCode;
+
 
         [DataMember]
         public string FirstName { get { return firstName; } set { firstName = value; } }
@@ -86,7 +81,6 @@ namespace GameService.Contracts
         [DataMember]
         public string ImageCode { get { return imageCode; } set { imageCode = value; } }
 
-        public OperationContext operationContext { get; set; }
     }
 
     [DataContract]
@@ -109,5 +103,18 @@ namespace GameService.Contracts
         [DataMember]
         public int IsBanned { get { return isBanned; } set { isBanned = value; } }
 
+    }
+
+    [DataContract]
+    public class Friend
+    {
+        private string gamertag;
+        private string gamertagFriend;
+
+        [DataMember]
+        public string Gamertag { get { return gamertag; } set { gamertag = value; } }
+
+        [DataMember]
+        public string GamertagFriend { get {  return gamertagFriend; } set { gamertagFriend = value; } }    
     }
 }
