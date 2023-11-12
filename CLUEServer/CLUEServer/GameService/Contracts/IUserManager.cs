@@ -7,7 +7,7 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameService
+namespace GameService.Contracts
 {
 
     [ServiceContract]
@@ -25,6 +25,44 @@ namespace GameService
         [OperationContract]
         string RequestGuessPlayer();
 
+        [OperationContract]
+        int AuthenticateGamertag(String gamertag);
+
+        [OperationContract]
+        int AuthenticateEmail(String email);
+
+        [OperationContract]
+        Boolean IsAccessAccountExisting (String user, String Password);
+
+        [OperationContract]
+        Boolean IsEmailExisting(String email);
+        
+        [OperationContract]
+        Boolean IsGamertagExisting (String gamertag);
+
+        [OperationContract]
+        Gamer GetGamer(string gamertag);
+
+        [OperationContract]
+        Gamer GetGamerByEmail(string gamertag);
+
+        [OperationContract]
+        int GetBannedStatus(string gamertag);
+
+        [OperationContract]
+        int ModifyAccount (String gamertag, String firstName, String lastName);
+
+        [OperationContract]
+        int UpdateGamerTransaction(Gamer gamer);
+        
+        [OperationContract]
+        int ChangeIcon (string gamertag, String titleIcon);
+
+        [OperationContract]
+        void Connect (String gamertag);
+
+        [OperationContract]
+        void Disconnect (String gamertag);  
     }
 
 
@@ -34,6 +72,7 @@ namespace GameService
         private string firstName;
         private string lastName;
         private int level;
+        private string imageCode;
 
         [DataMember]
         public string FirstName { get { return firstName; } set { firstName = value; } }
@@ -43,6 +82,11 @@ namespace GameService
 
         [DataMember]
         public int Level { get { return level; } set { level = value; } }
+
+        [DataMember]
+        public string ImageCode { get { return imageCode; } set { imageCode = value; } }
+
+        public OperationContext operationContext { get; set; }
     }
 
     [DataContract]

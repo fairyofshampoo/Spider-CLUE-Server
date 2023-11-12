@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataBaseManager
+namespace GameService.Contracts
 {
-    public class DataBaseMethods
+    internal interface IImageManager
     {
+        
     }
 }
