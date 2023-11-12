@@ -264,6 +264,9 @@ namespace GameService.Services
                         return Error;
                         throw sQLException;
                     }
+                }
+            }
+        }
         public int ChangeIcon(string gamertag, string titleIcon)
         {
             using (var dataBaseContext = new SpiderClueDbEntities() )
