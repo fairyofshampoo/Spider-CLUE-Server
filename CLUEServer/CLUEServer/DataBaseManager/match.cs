@@ -21,7 +21,7 @@ namespace DataBaseManager
         }
     
         public string codeMatch { get; set; }
-        public System.DateTime creationDate { get; set; }
+        public string createdBy { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<matchResult> matchResults { get; set; }

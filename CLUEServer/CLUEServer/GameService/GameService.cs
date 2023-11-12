@@ -9,14 +9,16 @@ using GameService.Contracts;
 using System.Security.Cryptography;
 using System.ServiceModel.Configuration;
 using System.Data.SqlClient;
+using System.ServiceModel;
 
 namespace GameService.Services
 {
+    
     public partial class GameService : IUserManager
-    {
+    {  
+        //  public Dictionary<string, OperationContext> usersConnectedDictonary = new Dictionary<string, OperationContext>();
         const int Error = -1;
         const int Success = 1;
-        List<string> UsersConnected = new List<string>();
 
         public int AddUserTransaction(Gamer gamer)
         {
@@ -99,9 +101,9 @@ namespace GameService.Services
 
         public int AuthenticateGamertag(string soughtGamertag)
         {
-            using(var dataBaseContext = new SpiderClueDbEntities())
+            using (var dataBaseContext = new SpiderClueDbEntities())
             {
-                int coincidences = dataBaseContext.gamers.Count(gamer =>  gamer.gamertag == soughtGamertag);
+                int coincidences = dataBaseContext.gamers.Count(gamer => gamer.gamertag == soughtGamertag);
                 return coincidences;
             }
         }
@@ -115,7 +117,7 @@ namespace GameService.Services
             }
         }
 
-        public Boolean IsAccessAccountExisting (String user, String password)
+        public Boolean IsAccessAccountExisting(String user, String password)
         {
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
@@ -131,13 +133,13 @@ namespace GameService.Services
 
         public bool IsEmailExisting(string email)
         {
-            using(var dataBaseContext = new SpiderClueDbEntities())
+            using (var dataBaseContext = new SpiderClueDbEntities())
             {
                 Boolean exist = false;
                 int coincidences = dataBaseContext.accessAccounts.Count(accessAccount => accessAccount.email == email);
                 if (coincidences > 0)
                 {
-                    exist = true;   
+                    exist = true;
                 }
                 return exist;
             }
@@ -148,14 +150,14 @@ namespace GameService.Services
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
                 Boolean exists = false;
-                int coincidences = dataBaseContext.accessAccounts.Count(accessAccount => accessAccount.gamertag ==  gamertag);
+                int coincidences = dataBaseContext.accessAccounts.Count(accessAccount => accessAccount.gamertag == gamertag);
                 if (coincidences > 0)
                 {
                     exists = true;
                 }
                 return exists;
             }
-           
+
         }
 
         public Gamer GetGamer(string gamertag)
@@ -196,50 +198,43 @@ namespace GameService.Services
         {
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
-                    var gamer = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == gamertag);
-                    if (gamer != null)
-                    {
-                        gamer.firstName = firstName;
-                        gamer.lastName = lastName;
-                        dataBaseContext.SaveChanges();
-                        return Success;
-                    }else 
-                    { 
-                    return Error; 
-                    }
+                var gamer = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == gamertag);
+                if (gamer != null)
+                {
+                    gamer.firstName = firstName;
+                    gamer.lastName = lastName;
+                    dataBaseContext.SaveChanges();
+                    return Success;
+                }
+                else
+                {
+                    return Error;
+                }
             }
         }
 
         public int ChangeIcon(string gamertag, string titleIcon)
         {
-            using (var dataBaseContext = new SpiderClueDbEntities() )
+            using (var dataBaseContext = new SpiderClueDbEntities())
             {
-                var gamer = dataBaseContext.gamers.FirstOrDefault (player => player.gamertag == gamertag); 
-                if(gamer != null)
+                var gamer = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == gamertag);
+                if (gamer != null)
                 {
                     gamer.imageCode = titleIcon;
                     dataBaseContext.SaveChanges();
                     return Success;
-                } else
-                { 
-                    return Error; 
+                }
+                else
+                {
+                    return Error;
                 }
             }
         }
 
-        public void Connect(string gamertag)
-        {
-            UsersConnected.Add(gamertag);
-            Console.WriteLine("Usuario conectado" + UsersConnected.First());
-        }
 
-        public void Disconnect(string gamertag)
-        {
-            var user = UsersConnected.FirstOrDefault(nickName => nickName == gamertag);
-            if(user != null)
-            {
-                UsersConnected.Remove(user);
-            }
-        }
+
+        
     }
 }
+
+   

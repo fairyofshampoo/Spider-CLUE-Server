@@ -60,7 +60,7 @@
             <PropertyRef Name="codeMatch" />
           </Key>
           <Property Name="codeMatch" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="creationDate" Type="date" Nullable="false" />
+          <Property Name="createdBy" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="matchResults">
           <Key>
@@ -90,30 +90,6 @@
               <PropertyRef Name="gamertag" />
             </Principal>
             <Dependent Role="accessAccount">
-              <PropertyRef Name="gamertag" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_friend_gamer">
-          <End Role="gamer" Type="Self.gamer" Multiplicity="1" />
-          <End Role="friendList" Type="Self.friendList" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="gamer">
-              <PropertyRef Name="gamertag" />
-            </Principal>
-            <Dependent Role="friendList">
-              <PropertyRef Name="friend" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_friendList_gamer">
-          <End Role="gamer" Type="Self.gamer" Multiplicity="1" />
-          <End Role="friendList" Type="Self.friendList" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="gamer">
-              <PropertyRef Name="gamertag" />
-            </Principal>
-            <Dependent Role="friendList">
               <PropertyRef Name="gamertag" />
             </Dependent>
           </ReferentialConstraint>
@@ -204,14 +180,6 @@
             <End Role="gamer" EntitySet="gamer" />
             <End Role="accessAccount" EntitySet="accessAccount" />
           </AssociationSet>
-          <AssociationSet Name="FK_friend_gamer" Association="Self.FK_friend_gamer">
-            <End Role="gamer" EntitySet="gamer" />
-            <End Role="friendList" EntitySet="friendList" />
-          </AssociationSet>
-          <AssociationSet Name="FK_friendList_gamer" Association="Self.FK_friendList_gamer">
-            <End Role="gamer" EntitySet="gamer" />
-            <End Role="friendList" EntitySet="friendList" />
-          </AssociationSet>
           <AssociationSet Name="FK_inventory_article" Association="Self.FK_inventory_article">
             <End Role="article" EntitySet="article" />
             <End Role="inventory" EntitySet="inventory" />
@@ -258,14 +226,6 @@
           <AssociationSet Name="FK_inventory_article" Association="SpiderClueDbModel.FK_inventory_article">
             <End Role="article" EntitySet="articles" />
             <End Role="inventory" EntitySet="inventories" />
-          </AssociationSet>
-          <AssociationSet Name="FK_friend_gamer" Association="SpiderClueDbModel.FK_friend_gamer">
-            <End Role="gamer" EntitySet="gamers" />
-            <End Role="friendList" EntitySet="friendLists" />
-          </AssociationSet>
-          <AssociationSet Name="FK_friendList_gamer" Association="SpiderClueDbModel.FK_friendList_gamer">
-            <End Role="gamer" EntitySet="gamers" />
-            <End Role="friendList" EntitySet="friendLists" />
           </AssociationSet>
           <AssociationSet Name="FK_inventory_gamer" Association="SpiderClueDbModel.FK_inventory_gamer">
             <End Role="gamer" EntitySet="gamers" />
@@ -314,8 +274,6 @@
           <Property Name="noList" Type="Int32" Nullable="false" />
           <Property Name="friend" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="gamertag" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="gamer" Relationship="SpiderClueDbModel.FK_friend_gamer" FromRole="friendList" ToRole="gamer" />
-          <NavigationProperty Name="gamer1" Relationship="SpiderClueDbModel.FK_friendList_gamer" FromRole="friendList" ToRole="gamer" />
         </EntityType>
         <EntityType Name="gamer">
           <Key>
@@ -327,8 +285,6 @@
           <Property Name="level" Type="Int32" Nullable="false" />
           <Property Name="imageCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="accessAccounts" Relationship="SpiderClueDbModel.FK_accessAccount_gamer" FromRole="gamer" ToRole="accessAccount" />
-          <NavigationProperty Name="friendLists" Relationship="SpiderClueDbModel.FK_friend_gamer" FromRole="gamer" ToRole="friendList" />
-          <NavigationProperty Name="friendLists1" Relationship="SpiderClueDbModel.FK_friendList_gamer" FromRole="gamer" ToRole="friendList" />
           <NavigationProperty Name="inventories" Relationship="SpiderClueDbModel.FK_inventory_gamer" FromRole="gamer" ToRole="inventory" />
           <NavigationProperty Name="matchResults" Relationship="SpiderClueDbModel.FK_match_results_gamer" FromRole="gamer" ToRole="matchResult" />
           <NavigationProperty Name="reports" Relationship="SpiderClueDbModel.FK_report_gamer" FromRole="gamer" ToRole="report" />
@@ -356,7 +312,7 @@
             <PropertyRef Name="codeMatch" />
           </Key>
           <Property Name="codeMatch" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="creationDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="createdBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="matchResults" Relationship="SpiderClueDbModel.FK_match_results_match" FromRole="match" ToRole="matchResult" />
         </EntityType>
         <EntityType Name="matchResult">
@@ -404,30 +360,6 @@
             </Principal>
             <Dependent Role="inventory">
               <PropertyRef Name="articleCode" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_friend_gamer">
-          <End Type="SpiderClueDbModel.gamer" Role="gamer" Multiplicity="1" />
-          <End Type="SpiderClueDbModel.friendList" Role="friendList" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="gamer">
-              <PropertyRef Name="gamertag" />
-            </Principal>
-            <Dependent Role="friendList">
-              <PropertyRef Name="friend" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_friendList_gamer">
-          <End Type="SpiderClueDbModel.gamer" Role="gamer" Multiplicity="1" />
-          <End Type="SpiderClueDbModel.friendList" Role="friendList" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="gamer">
-              <PropertyRef Name="gamertag" />
-            </Principal>
-            <Dependent Role="friendList">
-              <PropertyRef Name="gamertag" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -491,7 +423,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -556,7 +488,7 @@
           <EntitySetMapping Name="matches">
             <EntityTypeMapping TypeName="SpiderClueDbModel.match">
               <MappingFragment StoreEntitySet="match">
-                <ScalarProperty Name="creationDate" ColumnName="creationDate" />
+                <ScalarProperty Name="createdBy" ColumnName="createdBy" />
                 <ScalarProperty Name="codeMatch" ColumnName="codeMatch" />
               </MappingFragment>
             </EntityTypeMapping>
