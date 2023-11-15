@@ -67,7 +67,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Contracts\IFriendsManager.cs" />
-    <Compile Include="Contracts\IImageManager.cs" />
     <Compile Include="FriendsService.cs" />
     <Compile Include="VerificationService.cs" />
     <Compile Include="GameService.cs" />
