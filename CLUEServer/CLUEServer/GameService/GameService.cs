@@ -174,7 +174,7 @@ namespace GameService.Services
                     gamer.Level = gamerInformation.level;
                     gamer.LastName = gamerInformation.lastName;
                     gamer.Email = accessAcountInformation.email;
-                    gamer.ImageCode = gamer.ImageCode;
+                    gamer.ImageCode = gamerInformation.imageCode;
 
                 }
                 return gamer;
