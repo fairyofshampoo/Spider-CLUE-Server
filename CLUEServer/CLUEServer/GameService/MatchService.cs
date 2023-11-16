@@ -10,7 +10,22 @@ namespace GameService.Services
 {
     public partial class GameService : IMatchManager
     {
-        public Match getMatchInformation(string code)
+        public void ConnectToMatch(string gamertag, string code)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CreateMatch(Match newMatch)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetGamersInMatch(string gamertag, string code)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Match GetMatchInformation(string code)
         {
             using (var databaseContext = new SpiderClueDbEntities())
             {
@@ -23,6 +38,16 @@ namespace GameService.Services
                 }
                 return result;
             }
+        }
+
+        public bool KickPlayer(string gamertag)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void LeaveMatch(string gamertag, string code)
+        {
+            throw new NotImplementedException();
         }
     }
 }

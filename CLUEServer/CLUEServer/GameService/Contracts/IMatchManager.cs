@@ -12,7 +12,22 @@ namespace GameService.Contracts
     internal interface IMatchManager
     {
         [OperationContract]
-        Match getMatchInformation(string code);
+        Match GetMatchInformation(string code);
+
+        [OperationContract(IsOneWay = true)]
+        void ConnectToMatch(string gamertag, string code);
+
+        [OperationContract]
+        void CreateMatch(Match newMatch);
+
+        [OperationContract]
+        void LeaveMatch(string gamertag, string code);
+
+        [OperationContract]
+        bool KickPlayer(string gamertag);
+
+        [OperationContract(IsOneWay = true)]
+        void GetGamersInMatch(string gamertag, string code);
     }
 
     [DataContract]
