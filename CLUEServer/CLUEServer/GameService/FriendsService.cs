@@ -20,7 +20,7 @@ using System.Threading.Tasks;
                 usersConnected.Add(gamertag);
             }
 
-            public void Disconnect(string gamertag)
+        public void Disconnect(string gamertag)
             {
                 if (usersConnected.Contains(gamertag))
                 {
@@ -28,7 +28,7 @@ using System.Threading.Tasks;
                 }
             }
 
-            public void GetConnectedFriends(string gamertag)
+        public void GetConnectedFriends(string gamertag)
             {
                 List<string> friendList = GetFriendList(gamertag);
                 List<string> connectedFriends = new List<string>();
@@ -41,15 +41,6 @@ using System.Threading.Tasks;
                 }
                 OperationContext.Current.GetCallbackChannel<IFriendsManagerCallback>().ReceiveConnectedFriends(connectedFriends);
             }
-
-        public List<string> GetFriendList(string gamertag)
-        {
-            using (var databaseContext = new SpiderClueDbEntities())
-            {
-                var friendList = databaseContext.friendLists.Where(user => user.gamertag == gamertag)
-                    .Select(user => user.friend).ToList();
-                return friendList;
-            }
-        }
-        }
     }
+    
+}

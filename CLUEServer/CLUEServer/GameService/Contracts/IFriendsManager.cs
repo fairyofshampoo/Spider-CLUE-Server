@@ -18,7 +18,6 @@ namespace GameService.Contracts
 
         [OperationContract]
         void Disconnect(string gamertag);
-
     }
 
     [ServiceContract]
