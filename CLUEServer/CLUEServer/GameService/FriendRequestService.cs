@@ -9,8 +9,7 @@ using System.Threading.Tasks;
 namespace GameService.Services
 {
     public partial class GameService : IFriendRequestManager
-    {
-
+    { 
         public List<string> GetFriendList(string gamertag)
         {
             using (var databaseContext = new SpiderClueDbEntities())
