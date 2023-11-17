@@ -117,4 +117,5 @@ namespace GameService.Contracts
         [DataMember]
         public string GamertagFriend { get {  return gamertagFriend; } set { gamertagFriend = value; } }    
     }
+
 }
