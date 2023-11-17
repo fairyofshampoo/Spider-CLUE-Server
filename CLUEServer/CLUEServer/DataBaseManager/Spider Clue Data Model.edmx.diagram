@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="fac43e3bac784704a3edcf225e508b7b" Name="Diagram1" ZoomLevel="81">
+        <EntityTypeShape EntityType="SpiderClueDbModel.accessAccount" Width="1.5" PointX="3" PointY="13.125" />
+        <EntityTypeShape EntityType="SpiderClueDbModel.article" Width="1.5" PointX="0.75" PointY="2" />
+        <EntityTypeShape EntityType="SpiderClueDbModel.friendList" Width="1.5" PointX="5.75" PointY="0.75" />
+        <EntityTypeShape EntityType="SpiderClueDbModel.gamer" Width="1.5" PointX="0.75" PointY="5.375" />
+        <EntityTypeShape EntityType="SpiderClueDbModel.guessPlayer" Width="1.5" PointX="7.75" PointY="0.75" />
+        <EntityTypeShape EntityType="SpiderClueDbModel.inventory" Width="1.5" PointX="3" PointY="3.875" />
+        <EntityTypeShape EntityType="SpiderClueDbModel.match" Width="1.5" PointX="3.75" PointY="1" />
+        <EntityTypeShape EntityType="SpiderClueDbModel.matchResult" Width="1.5" PointX="6" PointY="5.75" />
+        <EntityTypeShape EntityType="SpiderClueDbModel.report" Width="1.5" PointX="3" PointY="6.875" />
+        <AssociationConnector Association="SpiderClueDbModel.FK_accessAccount_gamer" />
+        <AssociationConnector Association="SpiderClueDbModel.FK_inventory_article" />
+        <AssociationConnector Association="SpiderClueDbModel.FK_inventory_gamer" />
+        <AssociationConnector Association="SpiderClueDbModel.FK_match_results_gamer" />
+        <AssociationConnector Association="SpiderClueDbModel.FK_report_gamer" />
+        <AssociationConnector Association="SpiderClueDbModel.FK_reported_gamer" />
+        <AssociationConnector Association="SpiderClueDbModel.FK_match_results_match" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
