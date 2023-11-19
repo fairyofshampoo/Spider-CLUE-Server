@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using System.ServiceModel.Configuration;
 using System.Data.SqlClient;
 using System.ServiceModel;
+using System.Diagnostics;
 
 namespace GameService.Services
 {
@@ -288,9 +289,17 @@ namespace GameService.Services
             }
         }
 
-
-
-        
+        public string GetIcon(string gamertag)
+        {
+            using (var dataBaseContext = new SpiderClueDbEntities())
+            {
+                var imagecode = dataBaseContext.gamers
+                    .Where(player => player.gamertag == gamertag)
+                    .Select(player => player.imageCode)
+                    .FirstOrDefault();
+                return imagecode;
+            }
+        }
     }
 }
 

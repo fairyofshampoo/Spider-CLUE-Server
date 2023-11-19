@@ -7,13 +7,18 @@ using System.Threading.Tasks;
 
 namespace GameService.Contracts
 {
-    [ServiceContract]
+    [ServiceContract (CallbackContract = typeof(IFriendRequestManager))]
     public interface IFriendRequestManager
     {
         [OperationContract]
-        List<string> GetFriendList(string gamertag);
+        void showAllFriendsRequest(string gamertag);
+ 
+    }
 
+    [ServiceContract]
+    public interface IFriendRequestManagerCallback
+    {
         [OperationContract]
-        void DeleteFriend(string gamertag, string friendGamertag);
+        void ReceiveFriendsRequests();
     }
 }
