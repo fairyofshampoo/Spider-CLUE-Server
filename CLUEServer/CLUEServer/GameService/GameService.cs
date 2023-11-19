@@ -15,13 +15,13 @@ namespace GameService.Services
 {
     
     public partial class GameService : IUserManager
-    {  
-        //  public Dictionary<string, OperationContext> usersConnectedDictonary = new Dictionary<string, OperationContext>();
-        const int Error = -1;
-        const int Success = 1;
+    {
+        private const int Error = -1;
+        private const int Success = 1;
 
         public int AddUserTransaction(Gamer gamer)
-        {
+        { 
+            int result = 0;
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
                 using (var dataBaseContextTransaction = dataBaseContext.Database.BeginTransaction())
@@ -51,16 +51,17 @@ namespace GameService.Services
                         dataBaseContext.SaveChanges();
                         dataBaseContextTransaction.Commit();
 
-                        return Success;
+                        result = Success;
                     }
                     catch (SqlException sQLException)
                     {
                         dataBaseContextTransaction.Rollback();
-                        return Error;
+                        result = Error;
                         throw sQLException;
                     }
                 }
             }
+            return result;
         }
 
         public bool AuthenticateAccount(string gamertag, string password)
@@ -72,18 +73,18 @@ namespace GameService.Services
             }
         }
 
-        public string RequestGuessPlayer()
+        public string RequestGuestPlayer()
         {
             return CreateRandomUserName();
         }
 
         private string CreateRandomUserName()
         {
-            int length = 8;
+            int lengthGuestGamertag = 8;
             const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             Random random = new Random();
 
-            string randomUsername = new string(Enumerable.Repeat(validChars, length)
+            string randomUsername = new string(Enumerable.Repeat(validChars, lengthGuestGamertag)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
 
             return randomUsername;
@@ -123,7 +124,7 @@ namespace GameService.Services
             {
                 Boolean exist = false;
                 int coincidences = dataBaseContext.accessAccounts.Count(accessAccount => accessAccount.gamertag == user && accessAccount.password == password);
-                if (coincidences == 2)
+                if (coincidences > 0)
                 {
                     exist = true;
                 }
