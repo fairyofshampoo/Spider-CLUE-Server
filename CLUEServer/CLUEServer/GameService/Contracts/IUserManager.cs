@@ -24,7 +24,7 @@ namespace GameService.Contracts
         bool AuthenticateAccount(string gamertag, string password);
 
         [OperationContract]
-        string RequestGuessPlayer();
+        string RequestGuestPlayer();
 
         [OperationContract]
         int AuthenticateGamertag(String gamertag);
@@ -58,6 +58,9 @@ namespace GameService.Contracts
         
         [OperationContract]
         int ChangeIcon (string gamertag, String titleIcon);
+
+        [OperationContract]
+        string GetIcon (String gamertag);
     }
 
     [DataContract]
