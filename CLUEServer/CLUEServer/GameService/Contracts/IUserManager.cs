@@ -58,6 +58,9 @@ namespace GameService.Contracts
         
         [OperationContract]
         int ChangeIcon (string gamertag, String titleIcon);
+
+        [OperationContract]
+        string GetIcon (String gamertag);
     }
 
     [DataContract]

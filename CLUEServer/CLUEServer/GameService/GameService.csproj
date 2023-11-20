@@ -67,9 +67,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Contracts\IFriendRequestManager.cs" />
+    <Compile Include="Contracts\IFriendshipManager.cs" />
     <Compile Include="Contracts\IFriendsManager.cs" />
     <Compile Include="Contracts\IMatchManager.cs" />
     <Compile Include="FriendRequestService.cs" />
+    <Compile Include="FriendshipService.cs" />
     <Compile Include="FriendsService.cs" />
     <Compile Include="MatchService.cs" />
     <Compile Include="VerificationService.cs" />
