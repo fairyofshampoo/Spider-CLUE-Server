@@ -30,22 +30,25 @@ namespace GameService.Services
             }
         }
 
-        public void CreateFriendRequest(string gamertag, string friendGamertag)
+        public void AddFriend(string gamertag, string friendGamertag)
         {
             using (var databaseContext = new SpiderClueDbEntities())
             {
-
+                var existingFriendship = databaseContext.friendLists
+                .FirstOrDefault(f => (f.gamertag == gamertag && f.friend == friendGamertag) || (f.gamertag == friendGamertag && f.friend == gamertag));
+                if (existingFriendship == null)
+                {
+                    var newFriends = new DataBaseManager.friendList
+                    {
+                        gamertag = gamertag,
+                        friend = friendGamertag
+                    };
+                    databaseContext.friendLists.Add(newFriends);
+                    databaseContext.SaveChanges();
+                    AddFriend(friendGamertag, gamertag);
+                }
+                
             }
-        }
-
-        public void AcceptFriendRequest(string gamertag, string friendGamertag)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DeclineFriendRequest(string gamertg, string friendGamertag)
-        {
-            throw new NotImplementedException();
         }
     }
 }
