@@ -14,14 +14,6 @@
           <Property Name="password" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="isbanned" Type="int" Nullable="false" />
         </EntityType>
-        <EntityType Name="article">
-          <Key>
-            <PropertyRef Name="articleCode" />
-          </Key>
-          <Property Name="articleCode" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="articleName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="price" Type="money" Nullable="false" />
-        </EntityType>
         <EntityType Name="friendList">
           <Key>
             <PropertyRef Name="noList" />
@@ -29,6 +21,15 @@
           <Property Name="noList" Type="int" Nullable="false" />
           <Property Name="friend" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="gamertag" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="friendRequest">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="senderGamertag" Type="nvarchar" MaxLength="50" />
+          <Property Name="receiverGamertag" Type="nvarchar" MaxLength="50" />
+          <Property Name="friendRequestStatus" Type="nvarchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="gamer">
           <Key>
@@ -46,14 +47,6 @@
           </Key>
           <Property Name="code" Type="int" Nullable="false" />
           <Property Name="displayName" Type="nchar" MaxLength="50" Nullable="false" />
-        </EntityType>
-        <EntityType Name="inventory">
-          <Key>
-            <PropertyRef Name="noInventory" />
-          </Key>
-          <Property Name="noInventory" Type="int" Nullable="false" />
-          <Property Name="articleCode" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="gamertag" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="match">
           <Key>
@@ -90,30 +83,6 @@
               <PropertyRef Name="gamertag" />
             </Principal>
             <Dependent Role="accessAccount">
-              <PropertyRef Name="gamertag" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_inventory_article">
-          <End Role="article" Type="Self.article" Multiplicity="1" />
-          <End Role="inventory" Type="Self.inventory" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="article">
-              <PropertyRef Name="articleCode" />
-            </Principal>
-            <Dependent Role="inventory">
-              <PropertyRef Name="articleCode" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_inventory_gamer">
-          <End Role="gamer" Type="Self.gamer" Multiplicity="1" />
-          <End Role="inventory" Type="Self.inventory" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="gamer">
-              <PropertyRef Name="gamertag" />
-            </Principal>
-            <Dependent Role="inventory">
               <PropertyRef Name="gamertag" />
             </Dependent>
           </ReferentialConstraint>
@@ -168,25 +137,16 @@
         </Association>
         <EntityContainer Name="SpiderClueDbModelStoreContainer">
           <EntitySet Name="accessAccount" EntityType="Self.accessAccount" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="article" EntityType="Self.article" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="friendList" EntityType="Self.friendList" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="friendRequest" EntityType="Self.friendRequest" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="gamer" EntityType="Self.gamer" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="guessPlayer" EntityType="Self.guessPlayer" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="inventory" EntityType="Self.inventory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="match" EntityType="Self.match" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="matchResults" EntityType="Self.matchResults" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="report" EntityType="Self.report" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_accessAccount_gamer" Association="Self.FK_accessAccount_gamer">
             <End Role="gamer" EntitySet="gamer" />
             <End Role="accessAccount" EntitySet="accessAccount" />
-          </AssociationSet>
-          <AssociationSet Name="FK_inventory_article" Association="Self.FK_inventory_article">
-            <End Role="article" EntitySet="article" />
-            <End Role="inventory" EntitySet="inventory" />
-          </AssociationSet>
-          <AssociationSet Name="FK_inventory_gamer" Association="Self.FK_inventory_gamer">
-            <End Role="gamer" EntitySet="gamer" />
-            <End Role="inventory" EntitySet="inventory" />
           </AssociationSet>
           <AssociationSet Name="FK_match results_gamer" Association="Self.FK_match results_gamer">
             <End Role="gamer" EntitySet="gamer" />
@@ -211,25 +171,16 @@
       <Schema Namespace="SpiderClueDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="SpiderClueDbEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="accessAccounts" EntityType="SpiderClueDbModel.accessAccount" />
-          <EntitySet Name="articles" EntityType="SpiderClueDbModel.article" />
           <EntitySet Name="friendLists" EntityType="SpiderClueDbModel.friendList" />
+          <EntitySet Name="friendRequests" EntityType="SpiderClueDbModel.friendRequest" />
           <EntitySet Name="gamers" EntityType="SpiderClueDbModel.gamer" />
           <EntitySet Name="guessPlayers" EntityType="SpiderClueDbModel.guessPlayer" />
-          <EntitySet Name="inventories" EntityType="SpiderClueDbModel.inventory" />
           <EntitySet Name="matches" EntityType="SpiderClueDbModel.match" />
           <EntitySet Name="matchResults" EntityType="SpiderClueDbModel.matchResult" />
           <EntitySet Name="reports" EntityType="SpiderClueDbModel.report" />
           <AssociationSet Name="FK_accessAccount_gamer" Association="SpiderClueDbModel.FK_accessAccount_gamer">
             <End Role="gamer" EntitySet="gamers" />
             <End Role="accessAccount" EntitySet="accessAccounts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_inventory_article" Association="SpiderClueDbModel.FK_inventory_article">
-            <End Role="article" EntitySet="articles" />
-            <End Role="inventory" EntitySet="inventories" />
-          </AssociationSet>
-          <AssociationSet Name="FK_inventory_gamer" Association="SpiderClueDbModel.FK_inventory_gamer">
-            <End Role="gamer" EntitySet="gamers" />
-            <End Role="inventory" EntitySet="inventories" />
           </AssociationSet>
           <AssociationSet Name="FK_match_results_gamer" Association="SpiderClueDbModel.FK_match_results_gamer">
             <End Role="gamer" EntitySet="gamers" />
@@ -258,15 +209,6 @@
           <Property Name="isbanned" Type="Int32" Nullable="false" />
           <NavigationProperty Name="gamer" Relationship="SpiderClueDbModel.FK_accessAccount_gamer" FromRole="accessAccount" ToRole="gamer" />
         </EntityType>
-        <EntityType Name="article">
-          <Key>
-            <PropertyRef Name="articleCode" />
-          </Key>
-          <Property Name="articleCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="articleName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="price" Type="Decimal" Nullable="false" Precision="19" Scale="4" />
-          <NavigationProperty Name="inventories" Relationship="SpiderClueDbModel.FK_inventory_article" FromRole="article" ToRole="inventory" />
-        </EntityType>
         <EntityType Name="friendList">
           <Key>
             <PropertyRef Name="noList" />
@@ -274,6 +216,15 @@
           <Property Name="noList" Type="Int32" Nullable="false" />
           <Property Name="friend" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="gamertag" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="friendRequest">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="senderGamertag" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="receiverGamertag" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="friendRequestStatus" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="gamer">
           <Key>
@@ -285,7 +236,6 @@
           <Property Name="level" Type="Int32" Nullable="false" />
           <Property Name="imageCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="accessAccounts" Relationship="SpiderClueDbModel.FK_accessAccount_gamer" FromRole="gamer" ToRole="accessAccount" />
-          <NavigationProperty Name="inventories" Relationship="SpiderClueDbModel.FK_inventory_gamer" FromRole="gamer" ToRole="inventory" />
           <NavigationProperty Name="matchResults" Relationship="SpiderClueDbModel.FK_match_results_gamer" FromRole="gamer" ToRole="matchResult" />
           <NavigationProperty Name="reports" Relationship="SpiderClueDbModel.FK_report_gamer" FromRole="gamer" ToRole="report" />
           <NavigationProperty Name="reports1" Relationship="SpiderClueDbModel.FK_reported_gamer" FromRole="gamer" ToRole="report" />
@@ -296,16 +246,6 @@
           </Key>
           <Property Name="code" Type="Int32" Nullable="false" />
           <Property Name="displayName" Type="String" Nullable="false" MaxLength="50" FixedLength="true" Unicode="true" />
-        </EntityType>
-        <EntityType Name="inventory">
-          <Key>
-            <PropertyRef Name="noInventory" />
-          </Key>
-          <Property Name="noInventory" Type="Int32" Nullable="false" />
-          <Property Name="articleCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="gamertag" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="article" Relationship="SpiderClueDbModel.FK_inventory_article" FromRole="inventory" ToRole="article" />
-          <NavigationProperty Name="gamer" Relationship="SpiderClueDbModel.FK_inventory_gamer" FromRole="inventory" ToRole="gamer" />
         </EntityType>
         <EntityType Name="match">
           <Key>
@@ -347,30 +287,6 @@
               <PropertyRef Name="gamertag" />
             </Principal>
             <Dependent Role="accessAccount">
-              <PropertyRef Name="gamertag" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_inventory_article">
-          <End Type="SpiderClueDbModel.article" Role="article" Multiplicity="1" />
-          <End Type="SpiderClueDbModel.inventory" Role="inventory" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="article">
-              <PropertyRef Name="articleCode" />
-            </Principal>
-            <Dependent Role="inventory">
-              <PropertyRef Name="articleCode" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_inventory_gamer">
-          <End Type="SpiderClueDbModel.gamer" Role="gamer" Multiplicity="1" />
-          <End Type="SpiderClueDbModel.inventory" Role="inventory" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="gamer">
-              <PropertyRef Name="gamertag" />
-            </Principal>
-            <Dependent Role="inventory">
               <PropertyRef Name="gamertag" />
             </Dependent>
           </ReferentialConstraint>
@@ -439,21 +355,22 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="articles">
-            <EntityTypeMapping TypeName="SpiderClueDbModel.article">
-              <MappingFragment StoreEntitySet="article">
-                <ScalarProperty Name="price" ColumnName="price" />
-                <ScalarProperty Name="articleName" ColumnName="articleName" />
-                <ScalarProperty Name="articleCode" ColumnName="articleCode" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="friendLists">
             <EntityTypeMapping TypeName="SpiderClueDbModel.friendList">
               <MappingFragment StoreEntitySet="friendList">
                 <ScalarProperty Name="gamertag" ColumnName="gamertag" />
                 <ScalarProperty Name="friend" ColumnName="friend" />
                 <ScalarProperty Name="noList" ColumnName="noList" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="friendRequests">
+            <EntityTypeMapping TypeName="SpiderClueDbModel.friendRequest">
+              <MappingFragment StoreEntitySet="friendRequest">
+                <ScalarProperty Name="friendRequestStatus" ColumnName="friendRequestStatus" />
+                <ScalarProperty Name="receiverGamertag" ColumnName="receiverGamertag" />
+                <ScalarProperty Name="senderGamertag" ColumnName="senderGamertag" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -473,15 +390,6 @@
               <MappingFragment StoreEntitySet="guessPlayer">
                 <ScalarProperty Name="displayName" ColumnName="displayName" />
                 <ScalarProperty Name="code" ColumnName="code" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="inventories">
-            <EntityTypeMapping TypeName="SpiderClueDbModel.inventory">
-              <MappingFragment StoreEntitySet="inventory">
-                <ScalarProperty Name="gamertag" ColumnName="gamertag" />
-                <ScalarProperty Name="articleCode" ColumnName="articleCode" />
-                <ScalarProperty Name="noInventory" ColumnName="noInventory" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,12 +18,6 @@ namespace GameService.Contracts
         void DeleteFriend(string gamertag, string friendGamertag);
 
         [OperationContract]
-        void CreateFriendRequest(string gamertag, string friendGamertag);
-
-        [OperationContract]
-        void AcceptFriendRequest(string gamertag, string friendGamertag);
-
-        [OperationContract]
-        void DeclineFriendRequest(string gamertg, string friendGamertag);
+        void AddFriend(string gamertag, string friendGamertag);
     }
 }

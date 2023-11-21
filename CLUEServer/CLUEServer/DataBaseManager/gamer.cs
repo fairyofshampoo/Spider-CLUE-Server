@@ -18,7 +18,6 @@ namespace DataBaseManager
         public gamer()
         {
             this.accessAccounts = new HashSet<accessAccount>();
-            this.inventories = new HashSet<inventory>();
             this.matchResults = new HashSet<matchResult>();
             this.reports = new HashSet<report>();
             this.reports1 = new HashSet<report>();
@@ -32,8 +31,6 @@ namespace DataBaseManager
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<accessAccount> accessAccounts { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<inventory> inventories { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<matchResult> matchResults { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
