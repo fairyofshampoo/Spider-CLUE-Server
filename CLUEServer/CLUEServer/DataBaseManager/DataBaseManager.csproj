@@ -66,20 +66,17 @@
     <Compile Include="accessAccount.cs">
       <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="article.cs">
-      <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
-    </Compile>
     <Compile Include="DataBaseMethods.cs" />
     <Compile Include="friendList.cs">
+      <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="friendRequest.cs">
       <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
     </Compile>
     <Compile Include="gamer.cs">
       <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
     </Compile>
     <Compile Include="guessPlayer.cs">
-      <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
-    </Compile>
-    <Compile Include="inventory.cs">
       <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
     </Compile>
     <Compile Include="match.cs">
