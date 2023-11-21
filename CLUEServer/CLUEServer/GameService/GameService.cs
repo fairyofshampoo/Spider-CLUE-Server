@@ -218,6 +218,7 @@ namespace GameService.Services
 
         public int ModifyAccount(string gamertag, string firstName, string lastName)
         {
+            int result = 0;
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
                 var gamer = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == gamertag);
@@ -226,17 +227,19 @@ namespace GameService.Services
                     gamer.firstName = firstName;
                     gamer.lastName = lastName;
                     dataBaseContext.SaveChanges();
-                    return Success;
+                    result = Success;
                 }
                 else
                 {
-                    return Error;
+                    result = Error;
                 }
             }
+            return result;
         }
 
         public int UpdateGamerTransaction(Gamer gamer)
         {
+            int result = 0;
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
                 using (var dataBaseContextTransaction = dataBaseContext.Database.BeginTransaction())
@@ -261,19 +264,21 @@ namespace GameService.Services
                         dataBaseContext.SaveChanges();
                         dataBaseContextTransaction.Commit();
 
-                        return Success;
+                        result = Success;
                     }
                     catch (SqlException sQLException)
                     {
                         dataBaseContextTransaction.Rollback();
-                        return Error;
+                        result = Error;
                         throw sQLException;
                     }
                 }
             }
+            return result;
         }
         public int ChangeIcon(string gamertag, string titleIcon)
         {
+            int result = 0;
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
                 var gamer = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == gamertag);
@@ -281,13 +286,14 @@ namespace GameService.Services
                 {
                     gamer.imageCode = titleIcon;
                     dataBaseContext.SaveChanges();
-                    return Success;
+                    result = Success;
                 }
                 else
                 {
-                    return Error;
+                    result = Error;
                 }
             }
+            return result;
         }
 
         public string GetIcon(string gamertag)

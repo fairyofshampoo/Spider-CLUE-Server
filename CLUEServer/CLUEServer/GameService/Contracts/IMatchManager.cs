@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace GameService.Contracts
 {
+    [ServiceContract]
     internal interface IMatchManager
     {
         [OperationContract]
