@@ -87,7 +87,6 @@ namespace GameService.Services
 
             string randomUsername = new string(Enumerable.Repeat(validChars, lengthGuestGamertag)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
-
             return randomUsername;
         }
 
