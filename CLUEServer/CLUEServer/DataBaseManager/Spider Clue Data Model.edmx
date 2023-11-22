@@ -18,9 +18,9 @@
           <Key>
             <PropertyRef Name="noList" />
           </Key>
-          <Property Name="noList" Type="int" Nullable="false" />
-          <Property Name="friend" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="gamertag" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="noList" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="friend" Type="nvarchar" MaxLength="50" />
+          <Property Name="gamertag" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="friendRequest">
           <Key>
@@ -213,9 +213,9 @@
           <Key>
             <PropertyRef Name="noList" />
           </Key>
-          <Property Name="noList" Type="Int32" Nullable="false" />
-          <Property Name="friend" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="gamertag" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="noList" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="friend" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="gamertag" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="friendRequest">
           <Key>

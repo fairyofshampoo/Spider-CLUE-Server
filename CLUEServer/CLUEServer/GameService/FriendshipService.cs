@@ -35,7 +35,7 @@ namespace GameService.Services
             using (var databaseContext = new SpiderClueDbEntities())
             {
                 var existingFriendship = databaseContext.friendLists
-                .FirstOrDefault(f => (f.gamertag == gamertag && f.friend == friendGamertag) || (f.gamertag == friendGamertag && f.friend == gamertag));
+                .FirstOrDefault(f => f.gamertag == gamertag && f.friend == friendGamertag);
                 if (existingFriendship == null)
                 {
                     var newFriends = new DataBaseManager.friendList
@@ -46,8 +46,8 @@ namespace GameService.Services
                     databaseContext.friendLists.Add(newFriends);
                     databaseContext.SaveChanges();
                     AddFriend(friendGamertag, gamertag);
-                }
-                
+                    
+                }    
             }
         }
     }
