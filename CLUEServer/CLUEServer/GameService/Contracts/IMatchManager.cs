@@ -24,11 +24,22 @@ namespace GameService.Contracts
         [OperationContract]
         void LeaveMatch(string gamertag, string code);
 
-        [OperationContract]
+        [OperationContract(IsOneWay = true)]
         bool KickPlayer(string gamertag);
 
         [OperationContract(IsOneWay = true)]
         void GetGamersInMatch(string gamertag, string code);
+    }
+
+    [ServiceContract]
+    public interface IMatchManagerCallback
+    {
+        [OperationContract]
+        void KickPlayerFromMatch(string username);
+        [OperationContract]
+        void ReceiveGamersInMatch(List<string> gamertags);
+        [OperationContract]
+        void StartMatch();
     }
 
     [DataContract]

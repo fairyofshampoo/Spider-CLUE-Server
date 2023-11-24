@@ -1,21 +1,40 @@
 ﻿using DataBaseManager;
 using GameService.Contracts;
 using System;
+using System.ServiceModel;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameService.Services
 {
     public partial class GameService : IMatchManager
     {
         private static readonly Dictionary<string, string> gamersInMatch = new Dictionary<string, string>();
+        private static readonly Dictionary<string, IMatchManagerCallback> gamersMatchCallback = new Dictionary<string, IMatchManagerCallback>();
 
-        public void ConnectToMatch(string gamertag, string code)
+        public void ConnectToMatch(string gamertag, string matchCode)
         {
-            gamersInMatch.Add(gamertag, code);
+            gamersInMatch.Add(gamertag, matchCode);
+            gamersMatchCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>());
         }
+
+        private void ShowPlayerProfilesInMatch(string matchCode)
+        {
+            foreach(var gamer in gamersInMatch)
+            {
+                if (gamer.Value.Equals(matchCode))
+                {
+                    string gamertag = gamer.Key;
+                    gamersMatchCallback[gamertag].ReceiveGamersInMatch(GetGamersByMatch(matchCode));
+                }
+            }
+        }
+
+        private List<string> GetGamersByMatch(string matchCode)
+        {
+            return gamersInMatch.Where(gamer => gamer.Value == matchCode).Select(gamer => gamer.Key).ToList();
+        }
+
 
         public void CreateMatch(string gamertag)
         {
@@ -43,7 +62,7 @@ namespace GameService.Services
 
         public void GetGamersInMatch(string gamertag, string code)
         {
-            throw new NotImplementedException();
+
         }
 
         public Match GetMatchInformation(string code)
