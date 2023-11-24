@@ -17,9 +17,28 @@ namespace GameService.Services
             gamersInMatch.Add(gamertag, code);
         }
 
-        public void CreateMatch(Match newMatch)
+        public void CreateMatch(string gamertag)
         {
-            throw new NotImplementedException();
+            using (var databaseContext = new SpiderClueDbEntities())
+            {
+                var match = new DataBaseManager.match
+                {
+                    codeMatch = GenerateMatchCode(gamertag),
+                    createdBy = gamertag,
+                };
+                databaseContext.matches.Add(match);
+                databaseContext.SaveChanges();
+            }
+        }
+
+        private string GenerateMatchCode(string gamertag)
+        {
+            DateTime currentDate = DateTime.Now;
+            string date = currentDate.ToString("yyyyMMddHHmmss");
+            Random random = new Random();
+            string randomNumber = random.Next(10, 100).ToString();
+            string matchCode = ( gamertag + date + randomNumber);
+            return matchCode;
         }
 
         public void GetGamersInMatch(string gamertag, string code)
