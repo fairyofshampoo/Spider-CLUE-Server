@@ -48,7 +48,7 @@ namespace GameService.Services
         {
             using (var databaseContext = new SpiderClueDbEntities())
             {
-                Match result = null;
+                Match result = new Match();
                 var matchExist = databaseContext.matches.FirstOrDefault(match => match.codeMatch == code);
                 if (matchExist != null)
                 {
