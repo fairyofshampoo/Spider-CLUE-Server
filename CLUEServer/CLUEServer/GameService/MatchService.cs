@@ -10,9 +10,11 @@ namespace GameService.Services
 {
     public partial class GameService : IMatchManager
     {
+        private static readonly Dictionary<string, string> gamersInMatch = new Dictionary<string, string>();
+
         public void ConnectToMatch(string gamertag, string code)
         {
-            throw new NotImplementedException();
+            gamersInMatch.Add(gamertag, code);
         }
 
         public void CreateMatch(Match newMatch)

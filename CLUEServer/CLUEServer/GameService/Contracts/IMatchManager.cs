@@ -36,11 +36,14 @@ namespace GameService.Contracts
     {
         private string code;
         private string createdBy;
+        private int totalPlayers;
 
         [DataMember]
         public string Code { get { return code; } set { code = value; } }
 
         [DataMember]
         public string CreatedBy { get {  return createdBy; } set {  createdBy = value; } }
+
+        [DataMember] public int TotalPlayers { get { return totalPlayers; } set {  totalPlayers = value; } }
     }
 }
