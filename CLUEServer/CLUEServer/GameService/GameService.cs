@@ -69,7 +69,7 @@ namespace GameService.Services
         {
             using (var context = new SpiderClueDbEntities())
             {
-                var existingAccount = context.accessAccounts.FirstOrDefault(accessAccount => accessAccount.gamertag == gamertag);
+                    var existingAccount = context.accessAccounts.FirstOrDefault(accessAccount => accessAccount.gamertag == gamertag);
                 return existingAccount != null && existingAccount.password == password;
             }
         }
@@ -87,7 +87,6 @@ namespace GameService.Services
 
             string randomUsername = new string(Enumerable.Repeat(validChars, lengthGuestGamertag)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
-
             return randomUsername;
         }
 

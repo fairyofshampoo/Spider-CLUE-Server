@@ -19,7 +19,7 @@ namespace GameService.Contracts
         void ConnectToMatch(string gamertag, string code);
 
         [OperationContract]
-        void CreateMatch(Match newMatch);
+        void CreateMatch(string gamertag);
 
         [OperationContract]
         void LeaveMatch(string gamertag, string code);
