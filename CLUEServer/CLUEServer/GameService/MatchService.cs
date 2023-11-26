@@ -1,19 +1,41 @@
 ﻿using DataBaseManager;
 using GameService.Contracts;
 using System;
+using System.ServiceModel;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameService.Services
 {
     public partial class GameService : IMatchManager
     {
-        public void ConnectToMatch(string gamertag, string code)
+        private static readonly Dictionary<string, string> gamersInMatch = new Dictionary<string, string>();
+        private static readonly Dictionary<string, IMatchManagerCallback> gamersMatchCallback = new Dictionary<string, IMatchManagerCallback>();
+
+        public void ConnectToMatch(string gamertag, string matchCode)
         {
-            throw new NotImplementedException();
+            gamersInMatch.Add(gamertag, matchCode);
+            gamersMatchCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>());
+            ShowPlayerProfilesInMatch(matchCode);
         }
+
+        private void ShowPlayerProfilesInMatch(string matchCode)
+        {
+            foreach(var gamer in gamersInMatch)
+            {
+                if (gamer.Value.Equals(matchCode))
+                {
+                    string gamertag = gamer.Key;
+                    gamersMatchCallback[gamertag].ReceiveGamersInMatch(GetGamersByMatch(matchCode));
+                }
+            }
+        }
+
+        private List<string> GetGamersByMatch(string matchCode)
+        {
+            return gamersInMatch.Where(gamer => gamer.Value == matchCode).Select(gamer => gamer.Key).ToList();
+        }
+
 
         public void CreateMatch(string gamertag)
         {
@@ -41,7 +63,14 @@ namespace GameService.Services
 
         public void GetGamersInMatch(string gamertag, string code)
         {
-            throw new NotImplementedException();
+            if (gamersInMatch.ContainsKey(gamertag))
+            {
+                OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>().ReceiveGamersInMatch(new List<string>(gamersInMatch.Keys));
+            }
+            else
+            {
+                OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>().ReceiveGamersInMatch(GetGamersByMatch(code));
+            }
         }
 
         public Match GetMatchInformation(string code)
@@ -59,14 +88,21 @@ namespace GameService.Services
             }
         }
 
-        public bool KickPlayer(string gamertag)
+        public void KickPlayer(string gamertag)
         {
-            throw new NotImplementedException();
+            if (gamersMatchCallback.ContainsKey(gamertag))
+            {
+                gamersMatchCallback[gamertag].KickPlayerFromMatch(gamertag);
+                string matchCode = gamersInMatch[gamertag];
+                LeaveMatch(gamertag, matchCode);
+            }
         }
 
-        public void LeaveMatch(string gamertag, string code)
+        public void LeaveMatch(string gamertag, string matchCode)
         {
-            throw new NotImplementedException();
+            gamersInMatch.Remove(gamertag);
+            gamersMatchCallback.Remove(gamertag);
+            ShowPlayerProfilesInMatch(matchCode);
         }
     }
 }
