@@ -16,6 +16,7 @@ namespace GameService.Services
         {
             gamersInMatch.Add(gamertag, matchCode);
             gamersMatchCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>());
+            ShowPlayerProfilesInMatch(matchCode);
         }
 
         private void ShowPlayerProfilesInMatch(string matchCode)
@@ -62,7 +63,14 @@ namespace GameService.Services
 
         public void GetGamersInMatch(string gamertag, string code)
         {
-
+            if (gamersInMatch.ContainsKey(gamertag))
+            {
+                OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>().ReceiveGamersInMatch(new List<string>(gamersInMatch.Keys));
+            }
+            else
+            {
+                OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>().ReceiveGamersInMatch(GetGamersByMatch(code));
+            }
         }
 
         public Match GetMatchInformation(string code)
@@ -80,14 +88,21 @@ namespace GameService.Services
             }
         }
 
-        public bool KickPlayer(string gamertag)
+        public void KickPlayer(string gamertag)
         {
-            throw new NotImplementedException();
+            if (gamersMatchCallback.ContainsKey(gamertag))
+            {
+                gamersMatchCallback[gamertag].KickPlayerFromMatch(gamertag);
+                string matchCode = gamersInMatch[gamertag];
+                LeaveMatch(gamertag, matchCode);
+            }
         }
 
-        public void LeaveMatch(string gamertag, string code)
+        public void LeaveMatch(string gamertag, string matchCode)
         {
-            throw new NotImplementedException();
+            gamersInMatch.Remove(gamertag);
+            gamersMatchCallback.Remove(gamertag);
+            ShowPlayerProfilesInMatch(matchCode);
         }
     }
 }

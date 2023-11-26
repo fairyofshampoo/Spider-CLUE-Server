@@ -25,7 +25,7 @@ namespace GameService.Contracts
         void LeaveMatch(string gamertag, string code);
 
         [OperationContract(IsOneWay = true)]
-        bool KickPlayer(string gamertag);
+        void KickPlayer(string gamertag);
 
         [OperationContract(IsOneWay = true)]
         void GetGamersInMatch(string gamertag, string code);
