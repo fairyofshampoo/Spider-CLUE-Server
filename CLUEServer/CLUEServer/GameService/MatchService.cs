@@ -11,11 +11,13 @@ namespace GameService.Services
     {
         private static readonly Dictionary<string, string> gamersInMatch = new Dictionary<string, string>();
         private static readonly Dictionary<string, IMatchManagerCallback> gamersMatchCallback = new Dictionary<string, IMatchManagerCallback>();
+        private static readonly Dictionary<string, ILobbyManagerCallback> gamersLobbyCallback = new Dictionary<string, ILobbyManagerCallback>();
 
         public void ConnectToMatch(string gamertag, string matchCode)
         {
             gamersInMatch.Add(gamertag, matchCode);
             gamersMatchCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>());
+            gamersLobbyCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<ILobbyManagerCallback>());
             ShowPlayerProfilesInMatch(matchCode);
         }
 
@@ -88,20 +90,11 @@ namespace GameService.Services
             }
         }
 
-        public void KickPlayer(string gamertag)
-        {
-            if (gamersMatchCallback.ContainsKey(gamertag))
-            {
-                gamersMatchCallback[gamertag].KickPlayerFromMatch(gamertag);
-                string matchCode = gamersInMatch[gamertag];
-                LeaveMatch(gamertag, matchCode);
-            }
-        }
-
         public void LeaveMatch(string gamertag, string matchCode)
         {
             gamersInMatch.Remove(gamertag);
             gamersMatchCallback.Remove(gamertag);
+            gamersLobbyCallback.Remove(gamertag);
             ShowPlayerProfilesInMatch(matchCode);
         }
     }
