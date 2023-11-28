@@ -81,7 +81,11 @@ namespace GameService.Services
             {
                 Match result = new Match();
                 var matchExist = databaseContext.matches.FirstOrDefault(match => match.codeMatch == code);
-                if (matchExist != null)
+                if (matchExist == null)
+                {
+                    result = null;
+                }
+                else
                 {
                     result.Code = matchExist.codeMatch;
                     result.CreatedBy = matchExist.createdBy;

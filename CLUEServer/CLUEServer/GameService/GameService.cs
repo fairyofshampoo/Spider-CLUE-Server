@@ -178,6 +178,10 @@ namespace GameService.Services
                     gamer.ImageCode = gamerInformation.imageCode;
 
                 }
+                else
+                {
+                    gamer = null;
+                }
                 return gamer;
             }
         }
@@ -197,6 +201,10 @@ namespace GameService.Services
                     gamer.LastName = gamerInformation.lastName;
                     gamer.Email = accessAcountInformation.email;
 
+                }
+                else
+                {
+                    gamer = null;
                 }
                 return gamer;
             }
