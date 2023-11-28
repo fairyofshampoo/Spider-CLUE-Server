@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GameService.Contracts
 {
-    [ServiceContract]
+    [ServiceContract(CallbackContract = typeof(ILobbyManagerCallback))]
     public interface ILobbyManager
     {
 
@@ -20,7 +20,7 @@ namespace GameService.Contracts
     public interface ILobbyManagerCallback
     {
         [OperationContract]
-        void KickPlayerFromMatch(string username);
+        void KickPlayerFromMatch(string gamertag);
         [OperationContract]
         void StartMatch();
     }
