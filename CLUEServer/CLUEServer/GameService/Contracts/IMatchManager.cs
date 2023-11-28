@@ -45,6 +45,6 @@ namespace GameService.Contracts
         public string Code { get { return code; } set { code = value; } }
 
         [DataMember]
-        public string CreatedBy { get { return createdBy; } set { createdBy = value; } }
+        public string CreatedBy { get {  return createdBy; } set {  createdBy = value; } }
     }
 }
