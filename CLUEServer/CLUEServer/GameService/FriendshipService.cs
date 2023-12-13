@@ -50,5 +50,20 @@ namespace GameService.Services
                 }    
             }
         }
+
+        public bool AreFriends(string gamertag, string friendGamertag)
+        {
+            using (var databaseContext = new SpiderClueDbEntities())
+            {
+                Boolean areFriends = false;
+                var existingFriendship = databaseContext.friendLists
+                    .FirstOrDefault(friends => friends.gamertag == gamertag && friends.friend== friendGamertag);
+                if (existingFriendship != null)
+                {
+                    areFriends = true;
+                }
+                return areFriends;
+            }
+        }
     }
 }
