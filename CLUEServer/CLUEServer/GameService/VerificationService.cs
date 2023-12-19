@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Mail;
 using GameService.Contracts;
 using System.IO;
+using GameService.Utilities;
 
 namespace GameService.Services
 {
@@ -44,11 +45,12 @@ namespace GameService.Services
 
         private bool SendEmailWithCode(string toEmail, string code)
         {
+            LoggerManager logger = new LoggerManager(this.GetType());
             bool emailProcessResult = false;
             try
             {
                 string fromMail = "soobluving@gmail.com";
-                string fromPassword = "flmcnbzxpwcnxudz";
+                string fromPassword = Environment.GetEnvironmentVariable("EMAIL_CLUE_PASSWORD");
 
                 string PathDirectory = AppDomain.CurrentDomain.BaseDirectory;
                 string PathServerDirectory = Path.GetFullPath(Path.Combine(PathDirectory, "../../../"));
@@ -78,8 +80,12 @@ namespace GameService.Services
             }
             catch (SmtpException smtpException)
             {
-                // Aquí va un log jejeje
-                Console.WriteLine("Error SMTP: " + smtpException.Message);
+                logger.LogError(smtpException);
+                emailProcessResult = false;
+            }
+            catch (Exception exception) 
+            {
+                logger.LogFatal(exception);
             }
 
             return emailProcessResult;

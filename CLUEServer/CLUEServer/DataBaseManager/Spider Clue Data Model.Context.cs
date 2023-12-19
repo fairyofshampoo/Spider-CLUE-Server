@@ -16,7 +16,8 @@ namespace DataBaseManager
     public partial class SpiderClueDbEntities : DbContext
     {
         public SpiderClueDbEntities()
-            : base("name=SpiderClueDbEntities")
+            //: base("name=SpiderClueDbEntities")
+            :base(Environment.GetEnvironmentVariable("DATABASE"))
         {
         }
     
