@@ -9,7 +9,7 @@ namespace GameService.Services
 {
     public partial class ChatService : IChatManager
     {
-        private static readonly Dictionary<string, IChatManagerCallback> chat;
+        //private static readonly Dictionary<string, IChatManagerCallback> chat;
         public void ConnectToChat(string username, int code)
         {
             throw new NotImplementedException();
