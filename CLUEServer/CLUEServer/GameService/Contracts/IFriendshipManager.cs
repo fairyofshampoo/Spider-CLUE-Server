@@ -21,6 +21,9 @@ namespace GameService.Contracts
         void AddFriend(string gamertag, string friendGamertag);
 
         [OperationContract]
-        Boolean AreFriends(string gamertag, string friendGamertag);
+        Boolean AreNotFriends(string gamertag, string friendGamertag);
+
+        [OperationContract]
+        Boolean ThereIsNoFriendRequest(string gamertag, string friendGamertag);
     }
 }
