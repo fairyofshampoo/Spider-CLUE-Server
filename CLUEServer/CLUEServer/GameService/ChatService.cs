@@ -2,27 +2,54 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace GameService.Services
 {
-    public partial class ChatService : IChatManager
+    
+    public partial class GameService : IChatManager
     {
-        //private static readonly Dictionary<string, IChatManagerCallback> chat;
-        public void ConnectToChat(string username, int code)
+        private static readonly Dictionary<string, IChatManagerCallback> chatCallbacks;
+        private static readonly Dictionary<String, List<Message>> messagesforMatch = new Dictionary<String, List<Message>>();
+        public void ConnectToChat(string gamertag, String matchCode)
         {
-            throw new NotImplementedException();
+            chatCallbacks.Add(gamertag, OperationContext.Current.GetCallbackChannel<IChatManagerCallback>());
+            DisplayMessages(matchCode);
         }
 
-        public void DisconnectFromChat(string username)
+        private void DisplayMessages(String matchCode)
         {
-            throw new NotImplementedException();
+            foreach(var gamer in gamersInMatch)
+            {
+                string gamertag = gamer.Key;
+                if (chatCallbacks.ContainsKey(gamertag))
+                {
+                    chatCallbacks[gamertag].ReceiveMessages(RetrieveMessagesForMatch(matchCode));
+                }
+            }
         }
 
-        public void SendMessage(int code, Message message)
+        private List<Message> RetrieveMessagesForMatch(String matchCode)
         {
-            throw new NotImplementedException();
+            if (!messagesforMatch.ContainsKey(matchCode))
+            {
+                List<Message> messages = new List<Message>();
+                messagesforMatch.Add(matchCode, messages);
+            }
+            return messagesforMatch[matchCode];
+        }
+
+        public void DisconnectFromChat(string gamertag)
+        {
+            chatCallbacks.Remove(gamertag);
+        }
+
+        public void BroadcastMessage(String matchCode, Message message)
+        {
+            messagesforMatch[matchCode].Add(message);
+            DisplayMessages(matchCode);
         }
     }
 }

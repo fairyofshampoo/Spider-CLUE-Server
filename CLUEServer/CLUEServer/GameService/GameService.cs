@@ -11,14 +11,13 @@ using System.ServiceModel.Configuration;
 using System.Data.SqlClient;
 using System.ServiceModel;
 using System.Diagnostics;
+using GameService.Utilities;
 
 namespace GameService.Services
 {
     
     public partial class GameService : IUserManager
     {
-        private const int Error = -1;
-        private const int Success = 1;
 
         public int AddUserTransaction(Gamer gamer)
         { 
@@ -52,12 +51,12 @@ namespace GameService.Services
                         dataBaseContext.SaveChanges();
                         dataBaseContextTransaction.Commit();
 
-                        result = Success;
+                        result = Constants.SUCCESS_IN_OPERATION;
                     }
                     catch (SqlException sQLException)
                     {
                         dataBaseContextTransaction.Rollback();
-                        result = Error;
+                        result = Constants.ERROR_IN_OPERATION;
                         throw sQLException;
                     }
                 }
@@ -234,11 +233,11 @@ namespace GameService.Services
                     gamer.firstName = firstName;
                     gamer.lastName = lastName;
                     dataBaseContext.SaveChanges();
-                    result = Success;
+                    result = Constants.SUCCESS_IN_OPERATION; ;
                 }
                 else
                 {
-                    result = Error;
+                    result = Constants.ERROR_IN_OPERATION;
                 }
             }
             return result;
@@ -271,12 +270,12 @@ namespace GameService.Services
                         dataBaseContext.SaveChanges();
                         dataBaseContextTransaction.Commit();
 
-                        result = Success;
+                        result = Constants.SUCCESS_IN_OPERATION; ;
                     }
                     catch (SqlException sQLException)
                     {
                         dataBaseContextTransaction.Rollback();
-                        result = Error;
+                        result = Constants.ERROR_IN_OPERATION;
                         throw sQLException;
                     }
                 }
@@ -293,11 +292,11 @@ namespace GameService.Services
                 {
                     gamer.imageCode = titleIcon;
                     dataBaseContext.SaveChanges();
-                    result = Success;
+                    result = Constants.SUCCESS_IN_OPERATION; ;
                 }
                 else
                 {
-                    result = Error;
+                    result = Constants.ERROR_IN_OPERATION;
                 }
             }
             return result;

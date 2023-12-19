@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
@@ -9,13 +10,13 @@ namespace GameService.Contracts
     public interface IChatManager
     {
         [OperationContract(IsOneWay = true)]
-        void ConnectToChat(string username, int code);
+        void ConnectToChat(string gamertag, String matchCode);
 
         [OperationContract]
-        void DisconnectFromChat(string username);
+        void DisconnectFromChat(string gamertag);
 
         [OperationContract(IsOneWay = true)]
-        void SendMessage(int code, Message message);
+        void BroadcastMessage(String matchCode, Message message);
     }
 
     [ServiceContract]

@@ -83,6 +83,7 @@
     <Compile Include="FriendsService.cs" />
     <Compile Include="LobbyService.cs" />
     <Compile Include="MatchService.cs" />
+    <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\LoggerManager.cs" />
     <Compile Include="VerificationService.cs" />
     <Compile Include="GameService.cs" />
