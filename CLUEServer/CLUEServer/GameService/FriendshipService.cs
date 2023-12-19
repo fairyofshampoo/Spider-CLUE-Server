@@ -51,18 +51,33 @@ namespace GameService.Services
             }
         }
 
-        public bool AreFriends(string gamertag, string friendGamertag)
+        public bool AreNotFriends(string gamertag, string friendGamertag)
         {
             using (var databaseContext = new SpiderClueDbEntities())
             {
-                Boolean areFriends = false;
+                Boolean areNotFriends = true;
                 var existingFriendship = databaseContext.friendLists
                     .FirstOrDefault(friends => friends.gamertag == gamertag && friends.friend== friendGamertag);
                 if (existingFriendship != null)
                 {
-                    areFriends = true;
+                    areNotFriends = false;
                 }
-                return areFriends;
+                return areNotFriends;
+            }
+        }
+
+        public bool ThereIsNoFriendRequest(string gamertag, string friendGamertag)
+        {
+            using (var databaseContext = new SpiderClueDbEntities())
+            {
+                Boolean ThereIsNotFriendRequest = true;
+                var existingFriendRequest = databaseContext.friendRequests
+                    .FirstOrDefault(friendRequest => friendRequest.senderGamertag == gamertag && friendRequest.receiverGamertag == friendGamertag);
+                if(existingFriendRequest != null)
+                {
+                    ThereIsNotFriendRequest = false;
+                }
+                return ThereIsNotFriendRequest;
             }
         }
     }
