@@ -50,6 +50,33 @@ namespace GameService.Services
                 }
             }
         }
+
+        public void DeleteFriendRequest(string gamertag, string friendGamertag)
+        {
+            using (var databaseContext = new SpiderClueDbEntities())
+            {
+                var friendRequest = databaseContext.friendRequests
+                .Where(friend => friend.senderGamertag == gamertag && friend.receiverGamertag == friendGamertag);
+
+                var secondfriendRequest = databaseContext.friendRequests
+                    .Where(second => second.senderGamertag == friendGamertag && second.receiverGamertag == gamertag);
+
+                if (friendRequest.Any() || secondfriendRequest.Any())
+                {
+                    if (secondfriendRequest.Any())
+                    {
+                        databaseContext.friendRequests.RemoveRange(secondfriendRequest);
+                        databaseContext.SaveChanges();
+                    }
+
+                    if(friendRequest.Any())
+                    {
+                        databaseContext.friendRequests.RemoveRange(friendRequest);
+                        databaseContext.SaveChanges();
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -24,9 +24,14 @@ namespace GameService.Services
         {
             using (var databaseContext = new SpiderClueDbEntities())
             {
-                var friendEliminated = databaseContext.friendLists.Where(friend => friend.gamertag == gamertag && friend.friend == friendGamertag);
-                databaseContext.friendLists.RemoveRange(friendEliminated);
-                databaseContext.SaveChanges();
+                var friendEliminated = databaseContext.friendLists
+                .Where(friend => friend.gamertag == gamertag && friend.friend == friendGamertag);
+                if(friendEliminated.Any())
+                {
+                    databaseContext.friendLists.RemoveRange(friendEliminated);
+                    databaseContext.SaveChanges();
+                    DeleteFriend(friendGamertag, gamertag);
+                }
             }
         }
 
