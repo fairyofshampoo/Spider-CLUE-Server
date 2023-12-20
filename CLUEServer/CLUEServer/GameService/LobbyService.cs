@@ -9,6 +9,22 @@ namespace GameService.Services
 {
     public partial class GameService : ILobbyManager
     {
+        public void BeginMatch(string matchCode)
+        {
+            foreach (var gamer in gamersInMatch)
+            {
+                if (gamer.Value.Equals(matchCode))
+                {
+                    string gamertag = gamer.Key;
+
+                    if (gamersLobbyCallback.ContainsKey(gamertag))
+                    {
+                        gamersLobbyCallback[gamertag].StartGame();
+                    }
+                }
+            }
+        }
+
         public void KickPlayer(string gamertag)
         {
             if (gamersLobbyCallback.ContainsKey(gamertag))
