@@ -13,6 +13,9 @@ namespace GameService.Contracts
 
         [OperationContract(IsOneWay = true)]
         void KickPlayer(string gamertag);
+
+        [OperationContract(IsOneWay = true)]
+        void BeginMatch(string matchCode);
     }
 
 
@@ -22,6 +25,6 @@ namespace GameService.Contracts
         [OperationContract]
         void KickPlayerFromMatch(string gamertag);
         [OperationContract]
-        void StartMatch();
+        void StartGame();
     }
 }
