@@ -19,6 +19,9 @@ namespace GameService.Contracts
 
         [OperationContract]
         void ResponseFriendRequest(string gamertag, string friendGamertag, string response);
+
+        [OperationContract]
+        void DeleteFriendRequest(string gamertag, string friend);
     }
 
     [DataContract]
