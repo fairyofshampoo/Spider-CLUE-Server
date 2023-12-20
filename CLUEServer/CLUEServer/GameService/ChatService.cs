@@ -11,7 +11,7 @@ namespace GameService.Services
     
     public partial class GameService : IChatManager
     {
-        private static readonly Dictionary<string, IChatManagerCallback> chatCallbacks;
+        private static readonly Dictionary<string, IChatManagerCallback> chatCallbacks = new Dictionary<string, IChatManagerCallback>();
         private static readonly Dictionary<String, List<Message>> messagesforMatch = new Dictionary<String, List<Message>>();
         public void ConnectToChat(string gamertag, String matchCode)
         {

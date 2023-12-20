@@ -76,11 +76,14 @@
     <Compile Include="Contracts\IFriendRequestManager.cs" />
     <Compile Include="Contracts\IFriendshipManager.cs" />
     <Compile Include="Contracts\IFriendsManager.cs" />
+    <Compile Include="Contracts\IInvitationManager.cs" />
     <Compile Include="Contracts\ILobbyManager.cs" />
     <Compile Include="Contracts\IMatchManager.cs" />
+    <Compile Include="EmailService.cs" />
     <Compile Include="FriendRequestService.cs" />
     <Compile Include="FriendshipService.cs" />
     <Compile Include="FriendsService.cs" />
+    <Compile Include="InvitationService.cs" />
     <Compile Include="LobbyService.cs" />
     <Compile Include="MatchService.cs" />
     <Compile Include="Utilities\Constants.cs" />

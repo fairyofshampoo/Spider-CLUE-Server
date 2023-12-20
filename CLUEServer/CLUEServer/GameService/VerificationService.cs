@@ -1,27 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net;
-using System.Net.Mail;
 using GameService.Contracts;
-using System.IO;
-using GameService.Utilities;
 
 namespace GameService.Services
 {
     public partial class GameService : IEmailVerificationManager
     {
-        private Dictionary<string, VerificationData> verificationDictionary = new Dictionary<string, VerificationData>();
+        private readonly Dictionary<string, VerificationData> verificationDictionary = new Dictionary<string, VerificationData>();
         private TimeSpan verificationCodeValidity = TimeSpan.FromMinutes(8);
 
         public bool GenerateVerificationCode(string email)
         {
+            EmailService emailService = new EmailService();
             string verificationCode = GenerateRandomCode();
             verificationDictionary[email] = new VerificationData(verificationCode, DateTime.Now);
 
-            bool codeProcessResult = SendEmailWithCode(email, verificationCode);
+            bool codeProcessResult = emailService.SendEmailWithCode(email, verificationCode);
 
             return codeProcessResult;
         }
@@ -43,56 +37,6 @@ namespace GameService.Services
             return verificationStatus;
         }
 
-        private bool SendEmailWithCode(string toEmail, string code)
-        {
-            LoggerManager logger = new LoggerManager(this.GetType());
-            bool emailProcessResult = false;
-            try
-            {
-                string fromMail = "soobluving@gmail.com";
-                string fromPassword = Environment.GetEnvironmentVariable("EMAIL_CLUE_PASSWORD");
-
-                string PathDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                string PathServerDirectory = Path.GetFullPath(Path.Combine(PathDirectory, "../../../"));
-                string templatePath = PathServerDirectory + "GameService/Utilities/EmailTemplate-ES-MX.html";
-
-                string emailTemplate = File.ReadAllText(templatePath);
-
-                string emailBody = emailTemplate.Replace("{code}", code);
-
-                MailMessage message = new MailMessage();
-                message.From = new MailAddress(fromMail);
-                message.Subject = "Code Verification from Spider Clue";
-                message.To.Add(new MailAddress(toEmail));
-                message.Body = emailBody;
-                message.IsBodyHtml = true;
-
-                var smtpClient = new SmtpClient("smtp.gmail.com")
-                {
-                    Port = 587,
-                    Credentials = new NetworkCredential(fromMail, fromPassword),
-                    EnableSsl = true
-                };
-
-                smtpClient.Send(message);
-
-                emailProcessResult = true;
-            }
-            catch (SmtpException smtpException)
-            {
-                logger.LogError(smtpException);
-                emailProcessResult = false;
-            }
-            catch (Exception exception) 
-            {
-                logger.LogFatal(exception);
-            }
-
-            return emailProcessResult;
-        }
-
-
-
         private string GenerateRandomCode()
         {
             int lowerBound = 100000;
@@ -104,7 +48,6 @@ namespace GameService.Services
 
             return code;
         }
-
     }
 
     public class VerificationData
