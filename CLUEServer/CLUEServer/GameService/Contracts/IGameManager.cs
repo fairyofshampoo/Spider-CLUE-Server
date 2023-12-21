@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace GameService.Contracts
 {
-    internal interface IGameManager
+    [ServiceContract(CallbackContract = typeof(IGameManagerCallback))]
+    public interface IGameManager
     {
         [OperationContract(IsOneWay = true)]
         void MovePawn(string xPosition, string yPosition);
