@@ -18,7 +18,7 @@ namespace GameService.Contracts
         void BeginMatch(string matchCode);
 
         [OperationContract]
-        Boolean IsOwnerOfTheMatch(string gamertag,string matchCode);
+        bool IsOwnerOfTheMatch(string gamertag,string matchCode);
     }
 
 
