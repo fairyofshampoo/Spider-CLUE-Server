@@ -78,6 +78,7 @@
     <Compile Include="Contracts\IFriendsManager.cs" />
     <Compile Include="Contracts\IInvitationManager.cs" />
     <Compile Include="Contracts\ILobbyManager.cs" />
+    <Compile Include="Contracts\IMatchCreationManager.cs" />
     <Compile Include="Contracts\IMatchManager.cs" />
     <Compile Include="EmailService.cs" />
     <Compile Include="FriendRequestService.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="FriendsService.cs" />
     <Compile Include="InvitationService.cs" />
     <Compile Include="LobbyService.cs" />
+    <Compile Include="MatchCreationService.cs" />
     <Compile Include="MatchService.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\LoggerManager.cs" />
