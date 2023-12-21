@@ -12,7 +12,7 @@ namespace GameService.Contracts
 {
 
     [ServiceContract]
-    interface IUserManager
+    public interface IUserManager
     {
         [OperationContract]
         int AddUserTransaction(Gamer gamer);
@@ -33,13 +33,13 @@ namespace GameService.Contracts
         int AuthenticateEmail(String email);
 
         [OperationContract]
-        Boolean IsAccessAccountExisting (String user, String Password);
+        bool IsAccessAccountExisting (String user, String Password);
 
         [OperationContract]
-        Boolean IsEmailExisting(String email);
+        bool IsEmailExisting(String email);
         
         [OperationContract]
-        Boolean IsGamertagExisting (String gamertag);
+        bool IsGamertagExisting (String gamertag);
 
         [OperationContract]
         Gamer GetGamer(string gamertag);

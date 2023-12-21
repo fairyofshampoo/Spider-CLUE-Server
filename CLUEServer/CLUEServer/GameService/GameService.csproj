@@ -87,7 +87,7 @@
     <Compile Include="FriendRequestService.cs" />
     <Compile Include="FriendshipService.cs" />
     <Compile Include="FriendsService.cs" />
-    <Compile Include="GameBoardService.cs" />
+    <Compile Include="GameService.cs" />
     <Compile Include="InvitationService.cs" />
     <Compile Include="LobbyService.cs" />
     <Compile Include="MatchCreationService.cs" />
@@ -95,7 +95,7 @@
     <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\LoggerManager.cs" />
     <Compile Include="VerificationService.cs" />
-    <Compile Include="GameService.cs" />
+    <Compile Include="UserService.cs" />
     <Compile Include="Contracts\IEmailVerificationManager.cs" />
     <Compile Include="Contracts\IUserManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
