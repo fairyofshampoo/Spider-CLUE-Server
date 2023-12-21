@@ -45,7 +45,7 @@ namespace GameService.Services
             {
                 var match = new DataBaseManager.match
                 {
-                    codeMatch = GenerateMatchCode(gamertag),
+                    codeMatch = GenerateMatchCode(),
                     createdBy = gamertag,
                 };
                 databaseContext.matches.Add(match);
@@ -53,13 +53,12 @@ namespace GameService.Services
             }
         }
 
-        private string GenerateMatchCode(string gamertag)
+        private string GenerateMatchCode()
         {
-            DateTime currentDate = DateTime.Now;
-            string date = currentDate.ToString("yyyyMMddHHmmss");
+            string allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             Random random = new Random();
-            string randomNumber = random.Next(10, 100).ToString();
-            string matchCode = ( gamertag + date + randomNumber);
+            string matchCode = new string(Enumerable.Repeat(allowedCharacters, 6)
+                .Select(selection => selection[random.Next(selection.Length)]).ToArray());  
             return matchCode;
         }
 
