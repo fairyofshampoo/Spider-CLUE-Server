@@ -16,6 +16,9 @@ namespace GameService.Contracts
 
         [OperationContract(IsOneWay = true)]
         void BeginMatch(string matchCode);
+
+        [OperationContract]
+        Boolean IsOwnerOfTheMatch(string gamertag,string matchCode);
     }
 
 
@@ -24,6 +27,7 @@ namespace GameService.Contracts
     {
         [OperationContract]
         void KickPlayerFromMatch(string gamertag);
+
         [OperationContract]
         void StartGame();
     }
