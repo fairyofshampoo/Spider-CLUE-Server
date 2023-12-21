@@ -25,13 +25,13 @@ namespace GameService
         }
         public bool SendEmailWithInvitation(string email, string matchCode, string gamertag)
         {
-
             string templatePath = GetTemplatePath("EmailInvitationTemplate-ES-MX.html");
             string emailTemplate = File.ReadAllText(templatePath);
-            string emailBody = string.Format(emailTemplate, gamertag, matchCode);
+            string emailBody = emailTemplate.Replace("{inviter}", gamertag).Replace("{code}", matchCode);
 
             return SendEmail(email, "Invitation from Spider Clue", emailBody);
         }
+
 
         private bool SendEmail(string toEmail, string subject, string emailBody)
         {

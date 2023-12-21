@@ -9,6 +9,8 @@ namespace GameService.Services
 {
     public partial class GameService : ILobbyManager
     {
+
+        private static readonly Dictionary<string, ILobbyManagerCallback> gamersLobbyCallback = new Dictionary<string, ILobbyManagerCallback>();
         public void BeginMatch(string matchCode)
         {
             foreach (var gamer in gamersInMatch)
@@ -27,6 +29,9 @@ namespace GameService.Services
 
         public bool IsOwnerOfTheMatch(string gamertag, string matchCode)
         {
+
+            gamersLobbyCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<ILobbyManagerCallback>());
+
             using (var context = new SpiderClueDbEntities()) 
             {
                 bool isOwner = context.matches.Any(match => match.codeMatch == matchCode && match.createdBy == gamertag);

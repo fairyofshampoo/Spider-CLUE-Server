@@ -4,6 +4,7 @@ using System;
 using System.ServiceModel;
 using System.Collections.Generic;
 using System.Linq;
+using GameService.Utilities;
 
 namespace GameService.Services
 {
@@ -11,14 +12,22 @@ namespace GameService.Services
     {
         private static readonly Dictionary<string, string> gamersInMatch = new Dictionary<string, string>();
         private static readonly Dictionary<string, IMatchManagerCallback> gamersMatchCallback = new Dictionary<string, IMatchManagerCallback>();
-        private static readonly Dictionary<string, ILobbyManagerCallback> gamersLobbyCallback = new Dictionary<string, ILobbyManagerCallback>();
 
         public void ConnectToMatch(string gamertag, string matchCode)
         {
-            gamersInMatch.Add(gamertag, matchCode);
-            gamersMatchCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>());
-            gamersLobbyCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<ILobbyManagerCallback>());
-            ShowPlayerProfilesInMatch(matchCode);
+            LoggerManager logger = new LoggerManager(this.GetType());
+
+            try
+            {
+                gamersInMatch.Add(gamertag, matchCode);
+                gamersMatchCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>());
+                ShowPlayerProfilesInMatch(matchCode);
+            }
+            catch (Exception ex)
+            {
+                logger.LogFatal(ex);
+            }
+            
         }
 
         private void ShowPlayerProfilesInMatch(string matchCode)
