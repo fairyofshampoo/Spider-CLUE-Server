@@ -46,8 +46,6 @@ namespace GameService.Services
             if (gamersLobbyCallback.ContainsKey(gamertag))
             {
                 gamersLobbyCallback[gamertag].KickPlayerFromMatch(gamertag);
-                string matchCode = gamersInMatch[gamertag];
-                LeaveMatch(gamertag, matchCode);
             }
         }
     }
