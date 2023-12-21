@@ -1,27 +1,50 @@
 ﻿using DataBaseManager;
 using GameService.Contracts;
+using GameService.Utilities;
 using System;
-using System.Collections.Generic;
+using System.Data.Entity.Core;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameService.Services
 {
     public partial class GameService : IMatchCreationManager
     {
-        public void CreateMatch(string gamertag)
+        public string CreateMatch(string gamertag)
         {
-            using (var databaseContext = new SpiderClueDbEntities())
+            LoggerManager logger = new LoggerManager(this.GetType());
+            string matchcreationResult = string.Empty;
+            try
             {
-                var match = new DataBaseManager.match
+                using (var databaseContext = new SpiderClueDbEntities())
                 {
-                    codeMatch = GenerateMatchCode(),
-                    createdBy = gamertag,
-                };
-                databaseContext.matches.Add(match);
-                databaseContext.SaveChanges();
+                    var match = new DataBaseManager.match
+                    {
+                        codeMatch = GenerateMatchCode(),
+                        createdBy = gamertag,
+                    };
+
+                    databaseContext.matches.Add(match);
+                    if (databaseContext.SaveChanges() > 0)
+                    {
+                        matchcreationResult = match.codeMatch;
+                    }
+                }
             }
+            catch (EntityException entityException)
+            {
+                logger.LogError(entityException);
+            }
+            catch (SqlException sqlException)
+            {
+                logger.LogError(sqlException);
+            }
+            catch (Exception exception)
+            {
+                logger.LogFatal(exception);
+            }
+
+            return matchcreationResult;
         }
 
         private string GenerateMatchCode()
@@ -33,11 +56,11 @@ namespace GameService.Services
                 Random random = new Random();
                 matchCode = new string(Enumerable.Repeat(allowedCharacters, 6)
                     .Select(selection => selection[random.Next(selection.Length)]).ToArray());
-            } while (isCodeValid(matchCode) == false);
+            } while (IsCodeValid(matchCode) == false);
             return matchCode;
         }
 
-        private Boolean isCodeValid(string matchCode)
+        private Boolean IsCodeValid(string matchCode)
         {
             Boolean validation = false;
             using (var databaseContext = new SpiderClueDbEntities())

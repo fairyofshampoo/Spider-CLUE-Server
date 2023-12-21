@@ -11,6 +11,6 @@ namespace GameService.Contracts
     interface IMatchCreationManager
     {
         [OperationContract]
-        void CreateMatch(string gamertag);
+        string CreateMatch(string gamertag);
     }
 }
