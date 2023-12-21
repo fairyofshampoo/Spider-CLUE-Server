@@ -38,30 +38,6 @@ namespace GameService.Services
             return gamersInMatch.Where(gamer => gamer.Value == matchCode).Select(gamer => gamer.Key).ToList();
         }
 
-
-        public void CreateMatch(string gamertag)
-        {
-            using (var databaseContext = new SpiderClueDbEntities())
-            {
-                var match = new DataBaseManager.match
-                {
-                    codeMatch = GenerateMatchCode(),
-                    createdBy = gamertag,
-                };
-                databaseContext.matches.Add(match);
-                databaseContext.SaveChanges();
-            }
-        }
-
-        private string GenerateMatchCode()
-        {
-            string allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            Random random = new Random();
-            string matchCode = new string(Enumerable.Repeat(allowedCharacters, 6)
-                .Select(selection => selection[random.Next(selection.Length)]).ToArray());  
-            return matchCode;
-        }
-
         public void GetGamersInMatch(string gamertag, string code)
         {
             if (gamersInMatch.ContainsKey(gamertag))
