@@ -15,10 +15,7 @@ namespace GameService.Contracts
     public interface IUserManager
     {
         [OperationContract]
-        int AddUserTransaction(Gamer gamer);
-
-        [OperationContract]
-        bool IsAccountExisting(string email);
+        int AddUserTransaction(Gamer gamer); 
 
         [OperationContract]
         bool AuthenticateAccount(string gamertag, string password);
@@ -27,34 +24,22 @@ namespace GameService.Contracts
         string RequestGuestPlayer();
 
         [OperationContract]
-        int AuthenticateGamertag(String gamertag);
-
-        [OperationContract]
-        int AuthenticateEmail(String email);
-
-        [OperationContract]
-        bool IsAccessAccountExisting (String user, String Password);
-
-        [OperationContract]
         bool IsEmailExisting(String email);
-        
+
+        [OperationContract]
+        int UpdatePassword(String gamertag,  String password);
+
         [OperationContract]
         bool IsGamertagExisting (String gamertag);
 
         [OperationContract]
-        Gamer GetGamer(string gamertag);
+        Gamer GetGamerByGamertag(string gamertag);
 
         [OperationContract]
         Gamer GetGamerByEmail(string gamertag);
 
         [OperationContract]
-        int GetBannedStatus(string gamertag);
-
-        [OperationContract]
         int ModifyAccount (String gamertag, String firstName, String lastName);
-
-        [OperationContract]
-        int UpdateGamerTransaction(Gamer gamer);
         
         [OperationContract]
         int ChangeIcon (string gamertag, String titleIcon);
@@ -107,18 +92,4 @@ namespace GameService.Contracts
         public int IsBanned { get { return isBanned; } set { isBanned = value; } }
 
     }
-
-    [DataContract]
-    public class Friend
-    {
-        private string gamertag;
-        private string gamertagFriend;
-
-        [DataMember]
-        public string Gamertag { get { return gamertag; } set { gamertag = value; } }
-
-        [DataMember]
-        public string GamertagFriend { get {  return gamertagFriend; } set { gamertagFriend = value; } }    
-    }
-
 }
