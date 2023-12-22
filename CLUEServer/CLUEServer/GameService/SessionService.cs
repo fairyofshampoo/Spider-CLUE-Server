@@ -9,6 +9,7 @@ namespace GameService.Services
         public void Connect(string gamertag)
         {
             UsersConnected.Add(gamertag);
+            UpdateConnectedFriends(gamertag);
         }
 
         public void Disconnect(string gamertag)
