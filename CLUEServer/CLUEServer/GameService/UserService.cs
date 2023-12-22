@@ -33,7 +33,6 @@ namespace GameService.Services
                             password = gamer.Password,
                             gamertag = gamer.Gamertag,
                             email = gamer.Email,
-                            isbanned = 0
                         };
 
                         var newGamer = new DataBaseManager.gamer
@@ -41,7 +40,7 @@ namespace GameService.Services
                             firstName = gamer.FirstName,
                             lastName = gamer.LastName,
                             gamertag = gamer.Gamertag,
-                            level = gamer.Level,
+                            gamesWon = gamer.GamesWon,
                             imageCode = gamer.ImageCode
                         };
 
@@ -95,7 +94,7 @@ namespace GameService.Services
                         firstName = Constants.DEFAULT_GUEST_NAME,
                         lastName = Constants.DEFAULT_GUEST_LAST_NAME,
                         gamertag = gamertag,
-                        level = Constants.DEFAULT_LEVEL,
+                        gamesWon = Constants.DEFAULT_GAMES_WON,
                         imageCode = Constants.DEFAULT_ICON
                     };
 
@@ -154,7 +153,7 @@ namespace GameService.Services
                 {
                     gamer.Gamertag = gamerInformation.gamertag;
                     gamer.FirstName = gamerInformation.firstName;
-                    gamer.Level = gamerInformation.level;
+                    gamer.GamesWon = gamerInformation.gamesWon;
                     gamer.LastName = gamerInformation.lastName;
                     gamer.Email = accessAcountInformation.email;
                     gamer.ImageCode = gamerInformation.imageCode;
@@ -179,7 +178,7 @@ namespace GameService.Services
                 {
                     gamer.Gamertag = gamerInformation.gamertag;
                     gamer.FirstName = gamerInformation.firstName;
-                    gamer.Level = gamerInformation.level;
+                    gamer.GamesWon = gamerInformation.gamesWon;
                     gamer.LastName = gamerInformation.lastName;
                     gamer.Email = accessAcountInformation.email;
 

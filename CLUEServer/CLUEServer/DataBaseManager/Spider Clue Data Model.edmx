@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="SpiderClueDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="SpiderClueDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="accessAccount">
           <Key>
             <PropertyRef Name="email" />
@@ -12,7 +12,6 @@
           <Property Name="gamertag" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="email" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="password" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="isbanned" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="friendList">
           <Key>
@@ -38,8 +37,8 @@
           <Property Name="firstName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="lastName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="gamertag" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="level" Type="int" Nullable="false" />
           <Property Name="imageCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="gamesWon" Type="int" />
         </EntityType>
         <EntityType Name="guessPlayer">
           <Key>
@@ -74,6 +73,24 @@
           <Property Name="comment" Type="ntext" Nullable="false" />
           <Property Name="type" Type="int" Nullable="false" />
           <Property Name="reportDate" Type="date" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'SpiderClueDb.sys.database_firewall_rules' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="database_firewall_rules">
+          <Key>
+            <PropertyRef Name="id" />
+            <PropertyRef Name="name" />
+            <PropertyRef Name="start_ip_address" />
+            <PropertyRef Name="end_ip_address" />
+            <PropertyRef Name="create_date" />
+            <PropertyRef Name="modify_date" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="start_ip_address" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="end_ip_address" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="create_date" Type="datetime" Nullable="false" />
+          <Property Name="modify_date" Type="datetime" Nullable="false" />
         </EntityType>
         <Association Name="FK_accessAccount_gamer">
           <End Role="gamer" Type="Self.gamer" Multiplicity="1" />
@@ -144,6 +161,16 @@
           <EntitySet Name="match" EntityType="Self.match" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="matchResults" EntityType="Self.matchResults" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="report" EntityType="Self.report" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="database_firewall_rules" EntityType="Self.database_firewall_rules" store:Type="Views" store:Schema="sys">
+            <DefiningQuery>SELECT 
+    [database_firewall_rules].[id] AS [id], 
+    [database_firewall_rules].[name] AS [name], 
+    [database_firewall_rules].[start_ip_address] AS [start_ip_address], 
+    [database_firewall_rules].[end_ip_address] AS [end_ip_address], 
+    [database_firewall_rules].[create_date] AS [create_date], 
+    [database_firewall_rules].[modify_date] AS [modify_date]
+    FROM [sys].[database_firewall_rules] AS [database_firewall_rules]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_accessAccount_gamer" Association="Self.FK_accessAccount_gamer">
             <End Role="gamer" EntitySet="gamer" />
             <End Role="accessAccount" EntitySet="accessAccount" />
@@ -165,49 +192,19 @@
             <End Role="report" EntitySet="report" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="SpiderClueDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityContainer Name="SpiderClueDbEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="accessAccounts" EntityType="SpiderClueDbModel.accessAccount" />
-          <EntitySet Name="friendLists" EntityType="SpiderClueDbModel.friendList" />
-          <EntitySet Name="friendRequests" EntityType="SpiderClueDbModel.friendRequest" />
-          <EntitySet Name="gamers" EntityType="SpiderClueDbModel.gamer" />
-          <EntitySet Name="guessPlayers" EntityType="SpiderClueDbModel.guessPlayer" />
-          <EntitySet Name="matches" EntityType="SpiderClueDbModel.match" />
-          <EntitySet Name="matchResults" EntityType="SpiderClueDbModel.matchResult" />
-          <EntitySet Name="reports" EntityType="SpiderClueDbModel.report" />
-          <AssociationSet Name="FK_accessAccount_gamer" Association="SpiderClueDbModel.FK_accessAccount_gamer">
-            <End Role="gamer" EntitySet="gamers" />
-            <End Role="accessAccount" EntitySet="accessAccounts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_match_results_gamer" Association="SpiderClueDbModel.FK_match_results_gamer">
-            <End Role="gamer" EntitySet="gamers" />
-            <End Role="matchResult" EntitySet="matchResults" />
-          </AssociationSet>
-          <AssociationSet Name="FK_report_gamer" Association="SpiderClueDbModel.FK_report_gamer">
-            <End Role="gamer" EntitySet="gamers" />
-            <End Role="report" EntitySet="reports" />
-          </AssociationSet>
-          <AssociationSet Name="FK_reported_gamer" Association="SpiderClueDbModel.FK_reported_gamer">
-            <End Role="gamer" EntitySet="gamers" />
-            <End Role="report" EntitySet="reports" />
-          </AssociationSet>
-          <AssociationSet Name="FK_match_results_match" Association="SpiderClueDbModel.FK_match_results_match">
-            <End Role="match" EntitySet="matches" />
-            <End Role="matchResult" EntitySet="matchResults" />
-          </AssociationSet>
-        </EntityContainer>
         <EntityType Name="accessAccount">
           <Key>
             <PropertyRef Name="email" />
           </Key>
-          <Property Name="gamertag" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="password" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="isbanned" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="gamer" Relationship="SpiderClueDbModel.FK_accessAccount_gamer" FromRole="accessAccount" ToRole="gamer" />
+          <Property Name="gamertag" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="password" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="gamer" Relationship="Self.FK_accessAccount_gamer" FromRole="accessAccount" ToRole="gamer" />
         </EntityType>
         <EntityType Name="friendList">
           <Key>
@@ -230,58 +227,74 @@
           <Key>
             <PropertyRef Name="gamertag" />
           </Key>
-          <Property Name="firstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="lastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="gamertag" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="level" Type="Int32" Nullable="false" />
+          <Property Name="firstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="lastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="gamertag" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="imageCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="accessAccounts" Relationship="SpiderClueDbModel.FK_accessAccount_gamer" FromRole="gamer" ToRole="accessAccount" />
-          <NavigationProperty Name="matchResults" Relationship="SpiderClueDbModel.FK_match_results_gamer" FromRole="gamer" ToRole="matchResult" />
-          <NavigationProperty Name="reports" Relationship="SpiderClueDbModel.FK_report_gamer" FromRole="gamer" ToRole="report" />
-          <NavigationProperty Name="reports1" Relationship="SpiderClueDbModel.FK_reported_gamer" FromRole="gamer" ToRole="report" />
+          <Property Name="gamesWon" Type="Int32" />
+          <NavigationProperty Name="accessAccounts" Relationship="Self.FK_accessAccount_gamer" FromRole="gamer" ToRole="accessAccount" />
+          <NavigationProperty Name="matchResults" Relationship="Self.FK_match_results_gamer" FromRole="gamer" ToRole="matchResults" />
+          <NavigationProperty Name="reports" Relationship="Self.FK_report_gamer" FromRole="gamer" ToRole="report" />
+          <NavigationProperty Name="reports1" Relationship="Self.FK_reported_gamer" FromRole="gamer" ToRole="report" />
         </EntityType>
         <EntityType Name="guessPlayer">
           <Key>
             <PropertyRef Name="code" />
           </Key>
           <Property Name="code" Type="Int32" Nullable="false" />
-          <Property Name="displayName" Type="String" Nullable="false" MaxLength="50" FixedLength="true" Unicode="true" />
+          <Property Name="displayName" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
         </EntityType>
         <EntityType Name="match">
           <Key>
             <PropertyRef Name="codeMatch" />
           </Key>
-          <Property Name="codeMatch" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="codeMatch" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="createdBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="matchResults" Relationship="SpiderClueDbModel.FK_match_results_match" FromRole="match" ToRole="matchResult" />
+          <NavigationProperty Name="matchResults" Relationship="Self.FK_match_results_match" FromRole="match" ToRole="matchResults" />
         </EntityType>
         <EntityType Name="matchResult">
           <Key>
             <PropertyRef Name="idMatch" />
           </Key>
           <Property Name="idMatch" Type="Int32" Nullable="false" />
-          <Property Name="gamertag" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="gamertag" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="score" Type="Int32" Nullable="false" />
-          <Property Name="codeMatch" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="gamer" Relationship="SpiderClueDbModel.FK_match_results_gamer" FromRole="matchResult" ToRole="gamer" />
-          <NavigationProperty Name="match" Relationship="SpiderClueDbModel.FK_match_results_match" FromRole="matchResult" ToRole="match" />
+          <Property Name="codeMatch" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="gamer" Relationship="Self.FK_match_results_gamer" FromRole="matchResults" ToRole="gamer" />
+          <NavigationProperty Name="match" Relationship="Self.FK_match_results_match" FromRole="matchResults" ToRole="match" />
         </EntityType>
         <EntityType Name="report">
           <Key>
             <PropertyRef Name="noReport" />
           </Key>
           <Property Name="noReport" Type="Int32" Nullable="false" />
-          <Property Name="reporter" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="reported" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="comment" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="reporter" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="reported" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="type" Type="Int32" Nullable="false" />
           <Property Name="reportDate" Type="DateTime" Nullable="false" Precision="0" />
-          <NavigationProperty Name="gamer" Relationship="SpiderClueDbModel.FK_report_gamer" FromRole="report" ToRole="gamer" />
-          <NavigationProperty Name="gamer1" Relationship="SpiderClueDbModel.FK_reported_gamer" FromRole="report" ToRole="gamer" />
+          <NavigationProperty Name="gamer" Relationship="Self.FK_report_gamer" FromRole="report" ToRole="gamer" />
+          <NavigationProperty Name="gamer1" Relationship="Self.FK_reported_gamer" FromRole="report" ToRole="gamer" />
+        </EntityType>
+        <EntityType Name="database_firewall_rules">
+          <Key>
+            <PropertyRef Name="id" />
+            <PropertyRef Name="name" />
+            <PropertyRef Name="start_ip_address" />
+            <PropertyRef Name="end_ip_address" />
+            <PropertyRef Name="create_date" />
+            <PropertyRef Name="modify_date" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="start_ip_address" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="end_ip_address" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="create_date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="modify_date" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
         <Association Name="FK_accessAccount_gamer">
-          <End Type="SpiderClueDbModel.gamer" Role="gamer" Multiplicity="1" />
-          <End Type="SpiderClueDbModel.accessAccount" Role="accessAccount" Multiplicity="*" />
+          <End Role="gamer" Type="Self.gamer" Multiplicity="1" />
+          <End Role="accessAccount" Type="Self.accessAccount" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="gamer">
               <PropertyRef Name="gamertag" />
@@ -292,20 +305,20 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_match_results_gamer">
-          <End Type="SpiderClueDbModel.gamer" Role="gamer" Multiplicity="1" />
-          <End Type="SpiderClueDbModel.matchResult" Role="matchResult" Multiplicity="*" />
+          <End Role="gamer" Type="Self.gamer" Multiplicity="1" />
+          <End Role="matchResults" Type="Self.matchResult" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="gamer">
               <PropertyRef Name="gamertag" />
             </Principal>
-            <Dependent Role="matchResult">
+            <Dependent Role="matchResults">
               <PropertyRef Name="gamertag" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_report_gamer">
-          <End Type="SpiderClueDbModel.gamer" Role="gamer" Multiplicity="1" />
-          <End Type="SpiderClueDbModel.report" Role="report" Multiplicity="*" />
+          <End Role="gamer" Type="Self.gamer" Multiplicity="1" />
+          <End Role="report" Type="Self.report" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="gamer">
               <PropertyRef Name="gamertag" />
@@ -316,8 +329,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_reported_gamer">
-          <End Type="SpiderClueDbModel.gamer" Role="gamer" Multiplicity="1" />
-          <End Type="SpiderClueDbModel.report" Role="report" Multiplicity="*" />
+          <End Role="gamer" Type="Self.gamer" Multiplicity="1" />
+          <End Role="report" Type="Self.report" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="gamer">
               <PropertyRef Name="gamertag" />
@@ -328,18 +341,49 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_match_results_match">
-          <End Type="SpiderClueDbModel.match" Role="match" Multiplicity="1" />
-          <End Type="SpiderClueDbModel.matchResult" Role="matchResult" Multiplicity="*" />
+          <End Role="match" Type="Self.match" Multiplicity="1" />
+          <End Role="matchResults" Type="Self.matchResult" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="match">
               <PropertyRef Name="codeMatch" />
             </Principal>
-            <Dependent Role="matchResult">
+            <Dependent Role="matchResults">
               <PropertyRef Name="codeMatch" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        </Schema>
+        <EntityContainer Name="SpiderClueDbEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="accessAccounts" EntityType="Self.accessAccount" />
+          <EntitySet Name="friendLists" EntityType="Self.friendList" />
+          <EntitySet Name="friendRequests" EntityType="Self.friendRequest" />
+          <EntitySet Name="gamers" EntityType="Self.gamer" />
+          <EntitySet Name="guessPlayers" EntityType="Self.guessPlayer" />
+          <EntitySet Name="matches" EntityType="Self.match" />
+          <EntitySet Name="matchResults" EntityType="Self.matchResult" />
+          <EntitySet Name="reports" EntityType="Self.report" />
+          <EntitySet Name="database_firewall_rules" EntityType="Self.database_firewall_rules" />
+          <AssociationSet Name="FK_accessAccount_gamer" Association="Self.FK_accessAccount_gamer">
+            <End Role="gamer" EntitySet="gamers" />
+            <End Role="accessAccount" EntitySet="accessAccounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_match_results_gamer" Association="Self.FK_match_results_gamer">
+            <End Role="gamer" EntitySet="gamers" />
+            <End Role="matchResults" EntitySet="matchResults" />
+          </AssociationSet>
+          <AssociationSet Name="FK_report_gamer" Association="Self.FK_report_gamer">
+            <End Role="gamer" EntitySet="gamers" />
+            <End Role="report" EntitySet="reports" />
+          </AssociationSet>
+          <AssociationSet Name="FK_reported_gamer" Association="Self.FK_reported_gamer">
+            <End Role="gamer" EntitySet="gamers" />
+            <End Role="report" EntitySet="reports" />
+          </AssociationSet>
+          <AssociationSet Name="FK_match_results_match" Association="Self.FK_match_results_match">
+            <End Role="match" EntitySet="matches" />
+            <End Role="matchResults" EntitySet="matchResults" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -348,78 +392,89 @@
           <EntitySetMapping Name="accessAccounts">
             <EntityTypeMapping TypeName="SpiderClueDbModel.accessAccount">
               <MappingFragment StoreEntitySet="accessAccount">
-                <ScalarProperty Name="isbanned" ColumnName="isbanned" />
-                <ScalarProperty Name="password" ColumnName="password" />
-                <ScalarProperty Name="email" ColumnName="email" />
                 <ScalarProperty Name="gamertag" ColumnName="gamertag" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="password" ColumnName="password" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="friendLists">
             <EntityTypeMapping TypeName="SpiderClueDbModel.friendList">
               <MappingFragment StoreEntitySet="friendList">
-                <ScalarProperty Name="gamertag" ColumnName="gamertag" />
-                <ScalarProperty Name="friend" ColumnName="friend" />
                 <ScalarProperty Name="noList" ColumnName="noList" />
+                <ScalarProperty Name="friend" ColumnName="friend" />
+                <ScalarProperty Name="gamertag" ColumnName="gamertag" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="friendRequests">
             <EntityTypeMapping TypeName="SpiderClueDbModel.friendRequest">
               <MappingFragment StoreEntitySet="friendRequest">
-                <ScalarProperty Name="friendRequestStatus" ColumnName="friendRequestStatus" />
-                <ScalarProperty Name="receiverGamertag" ColumnName="receiverGamertag" />
-                <ScalarProperty Name="senderGamertag" ColumnName="senderGamertag" />
                 <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="senderGamertag" ColumnName="senderGamertag" />
+                <ScalarProperty Name="receiverGamertag" ColumnName="receiverGamertag" />
+                <ScalarProperty Name="friendRequestStatus" ColumnName="friendRequestStatus" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="gamers">
             <EntityTypeMapping TypeName="SpiderClueDbModel.gamer">
               <MappingFragment StoreEntitySet="gamer">
-                <ScalarProperty Name="imageCode" ColumnName="imageCode" />
-                <ScalarProperty Name="level" ColumnName="level" />
-                <ScalarProperty Name="gamertag" ColumnName="gamertag" />
-                <ScalarProperty Name="lastName" ColumnName="lastName" />
                 <ScalarProperty Name="firstName" ColumnName="firstName" />
+                <ScalarProperty Name="lastName" ColumnName="lastName" />
+                <ScalarProperty Name="gamertag" ColumnName="gamertag" />
+                <ScalarProperty Name="imageCode" ColumnName="imageCode" />
+                <ScalarProperty Name="gamesWon" ColumnName="gamesWon" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="guessPlayers">
             <EntityTypeMapping TypeName="SpiderClueDbModel.guessPlayer">
               <MappingFragment StoreEntitySet="guessPlayer">
-                <ScalarProperty Name="displayName" ColumnName="displayName" />
                 <ScalarProperty Name="code" ColumnName="code" />
+                <ScalarProperty Name="displayName" ColumnName="displayName" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="matches">
             <EntityTypeMapping TypeName="SpiderClueDbModel.match">
               <MappingFragment StoreEntitySet="match">
-                <ScalarProperty Name="createdBy" ColumnName="createdBy" />
                 <ScalarProperty Name="codeMatch" ColumnName="codeMatch" />
+                <ScalarProperty Name="createdBy" ColumnName="createdBy" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="matchResults">
             <EntityTypeMapping TypeName="SpiderClueDbModel.matchResult">
               <MappingFragment StoreEntitySet="matchResults">
-                <ScalarProperty Name="codeMatch" ColumnName="codeMatch" />
-                <ScalarProperty Name="score" ColumnName="score" />
-                <ScalarProperty Name="gamertag" ColumnName="gamertag" />
                 <ScalarProperty Name="idMatch" ColumnName="idMatch" />
+                <ScalarProperty Name="gamertag" ColumnName="gamertag" />
+                <ScalarProperty Name="score" ColumnName="score" />
+                <ScalarProperty Name="codeMatch" ColumnName="codeMatch" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="reports">
             <EntityTypeMapping TypeName="SpiderClueDbModel.report">
               <MappingFragment StoreEntitySet="report">
-                <ScalarProperty Name="reportDate" ColumnName="reportDate" />
-                <ScalarProperty Name="type" ColumnName="type" />
-                <ScalarProperty Name="comment" ColumnName="comment" />
-                <ScalarProperty Name="reported" ColumnName="reported" />
-                <ScalarProperty Name="reporter" ColumnName="reporter" />
                 <ScalarProperty Name="noReport" ColumnName="noReport" />
+                <ScalarProperty Name="reporter" ColumnName="reporter" />
+                <ScalarProperty Name="reported" ColumnName="reported" />
+                <ScalarProperty Name="comment" ColumnName="comment" />
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="reportDate" ColumnName="reportDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="database_firewall_rules">
+            <EntityTypeMapping TypeName="SpiderClueDbModel.database_firewall_rules">
+              <MappingFragment StoreEntitySet="database_firewall_rules">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="start_ip_address" ColumnName="start_ip_address" />
+                <ScalarProperty Name="end_ip_address" ColumnName="end_ip_address" />
+                <ScalarProperty Name="create_date" ColumnName="create_date" />
+                <ScalarProperty Name="modify_date" ColumnName="modify_date" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

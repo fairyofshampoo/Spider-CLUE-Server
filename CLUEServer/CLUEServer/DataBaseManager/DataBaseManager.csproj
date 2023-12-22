@@ -67,6 +67,9 @@
       <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
     </Compile>
     <Compile Include="DataBaseMethods.cs" />
+    <Compile Include="database_firewall_rules.cs">
+      <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="friendList.cs">
       <DependentUpon>Spider Clue Data Model.tt</DependentUpon>
     </Compile>
