@@ -14,7 +14,7 @@ namespace GameService.Services
             throw new NotImplementedException();
         }
 
-        public string RollDice()
+        public void RollDice()
         {
             throw new NotImplementedException();
         }

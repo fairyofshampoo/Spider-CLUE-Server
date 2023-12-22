@@ -21,7 +21,7 @@ namespace GameService.Services
 
         public int AddUserTransaction(Gamer gamer)
         { 
-            int result = 0;
+            int result = Constants.ERROR_IN_OPERATION;
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
                 using (var dataBaseContextTransaction = dataBaseContext.Database.BeginTransaction())
@@ -75,7 +75,43 @@ namespace GameService.Services
 
         public string RequestGuestPlayer()
         {
-            return CreateRandomUserName();
+            string guestGamertag = CreateRandomUserName();
+            CreateGuestGamer(guestGamertag);
+            //aquí si el create es menor a cero puedo lanzar un OperationFailedException (creada por nosotros)
+            return guestGamertag;
+        }
+
+        public int CreateGuestGamer(String gamertag)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            int result = Constants.ERROR_IN_OPERATION;
+
+            using (var dataBaseContext = new SpiderClueDbEntities())
+            {
+                try
+                {
+                    var newGamer = new DataBaseManager.gamer
+                    {
+                        firstName = Constants.DEFAULT_GUEST_NAME,
+                        lastName = Constants.DEFAULT_GUEST_LAST_NAME,
+                        gamertag = gamertag,
+                        level = Constants.DEFAULT_LEVEL,
+                        imageCode = Constants.DEFAULT_ICON
+                    };
+
+                    dataBaseContext.gamers.Add(newGamer);
+
+                    dataBaseContext.SaveChanges();
+
+                    result = Constants.SUCCESS_IN_OPERATION;
+                }
+                catch (SqlException sQLException)
+                {
+                    loggerManager.LogError(sQLException);
+                    result = Constants.ERROR_IN_OPERATION;
+                }
+            }
+            return result;
         }
 
         private string CreateRandomUserName()
@@ -89,8 +125,7 @@ namespace GameService.Services
             return randomUsername;
         }
 
-
-        public bool IsAccountExisting(string email)
+        public bool IsEmailExisting(string email)
         {
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
@@ -99,68 +134,16 @@ namespace GameService.Services
             }
         }
 
-        public int AuthenticateGamertag(string soughtGamertag)
-        {
-            using (var dataBaseContext = new SpiderClueDbEntities())
-            {
-                int coincidences = dataBaseContext.gamers.Count(gamer => gamer.gamertag == soughtGamertag);
-                return coincidences;
-            }
-        }
-
-        public int AuthenticateEmail(string soughtEmail)
-        {
-            using (var dataBaseContext = new SpiderClueDbEntities())
-            {
-                int coincidences = dataBaseContext.gamers.Count(gamer => gamer.gamertag == soughtEmail);
-                return coincidences;
-            }
-        }
-
-        public Boolean IsAccessAccountExisting(String user, String password)
-        {
-            using (var dataBaseContext = new SpiderClueDbEntities())
-            {
-                Boolean exist = false;
-                int coincidences = dataBaseContext.accessAccounts.Count(accessAccount => accessAccount.gamertag == user && accessAccount.password == password);
-                if (coincidences > 0)
-                {
-                    exist = true;
-                }
-                return exist;
-            }
-        }
-
-        public bool IsEmailExisting(string email)
-        {
-            using (var dataBaseContext = new SpiderClueDbEntities())
-            {
-                Boolean exist = false;
-                int coincidences = dataBaseContext.accessAccounts.Count(accessAccount => accessAccount.email == email);
-                if (coincidences > 0)
-                {
-                    exist = true;
-                }
-                return exist;
-            }
-        }
-
         public bool IsGamertagExisting(string gamertag)
         {
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
-                Boolean exists = false;
-                int coincidences = dataBaseContext.accessAccounts.Count(accessAccount => accessAccount.gamertag == gamertag);
-                if (coincidences > 0)
-                {
-                    exists = true;
-                }
-                return exists;
+                return dataBaseContext.accessAccounts.Any(accessAccount => accessAccount.gamertag == gamertag);
             }
-
         }
 
-        public Gamer GetGamer(string gamertag)
+
+        public Gamer GetGamerByGamertag(string gamertag)
         {
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
@@ -209,19 +192,6 @@ namespace GameService.Services
             }
         }
 
-        public int GetBannedStatus(string gamertag)
-        {
-            using (var dataBaseContext = new SpiderClueDbEntities())
-            {
-                int isBanned = dataBaseContext.accessAccounts
-                    .Where(accessAccount => accessAccount.gamertag == gamertag)
-                    .Select(accessAccount => accessAccount.isbanned)
-                    .FirstOrDefault();
-
-                return isBanned;
-            }
-        }
-
         public int ModifyAccount(string gamertag, string firstName, string lastName)
         {
             int result = 0;
@@ -243,45 +213,36 @@ namespace GameService.Services
             return result;
         }
 
-        public int UpdateGamerTransaction(Gamer gamer)
+        public int UpdatePassword(String gamertag, String password)
         {
-            int result = 0;
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            int result = Constants.ERROR_IN_OPERATION;
+
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
-                using (var dataBaseContextTransaction = dataBaseContext.Database.BeginTransaction())
+                try
                 {
-                    try
+
+                    var existingAccessAccount = dataBaseContext.accessAccounts.FirstOrDefault(account => account.gamertag == gamertag);
+
+                    if (existingAccessAccount != null)
                     {
-
-                        var existingGamer = dataBaseContext.gamers.First(player => player.gamertag == gamer.Gamertag);
-
-                        existingGamer.firstName = gamer.FirstName;
-                        existingGamer.lastName = gamer.LastName;
-                        existingGamer.level = gamer.Level;
-
-                        var existingAccessAccount = dataBaseContext.accessAccounts.FirstOrDefault(accpunt => accpunt.gamertag == gamer.Gamertag);
-
-                        if (existingAccessAccount != null)
-                        {
-                            existingAccessAccount.password = gamer.Password;
-                            existingAccessAccount.isbanned = 0;
-                        }
-
-                        dataBaseContext.SaveChanges();
-                        dataBaseContextTransaction.Commit();
-
-                        result = Constants.SUCCESS_IN_OPERATION; ;
+                        existingAccessAccount.password = password;
                     }
-                    catch (SqlException sQLException)
-                    {
-                        dataBaseContextTransaction.Rollback();
-                        result = Constants.ERROR_IN_OPERATION;
-                        throw sQLException;
-                    }
+
+                    dataBaseContext.SaveChanges();
+
+                    result = Constants.SUCCESS_IN_OPERATION; ;
+                }
+                catch (SqlException sQLException)
+                {
+                    loggerManager.LogError(sQLException);
+                    result = Constants.ERROR_IN_OPERATION;
                 }
             }
             return result;
         }
+
         public int ChangeIcon(string gamertag, string titleIcon)
         {
             int result = 0;
@@ -313,7 +274,47 @@ namespace GameService.Services
                 return imagecode;
             }
         }
+
+        public int DeleteGuestPlayer(string gamertag)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            int result = Constants.ERROR_IN_OPERATION;
+
+            using (var dataBaseContext = new SpiderClueDbEntities())
+            {
+                using (var dataBaseContextTransaction = dataBaseContext.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var existingGamer = dataBaseContext.gamers.FirstOrDefault(gamer => gamer.gamertag == gamertag);
+
+                        if (existingGamer != null)
+                        {
+                            dataBaseContext.gamers.Remove(existingGamer);
+                            dataBaseContext.SaveChanges();
+
+                            dataBaseContextTransaction.Commit();
+                            result = Constants.SUCCESS_IN_OPERATION;
+                        }
+                        else
+                        {
+                            result = Constants.SUCCESS_IN_OPERATION;
+                        }
+                    }
+                    catch (SqlException sqlException)
+                    {
+                        loggerManager.LogError(sqlException);
+                    }
+                    catch (Exception exception)
+                    {
+                        dataBaseContextTransaction.Rollback();
+                        loggerManager.LogFatal(exception);
+                    }
+                }
+            }
+
+            return result;
+        }
+
     }
 }
-
-   

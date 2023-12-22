@@ -15,15 +15,13 @@ namespace GameService.Contracts
         void MovePawn(string xPosition, string yPosition);
 
         [OperationContract(IsOneWay = true)]
-        string RollDice();
-        
-        
+        void RollDice();
     }
 
     [ServiceContract]
     public interface IGameManagerCallback
     {
-
+        //aquí faltan métodos
     }
 
 }
