@@ -67,7 +67,7 @@ namespace GameService.Services
         {
             using (var context = new SpiderClueDbEntities())
             {
-                    var existingAccount = context.accessAccounts.FirstOrDefault(accessAccount => accessAccount.gamertag == gamertag);
+                var existingAccount = context.accessAccounts.FirstOrDefault(accessAccount => accessAccount.gamertag == gamertag);
                 return existingAccount != null && existingAccount.password == password;
             }
         }
