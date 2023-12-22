@@ -153,7 +153,7 @@ namespace GameService.Services
                 {
                     gamer.Gamertag = gamerInformation.gamertag;
                     gamer.FirstName = gamerInformation.firstName;
-                    gamer.GamesWon = (int)gamerInformation.gamesWon;
+                    gamer.GamesWon = gamerInformation.gamesWon;
                     gamer.LastName = gamerInformation.lastName;
                     gamer.Email = accessAcountInformation.email;
                     gamer.ImageCode = gamerInformation.imageCode;
@@ -178,7 +178,7 @@ namespace GameService.Services
                 {
                     gamer.Gamertag = gamerInformation.gamertag;
                     gamer.FirstName = gamerInformation.firstName;
-                    gamer.GamesWon = (int)gamerInformation.gamesWon;
+                    gamer.GamesWon = gamerInformation.gamesWon;
                     gamer.LastName = gamerInformation.lastName;
                     gamer.Email = accessAcountInformation.email;
 
