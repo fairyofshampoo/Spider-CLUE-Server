@@ -1,4 +1,5 @@
 ﻿using GameService.Contracts;
+using System.Collections.Generic;
 using System.ServiceModel;
 
 namespace GameService.Services
@@ -13,22 +14,35 @@ namespace GameService.Services
         public void Disconnect(string gamertag)
         {
             RemoveFromUsersConnected(gamertag);
-            RemoveFromChatCallbacks(gamertag);
+            RemoveFromMatch(gamertag);
         }
-
         private void RemoveFromUsersConnected(string gamertag)
         {
             if (UsersConnected.Contains(gamertag))
             {
                 UsersConnected.Remove(gamertag);
+                UpdateConnectedFriends(gamertag);
             }
         }
 
-        private void RemoveFromChatCallbacks(string gamertag)
+        private void UpdateConnectedFriends(string gamertag)
         {
-            if (chatCallbacks.ContainsKey(gamertag))
+            List<string> connectedFriends = SetConnectedFriendsList(gamertag);
+            foreach (var connectedFriend in connectedFriends)
             {
-                chatCallbacks.Remove(gamertag);
+                if (gamersFriendsManagerCallback.ContainsKey(connectedFriend))
+                {
+                    gamersFriendsManagerCallback[connectedFriend].ReceiveConnectedFriends(SetConnectedFriendsList(connectedFriend));
+                }
+            }
+        }
+
+        private void RemoveFromMatch(string gamertag)
+        {
+            if (gamersInMatch.ContainsKey(gamertag))
+            {
+                string matchCode = gamersInMatch[gamertag];
+                LeaveMatch(gamertag, matchCode);
             }
         }
     }

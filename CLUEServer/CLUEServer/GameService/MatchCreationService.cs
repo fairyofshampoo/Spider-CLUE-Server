@@ -60,9 +60,9 @@ namespace GameService.Services
             return matchCode;
         }
 
-        private Boolean IsCodeValid(string matchCode)
+        private bool IsCodeValid(string matchCode)
         {
-            Boolean validation = false;
+            bool validation = false;
             using (var databaseContext = new SpiderClueDbEntities())
             {
                 var isCodeExisting = databaseContext.matches.FirstOrDefault(match => match.codeMatch == matchCode);

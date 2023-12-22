@@ -13,8 +13,18 @@ namespace GameService.Services
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant)]
     public partial class GameService : IFriendsManager
     {
+        private static readonly Dictionary<string, IFriendsManagerCallback> gamersFriendsManagerCallback = new Dictionary<string, IFriendsManagerCallback>();
+
         private static readonly List<string> UsersConnected = new List<string>();
         public void GetConnectedFriends(string gamertag)
+        {
+            List<string> connectedFriends = SetConnectedFriendsList(gamertag);
+            IFriendsManagerCallback callback = OperationContext.Current.GetCallbackChannel<IFriendsManagerCallback>();
+            gamersFriendsManagerCallback.Add(gamertag, callback);
+            callback.ReceiveConnectedFriends(connectedFriends);
+        }
+
+        private List<string> SetConnectedFriendsList(string gamertag)
         {
             List<string> friendList = GetFriendList(gamertag);
             List<string> connectedFriends = new List<string>();
@@ -25,7 +35,7 @@ namespace GameService.Services
                     connectedFriends.Add(friend);
                 }
             }
-            OperationContext.Current.GetCallbackChannel<IFriendsManagerCallback>().ReceiveConnectedFriends(connectedFriends);
+            return connectedFriends;
         }
     }
     

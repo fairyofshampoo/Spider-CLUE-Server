@@ -83,6 +83,7 @@ namespace GameService.Services
             gamersInMatch.Remove(gamertag);
             gamersMatchCallback.Remove(gamertag);
             gamersLobbyCallback.Remove(gamertag);
+            chatCallbacks.Remove(gamertag);
             ShowPlayerProfilesInMatch(matchCode);
         }
     }
