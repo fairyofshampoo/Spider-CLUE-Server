@@ -19,9 +19,17 @@ namespace GameService.Services
         public void GetConnectedFriends(string gamertag)
         {
             List<string> connectedFriends = SetConnectedFriendsList(gamertag);
+            
+            OperationContext.Current.GetCallbackChannel<IFriendsManagerCallback>().ReceiveConnectedFriends(connectedFriends);
+        }
+
+        public void JoinFriendsConnected(string gamertag)
+        {
             IFriendsManagerCallback callback = OperationContext.Current.GetCallbackChannel<IFriendsManagerCallback>();
-            gamersFriendsManagerCallback.Add(gamertag, callback);
-            callback.ReceiveConnectedFriends(connectedFriends);
+            if (!gamersFriendsManagerCallback.ContainsKey(gamertag))
+            {
+                gamersFriendsManagerCallback.Add(gamertag, callback);
+            }
         }
 
         private List<string> SetConnectedFriendsList(string gamertag)
