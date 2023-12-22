@@ -12,16 +12,16 @@ namespace GameService.Contracts
     internal interface ICardManager
     {
         [OperationContract]
-        void CreatCards();
+        void CreatCards(string gamer1, string gamer2, string gamer3);
 
         [OperationContract]
-        void ChooseCards(List<Card> first, List<Card> second, List<Card> third);
+        void ChooseCards();
 
         [OperationContract]
-        void ShuffleCards(List<Card> cards);
+        List<Card> ShuffleCards();
 
         [OperationContract]
-        void DealCards(string gamer1, string gamer2, string gamer3);
+        void DealCards(string gamer1, string gamer2, string gamer3, List<Card> card);
     }
 
     [DataContract]
@@ -29,15 +29,11 @@ namespace GameService.Contracts
     {
         private string id;
         private string type;
-        private string name;
 
         [DataMember]
         public string ID { get { return id; } set { id = value; } }
 
         [DataMember]
         public string Type { get { return type; } set { type = value; } }
-
-        [DataMember]
-        public string Name { get { return name; } set { name = value; } }
     }
 }
