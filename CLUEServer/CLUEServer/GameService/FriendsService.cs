@@ -20,7 +20,10 @@ namespace GameService.Services
         {
             List<string> connectedFriends = SetConnectedFriendsList(gamertag);
             IFriendsManagerCallback callback = OperationContext.Current.GetCallbackChannel<IFriendsManagerCallback>();
-            gamersFriendsManagerCallback.Add(gamertag, callback);
+            if (!gamersFriendsManagerCallback.ContainsKey(gamertag))
+            {
+                gamersFriendsManagerCallback.Add(gamertag, callback);
+            }
             callback.ReceiveConnectedFriends(connectedFriends);
         }
 
@@ -38,5 +41,4 @@ namespace GameService.Services
             return connectedFriends;
         }
     }
-    
 }
