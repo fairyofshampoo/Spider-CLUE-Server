@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameService
+namespace GameService.Services
 {
     public partial class GameService : IGameManager
     {
