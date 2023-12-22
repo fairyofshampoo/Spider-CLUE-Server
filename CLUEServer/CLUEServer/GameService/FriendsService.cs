@@ -46,5 +46,4 @@ namespace GameService.Services
             return connectedFriends;
         }
     }
-    
 }

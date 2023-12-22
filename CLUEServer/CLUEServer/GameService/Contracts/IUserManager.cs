@@ -80,7 +80,6 @@ namespace GameService.Contracts
         private string email;
         private string gamertag;
         private string password;
-        private int isBanned;
 
         [DataMember]
         public string Email { get { return email; } set { email = value; } }
@@ -90,9 +89,5 @@ namespace GameService.Contracts
 
         [DataMember]
         public string Password { get { return password; } set { password = value; } }
-
-        [DataMember]
-        public int IsBanned { get { return isBanned; } set { isBanned = value; } }
-
     }
 }
