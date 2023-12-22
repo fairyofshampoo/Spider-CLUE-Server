@@ -17,7 +17,6 @@ namespace DataBaseManager
         public string gamertag { get; set; }
         public string email { get; set; }
         public string password { get; set; }
-        public int isbanned { get; set; }
     
         public virtual gamer gamer { get; set; }
     }

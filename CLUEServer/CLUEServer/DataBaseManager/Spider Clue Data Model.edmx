@@ -12,7 +12,6 @@
           <Property Name="gamertag" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="email" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="password" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="isbanned" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="friendList">
           <Key>
@@ -38,8 +37,8 @@
           <Property Name="firstName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="lastName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="gamertag" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="level" Type="int" Nullable="false" />
           <Property Name="imageCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="gamesWon" Type="int" />
         </EntityType>
         <EntityType Name="guessPlayer">
           <Key>
@@ -206,7 +205,6 @@
           <Property Name="gamertag" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="password" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="isbanned" Type="Int32" Nullable="false" />
           <NavigationProperty Name="gamer" Relationship="SpiderClueDbModel.FK_accessAccount_gamer" FromRole="accessAccount" ToRole="gamer" />
         </EntityType>
         <EntityType Name="friendList">
@@ -233,8 +231,8 @@
           <Property Name="firstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="lastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="gamertag" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="level" Type="Int32" Nullable="false" />
           <Property Name="imageCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="gamesWon" Type="Int32" />
           <NavigationProperty Name="accessAccounts" Relationship="SpiderClueDbModel.FK_accessAccount_gamer" FromRole="gamer" ToRole="accessAccount" />
           <NavigationProperty Name="matchResults" Relationship="SpiderClueDbModel.FK_match_results_gamer" FromRole="gamer" ToRole="matchResult" />
           <NavigationProperty Name="reports" Relationship="SpiderClueDbModel.FK_report_gamer" FromRole="gamer" ToRole="report" />
@@ -348,7 +346,6 @@
           <EntitySetMapping Name="accessAccounts">
             <EntityTypeMapping TypeName="SpiderClueDbModel.accessAccount">
               <MappingFragment StoreEntitySet="accessAccount">
-                <ScalarProperty Name="isbanned" ColumnName="isbanned" />
                 <ScalarProperty Name="password" ColumnName="password" />
                 <ScalarProperty Name="email" ColumnName="email" />
                 <ScalarProperty Name="gamertag" ColumnName="gamertag" />
@@ -377,8 +374,8 @@
           <EntitySetMapping Name="gamers">
             <EntityTypeMapping TypeName="SpiderClueDbModel.gamer">
               <MappingFragment StoreEntitySet="gamer">
+                <ScalarProperty Name="gamesWon" ColumnName="gamesWon" />
                 <ScalarProperty Name="imageCode" ColumnName="imageCode" />
-                <ScalarProperty Name="level" ColumnName="level" />
                 <ScalarProperty Name="gamertag" ColumnName="gamertag" />
                 <ScalarProperty Name="lastName" ColumnName="lastName" />
                 <ScalarProperty Name="firstName" ColumnName="firstName" />

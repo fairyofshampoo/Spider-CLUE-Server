@@ -56,7 +56,7 @@ namespace GameService.Contracts
     {
         private string firstName;
         private string lastName;
-        private int level;
+        private int gamesWon;
         private string imageCode;
 
 
@@ -67,7 +67,7 @@ namespace GameService.Contracts
         public string LastName { get { return lastName; } set { lastName = value; } }
 
         [DataMember]
-        public int Level { get { return level; } set { level = value; } }
+        public int GamesWon { get { return gamesWon; } set { gamesWon = value; } }
 
         [DataMember]
         public string ImageCode { get { return imageCode; } set { imageCode = value; } }
@@ -80,7 +80,6 @@ namespace GameService.Contracts
         private string email;
         private string gamertag;
         private string password;
-        private int isBanned;
 
         [DataMember]
         public string Email { get { return email; } set { email = value; } }
@@ -90,9 +89,5 @@ namespace GameService.Contracts
 
         [DataMember]
         public string Password { get { return password; } set { password = value; } }
-
-        [DataMember]
-        public int IsBanned { get { return isBanned; } set { isBanned = value; } }
-
     }
 }
