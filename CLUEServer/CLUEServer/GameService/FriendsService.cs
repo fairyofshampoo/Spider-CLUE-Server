@@ -8,39 +8,25 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
-    namespace GameService.Services
+namespace GameService.Services
+{
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant)]
+    public partial class GameService : IFriendsManager
     {
-        [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant)]
-        public partial class GameService : IFriendsManager
-        {
-            private static List<string> usersConnected = new List<string>();
-
-            public void Connect(string gamertag)
-            {
-                usersConnected.Add(gamertag);
-            }
-
-        public void Disconnect(string gamertag)
-            {
-                if (usersConnected.Contains(gamertag))
-                {
-                    usersConnected.Remove(gamertag);
-                }
-            }
-
+        private static readonly List<string> UsersConnected = new List<string>();
         public void GetConnectedFriends(string gamertag)
+        {
+            List<string> friendList = GetFriendList(gamertag);
+            List<string> connectedFriends = new List<string>();
+            foreach (string friend in friendList)
             {
-                List<string> friendList = GetFriendList(gamertag);
-                List<string> connectedFriends = new List<string>();
-                foreach (string friend in friendList)
+                if (UsersConnected.Contains(friend))
                 {
-                    if (usersConnected.Contains(friend))
-                    {
-                        connectedFriends.Add(friend);
-                    }
+                    connectedFriends.Add(friend);
                 }
-                OperationContext.Current.GetCallbackChannel<IFriendsManagerCallback>().ReceiveConnectedFriends(connectedFriends);
             }
+            OperationContext.Current.GetCallbackChannel<IFriendsManagerCallback>().ReceiveConnectedFriends(connectedFriends);
+        }
     }
     
 }
