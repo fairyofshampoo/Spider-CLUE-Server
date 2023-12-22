@@ -15,10 +15,10 @@ namespace GameService.Contracts
         void CreatCards(string gamer1, string gamer2, string gamer3);
 
         [OperationContract]
-        void ChooseCards();
+        List<Card> ChooseCards(List<Card> firstDeck, List<Card> secondDeck, List<Card> thirdDeck);
 
         [OperationContract]
-        List<Card> ShuffleCards();
+        List<Card> ShuffleCards(List<Card> cards);
 
         [OperationContract]
         void DealCards(string gamer1, string gamer2, string gamer3, List<Card> card);
