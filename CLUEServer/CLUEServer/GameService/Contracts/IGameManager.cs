@@ -16,14 +16,12 @@ namespace GameService.Contracts
 
         [OperationContract(IsOneWay = true)]
         void RollDice();
-        
-        
     }
 
     [ServiceContract]
     public interface IGameManagerCallback
     {
-
+        //aquí faltan métodos
     }
 
 }
