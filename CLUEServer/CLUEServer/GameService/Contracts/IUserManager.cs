@@ -46,6 +46,9 @@ namespace GameService.Contracts
 
         [OperationContract]
         string GetIcon (String gamertag);
+
+        [OperationContract]
+        int DeleteGuestPlayer(string gamertag);
     }
 
     [DataContract]

@@ -77,6 +77,7 @@ namespace GameService.Services
         {
             string guestGamertag = CreateRandomUserName();
             CreateGuestGamer(guestGamertag);
+            //aquí si el create es menor a cero puedo lanzar un OperationFailedException (creada por nosotros)
             return guestGamertag;
         }
 
@@ -273,5 +274,47 @@ namespace GameService.Services
                 return imagecode;
             }
         }
+
+        public int DeleteGuestPlayer(string gamertag)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            int result = Constants.ERROR_IN_OPERATION;
+
+            using (var dataBaseContext = new SpiderClueDbEntities())
+            {
+                using (var dataBaseContextTransaction = dataBaseContext.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var existingGamer = dataBaseContext.gamers.FirstOrDefault(gamer => gamer.gamertag == gamertag);
+
+                        if (existingGamer != null)
+                        {
+                            dataBaseContext.gamers.Remove(existingGamer);
+                            dataBaseContext.SaveChanges();
+
+                            dataBaseContextTransaction.Commit();
+                            result = Constants.SUCCESS_IN_OPERATION;
+                        }
+                        else
+                        {
+                            result = Constants.SUCCESS_IN_OPERATION;
+                        }
+                    }
+                    catch (SqlException sqlException)
+                    {
+                        loggerManager.LogError(sqlException);
+                    }
+                    catch (Exception exception)
+                    {
+                        dataBaseContextTransaction.Rollback();
+                        loggerManager.LogFatal(exception);
+                    }
+                }
+            }
+
+            return result;
+        }
+
     }
 }

@@ -15,7 +15,7 @@ namespace GameService.Contracts
         void MovePawn(string xPosition, string yPosition);
 
         [OperationContract(IsOneWay = true)]
-        string RollDice();
+        void RollDice();
         
         
     }
