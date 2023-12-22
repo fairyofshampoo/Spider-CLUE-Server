@@ -74,8 +74,16 @@ namespace GameService.Services
 
         public string RequestGuestPlayer()
         {
-            string guestGamertag = CreateRandomUserName();
+            string guestGamertag;
+
+            do
+            {
+                guestGamertag = CreateRandomUserName();
+
+            } while (IsGamertagExisting(guestGamertag));
+
             CreateGuestGamer(guestGamertag);
+
             //aquí si el create es menor a cero puedo lanzar un OperationFailedException (creada por nosotros)
             return guestGamertag;
         }
