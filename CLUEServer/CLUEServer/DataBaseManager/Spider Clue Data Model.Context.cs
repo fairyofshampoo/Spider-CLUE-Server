@@ -16,7 +16,6 @@ namespace DataBaseManager
     public partial class SpiderClueDbEntities : DbContext
     {
         public SpiderClueDbEntities()
-            //: base("name=SpiderClueDbEntities")
             :base(Environment.GetEnvironmentVariable("DATABASE"))
         {
         }
@@ -34,5 +33,6 @@ namespace DataBaseManager
         public virtual DbSet<match> matches { get; set; }
         public virtual DbSet<matchResult> matchResults { get; set; }
         public virtual DbSet<report> reports { get; set; }
+        public virtual DbSet<database_firewall_rules> database_firewall_rules { get; set; }
     }
 }

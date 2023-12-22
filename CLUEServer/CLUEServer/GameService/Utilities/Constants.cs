@@ -12,7 +12,7 @@ namespace GameService.Utilities
         public const int SUCCESS_IN_OPERATION = 1;
         public const string DEFAULT_ICON = "Icon0.jpg";
         public const string DEFAULT_GUEST_NAME = "Guest";
-        public const int DEFAULT_LEVEL = 0;
+        public const int DEFAULT_GAMES_WON = 0;
         public const string DEFAULT_GUEST_LAST_NAME = "Player";
     }
 }

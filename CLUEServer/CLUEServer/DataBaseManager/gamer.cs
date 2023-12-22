@@ -26,8 +26,8 @@ namespace DataBaseManager
         public string firstName { get; set; }
         public string lastName { get; set; }
         public string gamertag { get; set; }
-        public int level { get; set; }
         public string imageCode { get; set; }
+        public int gamesWon { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<accessAccount> accessAccounts { get; set; }

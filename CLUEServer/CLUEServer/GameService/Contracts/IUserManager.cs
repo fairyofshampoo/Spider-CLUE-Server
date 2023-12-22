@@ -56,7 +56,7 @@ namespace GameService.Contracts
     {
         private string firstName;
         private string lastName;
-        private int level;
+        private int gamesWon;
         private string imageCode;
 
 
@@ -67,7 +67,7 @@ namespace GameService.Contracts
         public string LastName { get { return lastName; } set { lastName = value; } }
 
         [DataMember]
-        public int Level { get { return level; } set { level = value; } }
+        public int GamesWon { get { return gamesWon; } set { gamesWon = value; } }
 
         [DataMember]
         public string ImageCode { get { return imageCode; } set { imageCode = value; } }
