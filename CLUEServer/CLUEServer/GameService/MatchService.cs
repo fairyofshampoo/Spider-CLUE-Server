@@ -16,7 +16,6 @@ namespace GameService.Services
         public void ConnectToMatch(string gamertag, string matchCode)
         {
             LoggerManager logger = new LoggerManager(this.GetType());
-
             try
             {
                 gamersInMatch.Add(gamertag, matchCode);
@@ -32,12 +31,19 @@ namespace GameService.Services
 
         private void ShowPlayerProfilesInMatch(string matchCode)
         {
-            foreach(var gamer in gamersInMatch)
+            lock (gamersMatchCallback)
             {
-                if (gamer.Value.Equals(matchCode))
+                foreach (var gamer in gamersInMatch.ToList())
                 {
-                    string gamertag = gamer.Key;
-                    gamersMatchCallback[gamertag].ReceiveGamersInMatch(GetGamersByMatch(matchCode));
+                    if (gamer.Value.Equals(matchCode))
+                    {
+                        string gamertag = gamer.Key;
+
+                        if (gamersMatchCallback.ContainsKey(gamertag))
+                        {
+                            gamersMatchCallback[gamertag].ReceiveGamersInMatch(GetGamersByMatch(matchCode));
+                        }
+                    }
                 }
             }
         }
@@ -84,7 +90,51 @@ namespace GameService.Services
             gamersMatchCallback.Remove(gamertag);
             gamersLobbyCallback.Remove(gamertag);
             chatCallbacks.Remove(gamertag);
+            charactersPerGamer.Remove(gamertag);
             ShowPlayerProfilesInMatch(matchCode);
         }
+
+        private static List<Character> characters = new List<Character>
+        {
+            new Character { CharacterName = "BlueCharacter", PawnName = "BluePawn" },
+            new Character { CharacterName = "GreenCharacter", PawnName = "GreenPawn" },
+            new Character { CharacterName = "PurpleCharacter", PawnName = "PurplePawn"},
+            new Character { CharacterName = "RedCharacter", PawnName = "RedPawn" },
+            new Character { CharacterName = "WhiteCharacter", PawnName = "WhitePawn" },
+            new Character { CharacterName = "YellowCharacter", PawnName = "YellowPawn"}
+        };
+
+        private static readonly Dictionary<string, Character> charactersPerGamer = new Dictionary<string, Character>();
+
+        public Character GetCharacterColor(string gamertag, string matchCode)
+        {
+            Random random = new Random();
+            Character assignedCharacter = null;
+
+            while (assignedCharacter == null || !IsCharacterAvailable(matchCode, assignedCharacter))
+            {
+                int index = random.Next(characters.Count);
+                assignedCharacter = characters[index];
+            }
+
+            charactersPerGamer.Add(gamertag, assignedCharacter);
+            return assignedCharacter;
+        }
+
+
+        public bool IsCharacterAvailable(string matchCode, Character characterSelected)
+        {
+            bool isCharacterAvailable = false;
+
+            var assignedCharactersInMatch = charactersPerGamer
+                .Where(gamerCharacterPair => gamersInMatch.ContainsValue(matchCode))
+                .Select(gamerCharacterPair => gamerCharacterPair.Value)
+                .ToList();
+
+            isCharacterAvailable = !assignedCharactersInMatch.Contains(characterSelected);
+
+            return isCharacterAvailable;
+        }
+
     }
 }
