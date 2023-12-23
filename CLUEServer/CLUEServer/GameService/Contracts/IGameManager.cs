@@ -12,7 +12,7 @@ namespace GameService.Contracts
     public interface IGameManager
     {
         [OperationContract(IsOneWay = true)]
-        void MovePawn(string xPosition, string yPosition, string pawn);
+        void MovePawn(int columns, int rows, string pawn);
 
         [OperationContract]
         int RollDice();
@@ -21,9 +21,38 @@ namespace GameService.Contracts
     [ServiceContract]
     public interface IGameManagerCallback
     {
-        
         [OperationContract]
-        void MovePawn();    
+        void ReceivePawnsMove();    
     }
 
+    [DataContract]
+    public class Pawn
+    {
+        private string color;
+        private int xPosition;
+        private int yPosition;
+
+        [DataMember]
+        public string Color { get { return color; } set { color = value; } }
+
+        [DataMember]
+        public int XPosition { get {  return xPosition; } set {  xPosition = value; } }
+
+        [DataMember]
+        public int YPosition { get { return yPosition; } set {  yPosition = value; } }
+
+    }
+
+    [DataContract]
+    public class RestrictedSquare
+    {
+        private int xPosition;
+        private int yPosition;
+
+        [DataMember]
+        public int Xposition { get { return xPosition; } set { xPosition = value; } }
+
+        [DataMember]
+        public int Yposition { get { return yPosition; } set { yPosition = value; } }
+    }
 }
