@@ -162,5 +162,21 @@ namespace GameService.Services
             }
             return cards;
         }
+
+        public List<Card> GetDeck(string gamertag)
+        {
+            List<Card> gamerDeck = new List<Card>();
+            foreach (var gamer in decks)
+            {
+                if(gamer.Key == gamertag)
+                {
+                    foreach (var card in gamer.Value)
+                    {
+                        gamerDeck.Add(card);
+                    }
+                }     
+            }
+            return gamerDeck;
+        }
     }
 }

@@ -22,6 +22,9 @@ namespace GameService.Contracts
 
         [OperationContract]
         void DealCards(string gamer1, string gamer2, string gamer3, List<Card> card);
+
+        [OperationContract]
+        List<Card> GetDeck(string gamertag);
     }
 
     [DataContract]
