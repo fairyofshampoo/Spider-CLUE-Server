@@ -16,7 +16,7 @@ namespace GameService.Services
         private static readonly Dictionary<string, IFriendsManagerCallback> gamersFriendsManagerCallback = new Dictionary<string, IFriendsManagerCallback>();
 
         private static readonly List<string> UsersConnected = new List<string>();
-        public void GetConnectedFriends(string gamertag)
+public void GetConnectedFriends(string gamertag)
         {
             List<string> connectedFriends = SetConnectedFriendsList(gamertag);
             

@@ -1,6 +1,8 @@
 ﻿using GameService.Contracts;
+using System;
 using System.Collections.Generic;
 using System.ServiceModel;
+using System.Web.UI.WebControls;
 
 namespace GameService.Services
 {
@@ -8,8 +10,16 @@ namespace GameService.Services
     {
         public void Connect(string gamertag)
         {
-            UsersConnected.Add(gamertag);
-            UpdateConnectedFriends(gamertag);
+            if (!UsersConnected.Contains(gamertag))
+            {
+                UsersConnected.Add(gamertag);
+                UpdateConnectedFriends(gamertag);
+            }
+        }
+
+        public bool IsGamerAlreadyOnline(string gamertag)
+        {
+            return UsersConnected.Contains(gamertag); ;
         }
 
         public void Disconnect(string gamertag)
@@ -42,8 +52,7 @@ namespace GameService.Services
         {
             if (gamersInMatch.ContainsKey(gamertag))
             {
-                string matchCode = gamersInMatch[gamertag];
-                LeaveMatch(gamertag, matchCode);
+                KickPlayer(gamertag);
             }
         }
     }
