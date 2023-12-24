@@ -94,47 +94,5 @@ namespace GameService.Services
             ShowPlayerProfilesInMatch(matchCode);
         }
 
-        private static List<Character> characters = new List<Character>
-        {
-            new Character { CharacterName = "BlueCharacter", PawnName = "BluePawn" },
-            new Character { CharacterName = "GreenCharacter", PawnName = "GreenPawn" },
-            new Character { CharacterName = "PurpleCharacter", PawnName = "PurplePawn"},
-            new Character { CharacterName = "RedCharacter", PawnName = "RedPawn" },
-            new Character { CharacterName = "WhiteCharacter", PawnName = "WhitePawn" },
-            new Character { CharacterName = "YellowCharacter", PawnName = "YellowPawn"}
-        };
-
-        private static readonly Dictionary<string, Character> charactersPerGamer = new Dictionary<string, Character>();
-
-        public Character GetCharacterColor(string gamertag, string matchCode)
-        {
-            Random random = new Random();
-            Character assignedCharacter = null;
-
-            while (assignedCharacter == null || !IsCharacterAvailable(matchCode, assignedCharacter))
-            {
-                int index = random.Next(characters.Count);
-                assignedCharacter = characters[index];
-            }
-
-            charactersPerGamer.Add(gamertag, assignedCharacter);
-            return assignedCharacter;
-        }
-
-
-        public bool IsCharacterAvailable(string matchCode, Character characterSelected)
-        {
-            bool isCharacterAvailable = false;
-
-            var assignedCharactersInMatch = charactersPerGamer
-                .Where(gamerCharacterPair => gamersInMatch.ContainsValue(matchCode))
-                .Select(gamerCharacterPair => gamerCharacterPair.Value)
-                .ToList();
-
-            isCharacterAvailable = !assignedCharactersInMatch.Contains(characterSelected);
-
-            return isCharacterAvailable;
-        }
-
     }
 }

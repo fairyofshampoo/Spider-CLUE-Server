@@ -41,17 +41,6 @@ namespace GameService.Services
             return messagesforMatch[matchCode];
         }
 
-        public void DisconnectFromChat(string gamertag)
-        {
-            lock(chatCallbacks)
-            {
-                if (chatCallbacks.ContainsKey(gamertag))
-                {
-                    chatCallbacks.Remove(gamertag);
-                }
-            }
-        }
-
         public void BroadcastMessage(String matchCode, Message message)
         {
             messagesforMatch[matchCode].Add(message);
