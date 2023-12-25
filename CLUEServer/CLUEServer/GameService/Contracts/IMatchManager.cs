@@ -29,7 +29,7 @@ namespace GameService.Contracts
     public interface IMatchManagerCallback
     {
         [OperationContract]
-        void ReceiveGamersInMatch(List<string> gamertags);
+        void ReceiveGamersInMatch(Dictionary<string, string> gamers);
     }
 
     [DataContract]

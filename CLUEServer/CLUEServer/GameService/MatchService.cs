@@ -42,7 +42,7 @@ namespace GameService.Services
 
                         if (gamersMatchCallback.ContainsKey(gamertag))
                         {
-                            gamersMatchCallback[gamertag].ReceiveGamersInMatch(GetGamersByMatch(matchCode));
+                            gamersMatchCallback[gamertag].ReceiveGamersInMatch(GetCharactersInMatch(matchCode));
                         }
                     }
                 }
@@ -56,7 +56,7 @@ namespace GameService.Services
 
         public void GetGamersInMatch(string gamertag, string code)
         {
-            OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>().ReceiveGamersInMatch(GetGamersByMatch(code));
+            OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>().ReceiveGamersInMatch(GetCharactersInMatch(code));
         }
 
         public Match GetMatchInformation(string code)
@@ -111,7 +111,7 @@ namespace GameService.Services
                     int index = random.Next(characters.Count);
                     assignedCharacter = characters[index];
                 }
-                Console.WriteLine(gamertag + "asignado a : " + assignedCharacter);
+
                 charactersPerGamer.Add(gamertag, assignedCharacter);
             }
         }
