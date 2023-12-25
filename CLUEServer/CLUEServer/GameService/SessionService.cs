@@ -1,8 +1,6 @@
 ﻿using GameService.Contracts;
-using System;
 using System.Collections.Generic;
 using System.ServiceModel;
-using System.Web.UI.WebControls;
 
 namespace GameService.Services
 {
@@ -14,19 +12,19 @@ namespace GameService.Services
             {
                 UsersConnected.Add(gamertag);
                 UpdateConnectedFriends(gamertag);
-            }
-        }
-
-        public bool IsGamerAlreadyOnline(string gamertag)
-        {
-            return UsersConnected.Contains(gamertag); ;
+            } 
         }
 
         public void Disconnect(string gamertag)
         {
             RemoveFromUsersConnected(gamertag);
-            RemoveFromMatch(gamertag);
         }
+
+        public bool IsGamerAlreadyOnline(string gamertag)
+        {
+            return UsersConnected.Contains(gamertag);
+        }
+
         private void RemoveFromUsersConnected(string gamertag)
         {
             if (UsersConnected.Contains(gamertag))
@@ -45,14 +43,6 @@ namespace GameService.Services
                 {
                     gamersFriendsManagerCallback[connectedFriend].ReceiveConnectedFriends(SetConnectedFriendsList(connectedFriend));
                 }
-            }
-        }
-
-        private void RemoveFromMatch(string gamertag)
-        {
-            if (gamersInMatch.ContainsKey(gamertag))
-            {
-                KickPlayer(gamertag);
             }
         }
     }

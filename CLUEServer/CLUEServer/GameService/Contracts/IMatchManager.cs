@@ -23,7 +23,6 @@ namespace GameService.Contracts
 
         [OperationContract(IsOneWay = true)]
         void GetGamersInMatch(string gamertag, string code);
-        
     }
 
     [ServiceContract]
@@ -45,4 +44,5 @@ namespace GameService.Contracts
         [DataMember]
         public string CreatedBy { get {  return createdBy; } set {  createdBy = value; } }
     }
+
 }

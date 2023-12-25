@@ -12,6 +12,9 @@ namespace GameService.Contracts
         [OperationContract(IsOneWay = true)]
         void ConnectToChat(string gamertag, String matchCode);
 
+        [OperationContract]
+        void DisconnectFromChat(string gamertag);
+
         [OperationContract(IsOneWay = true)]
         void BroadcastMessage(String matchCode, Message message);
     }
