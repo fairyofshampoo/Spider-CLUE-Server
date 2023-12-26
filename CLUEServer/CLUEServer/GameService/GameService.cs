@@ -8,6 +8,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Policy;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Configuration;
@@ -23,7 +24,7 @@ namespace GameService.Services
         public List<GridNode> InvalidZones = new List<GridNode>();
         public List<Door> Doors = new List<Door>();
 
-        private static readonly Dictionary<string, IGameManagerCallback> gamersGameBoardCallback = new Dictionary<string, IGameManagerCallback>();
+        private static readonly Dictionary<string, IGameManagerCallback> GamersInGameBoardCallback = new Dictionary<string, IGameManagerCallback>();
 
         public void AddToDoorsList(Door door)
         {
@@ -52,6 +53,11 @@ namespace GameService.Services
             {
                 //Envíar el pawn nulo
             }
+        }
+
+        public void ConnectGamerToGameBoard(string gamertag)
+        {
+            GamersInGameBoardCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<IGameManagerCallback>());
         }
 
         public GridNode GetPawnPosition(string gamertag) 

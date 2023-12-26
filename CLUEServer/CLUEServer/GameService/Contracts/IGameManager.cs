@@ -16,6 +16,9 @@ namespace GameService.Contracts
 
         [OperationContract]
         int RollDice();
+
+        [OperationContract(IsOneWay = true)]
+        void ConnectGamerToGameBoard(string gamertag);
     }
 
     [ServiceContract]
