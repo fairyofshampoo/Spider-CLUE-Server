@@ -13,11 +13,8 @@ namespace GameService.Contracts
         [OperationContract(IsOneWay = true)]
         void GetConnectedFriends(string gamertag);
 
-        [OperationContract]
-        void Connect(string gamertag);
-
-        [OperationContract]
-        void Disconnect(string gamertag);
+        [OperationContract(IsOneWay = true)]
+        void JoinFriendsConnected(string gamertag);
     }
 
     [ServiceContract]

@@ -12,13 +12,10 @@ namespace GameService.Contracts
 {
 
     [ServiceContract]
-    interface IUserManager
+    public interface IUserManager
     {
         [OperationContract]
-        int AddUserTransaction(Gamer gamer);
-
-        [OperationContract]
-        bool IsAccountExisting(string email);
+        int AddUserTransaction(Gamer gamer); 
 
         [OperationContract]
         bool AuthenticateAccount(string gamertag, string password);
@@ -27,40 +24,31 @@ namespace GameService.Contracts
         string RequestGuestPlayer();
 
         [OperationContract]
-        int AuthenticateGamertag(String gamertag);
+        bool IsEmailExisting(String email);
 
         [OperationContract]
-        int AuthenticateEmail(String email);
+        int UpdatePassword(String gamertag,  String password);
 
         [OperationContract]
-        Boolean IsAccessAccountExisting (String user, String Password);
+        bool IsGamertagExisting (String gamertag);
 
         [OperationContract]
-        Boolean IsEmailExisting(String email);
-        
-        [OperationContract]
-        Boolean IsGamertagExisting (String gamertag);
-
-        [OperationContract]
-        Gamer GetGamer(string gamertag);
+        Gamer GetGamerByGamertag(string gamertag);
 
         [OperationContract]
         Gamer GetGamerByEmail(string gamertag);
 
         [OperationContract]
-        int GetBannedStatus(string gamertag);
-
-        [OperationContract]
         int ModifyAccount (String gamertag, String firstName, String lastName);
-
-        [OperationContract]
-        int UpdateGamerTransaction(Gamer gamer);
         
         [OperationContract]
         int ChangeIcon (string gamertag, String titleIcon);
 
         [OperationContract]
         string GetIcon (String gamertag);
+
+        [OperationContract]
+        int DeleteGuestPlayer(string gamertag);
     }
 
     [DataContract]
@@ -68,7 +56,7 @@ namespace GameService.Contracts
     {
         private string firstName;
         private string lastName;
-        private int level;
+        private int gamesWon;
         private string imageCode;
 
 
@@ -79,7 +67,7 @@ namespace GameService.Contracts
         public string LastName { get { return lastName; } set { lastName = value; } }
 
         [DataMember]
-        public int Level { get { return level; } set { level = value; } }
+        public int GamesWon { get { return gamesWon; } set { gamesWon = value; } }
 
         [DataMember]
         public string ImageCode { get { return imageCode; } set { imageCode = value; } }
@@ -92,7 +80,6 @@ namespace GameService.Contracts
         private string email;
         private string gamertag;
         private string password;
-        private int isBanned;
 
         [DataMember]
         public string Email { get { return email; } set { email = value; } }
@@ -102,23 +89,5 @@ namespace GameService.Contracts
 
         [DataMember]
         public string Password { get { return password; } set { password = value; } }
-
-        [DataMember]
-        public int IsBanned { get { return isBanned; } set { isBanned = value; } }
-
     }
-
-    [DataContract]
-    public class Friend
-    {
-        private string gamertag;
-        private string gamertagFriend;
-
-        [DataMember]
-        public string Gamertag { get { return gamertag; } set { gamertag = value; } }
-
-        [DataMember]
-        public string GamertagFriend { get {  return gamertagFriend; } set { gamertagFriend = value; } }    
-    }
-
 }

@@ -40,11 +40,15 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\SpiderClueService\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=2.0.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\SpiderClueService\packages\log4net.2.0.15\lib\net45\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\SpiderClueService\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\SpiderClueService\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
@@ -58,6 +62,7 @@
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -66,16 +71,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CardsService.cs" />
+    <Compile Include="ChatService.cs" />
+    <Compile Include="Contracts\ICardManager.cs" />
+    <Compile Include="Contracts\IChatManager.cs" />
     <Compile Include="Contracts\IFriendRequestManager.cs" />
     <Compile Include="Contracts\IFriendshipManager.cs" />
     <Compile Include="Contracts\IFriendsManager.cs" />
+    <Compile Include="Contracts\IGameManager.cs" />
+    <Compile Include="Contracts\IInvitationManager.cs" />
+    <Compile Include="Contracts\ILobbyManager.cs" />
+    <Compile Include="Contracts\IMatchCreationManager.cs" />
     <Compile Include="Contracts\IMatchManager.cs" />
+    <Compile Include="Contracts\ISessionManager.cs" />
+    <Compile Include="EmailService.cs" />
     <Compile Include="FriendRequestService.cs" />
     <Compile Include="FriendshipService.cs" />
     <Compile Include="FriendsService.cs" />
-    <Compile Include="MatchService.cs" />
-    <Compile Include="VerificationService.cs" />
     <Compile Include="GameService.cs" />
+    <Compile Include="InvitationService.cs" />
+    <Compile Include="LobbyService.cs" />
+    <Compile Include="MatchCreationService.cs" />
+    <Compile Include="MatchService.cs" />
+    <Compile Include="SessionService.cs" />
+    <Compile Include="Utilities\Constants.cs" />
+    <Compile Include="Utilities\LoggerManager.cs" />
+    <Compile Include="VerificationService.cs" />
+    <Compile Include="UserService.cs" />
     <Compile Include="Contracts\IEmailVerificationManager.cs" />
     <Compile Include="Contracts\IUserManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -90,8 +112,6 @@
       <Name>DataBaseManager</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Utilities\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

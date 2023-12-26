@@ -24,28 +24,66 @@ namespace GameService.Services
         {
             using (var databaseContext = new SpiderClueDbEntities())
             {
-                var friendEliminated = databaseContext.friendLists.Where(friend => friend.gamertag == gamertag && friend.friend == friendGamertag);
-                databaseContext.friendLists.RemoveRange(friendEliminated);
-                databaseContext.SaveChanges();
+                var friendEliminated = databaseContext.friendLists
+                .Where(friend => friend.gamertag == gamertag && friend.friend == friendGamertag);
+                if(friendEliminated.Any())
+                {
+                    databaseContext.friendLists.RemoveRange(friendEliminated);
+                    databaseContext.SaveChanges();
+                    DeleteFriend(friendGamertag, gamertag);
+                }
             }
         }
 
-        public void CreateFriendRequest(string gamertag, string friendGamertag)
+        public void AddFriend(string gamertag, string friendGamertag)
         {
             using (var databaseContext = new SpiderClueDbEntities())
             {
-
+                var existingFriendship = databaseContext.friendLists
+                .FirstOrDefault(f => f.gamertag == gamertag && f.friend == friendGamertag);
+                if (existingFriendship == null)
+                {
+                    var newFriends = new DataBaseManager.friendList
+                    {
+                        gamertag = gamertag,
+                        friend = friendGamertag
+                    };
+                    databaseContext.friendLists.Add(newFriends);
+                    databaseContext.SaveChanges();
+                    AddFriend(friendGamertag, gamertag);
+                    
+                }    
             }
         }
 
-        public void AcceptFriendRequest(string gamertag, string friendGamertag)
+        public bool AreNotFriends(string gamertag, string friendGamertag)
         {
-            throw new NotImplementedException();
+            using (var databaseContext = new SpiderClueDbEntities())
+            {
+                Boolean areNotFriends = true;
+                var existingFriendship = databaseContext.friendLists
+                    .FirstOrDefault(friends => friends.gamertag == gamertag && friends.friend== friendGamertag);
+                if (existingFriendship != null)
+                {
+                    areNotFriends = false;
+                }
+                return areNotFriends;
+            }
         }
 
-        public void DeclineFriendRequest(string gamertg, string friendGamertag)
+        public bool ThereIsNoFriendRequest(string gamertag, string friendGamertag)
         {
-            throw new NotImplementedException();
+            using (var databaseContext = new SpiderClueDbEntities())
+            {
+                Boolean ThereIsNotFriendRequest = true;
+                var existingFriendRequest = databaseContext.friendRequests
+                    .FirstOrDefault(friendRequest => friendRequest.senderGamertag == gamertag && friendRequest.receiverGamertag == friendGamertag);
+                if(existingFriendRequest != null)
+                {
+                    ThereIsNotFriendRequest = false;
+                }
+                return ThereIsNotFriendRequest;
+            }
         }
     }
 }

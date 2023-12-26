@@ -1,24 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace GameService.Contracts
 {
-    [ServiceContract (CallbackContract = typeof(IFriendRequestManager))]
-    public interface IFriendRequestManager
+    [ServiceContract]
+    interface IFriendRequestManager
     {
         [OperationContract]
-        void showAllFriendsRequest(string gamertag);
- 
+        string [] GetFriendsRequets(string gamertag);
+
+        [OperationContract]
+        void CreateFriendRequest(string gamertag, string friendGamertag);
+
+        [OperationContract]
+        void ResponseFriendRequest(string gamertag, string friendGamertag, string response);
+
+        [OperationContract]
+        void DeleteFriendRequest(string gamertag, string friend);
     }
 
-    [ServiceContract]
-    public interface IFriendRequestManagerCallback
+    [DataContract]
+    public class FriendRequest
     {
-        [OperationContract]
-        void ReceiveFriendsRequests();
+        private string senderGamertag;
+        private string receiverGamertag;
+        private string friendRequestStatus;
+
+        [DataMember]
+        public string SenderGamertag { get { return senderGamertag; } set { senderGamertag = value; } }
+
+        [DataMember]
+        public string ReceiverGamertag { get { return receiverGamertag; } set { receiverGamertag = value; } }
+
+        [DataMember]
+        public string FriendRequestStatus { get { return friendRequestStatus; } set { friendRequestStatus = value; } }
     }
+
 }

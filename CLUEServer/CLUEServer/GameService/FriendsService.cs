@@ -8,39 +8,42 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
-    namespace GameService.Services
+namespace GameService.Services
+{
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant)]
+    public partial class GameService : IFriendsManager
     {
-        [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant)]
-        public partial class GameService : IFriendsManager
-        {
-            private static List<string> usersConnected = new List<string>();
+        private static readonly Dictionary<string, IFriendsManagerCallback> gamersFriendsManagerCallback = new Dictionary<string, IFriendsManagerCallback>();
 
-            public void Connect(string gamertag)
-            {
-                usersConnected.Add(gamertag);
-            }
-
-        public void Disconnect(string gamertag)
-            {
-                if (usersConnected.Contains(gamertag))
-                {
-                    usersConnected.Remove(gamertag);
-                }
-            }
-
+        private static readonly List<string> UsersConnected = new List<string>();
         public void GetConnectedFriends(string gamertag)
+        {
+            List<string> connectedFriends = SetConnectedFriendsList(gamertag);
+            
+            OperationContext.Current.GetCallbackChannel<IFriendsManagerCallback>().ReceiveConnectedFriends(connectedFriends);
+        }
+
+        public void JoinFriendsConnected(string gamertag)
+        {
+            IFriendsManagerCallback callback = OperationContext.Current.GetCallbackChannel<IFriendsManagerCallback>();
+            if (!gamersFriendsManagerCallback.ContainsKey(gamertag))
             {
-                List<string> friendList = GetFriendList(gamertag);
-                List<string> connectedFriends = new List<string>();
-                foreach (string friend in friendList)
-                {
-                    if (usersConnected.Contains(friend))
-                    {
-                        connectedFriends.Add(friend);
-                    }
-                }
-                OperationContext.Current.GetCallbackChannel<IFriendsManagerCallback>().ReceiveConnectedFriends(connectedFriends);
+                gamersFriendsManagerCallback.Add(gamertag, callback);
             }
+        }
+
+        private List<string> SetConnectedFriendsList(string gamertag)
+        {
+            List<string> friendList = GetFriendList(gamertag);
+            List<string> connectedFriends = new List<string>();
+            foreach (string friend in friendList)
+            {
+                if (UsersConnected.Contains(friend))
+                {
+                    connectedFriends.Add(friend);
+                }
+            }
+            return connectedFriends;
+        }
     }
-    
 }

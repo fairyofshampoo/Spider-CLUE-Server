@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 
 namespace GameService.Contracts
 {
-    internal interface IMatchManager
+    [ServiceContract(CallbackContract = typeof(IMatchManagerCallback))]
+    public interface IMatchManager
     {
         [OperationContract]
         Match GetMatchInformation(string code);
@@ -18,16 +19,17 @@ namespace GameService.Contracts
         void ConnectToMatch(string gamertag, string code);
 
         [OperationContract]
-        void CreateMatch(Match newMatch);
-
-        [OperationContract]
         void LeaveMatch(string gamertag, string code);
-
-        [OperationContract]
-        bool KickPlayer(string gamertag);
 
         [OperationContract(IsOneWay = true)]
         void GetGamersInMatch(string gamertag, string code);
+    }
+
+    [ServiceContract]
+    public interface IMatchManagerCallback
+    {
+        [OperationContract]
+        void ReceiveGamersInMatch(Dictionary<string, Pawn> characters);
     }
 
     [DataContract]
@@ -42,4 +44,5 @@ namespace GameService.Contracts
         [DataMember]
         public string CreatedBy { get {  return createdBy; } set {  createdBy = value; } }
     }
+
 }
