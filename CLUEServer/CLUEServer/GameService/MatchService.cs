@@ -20,6 +20,7 @@ namespace GameService.Services
             {
                 gamersInMatch.Add(gamertag, matchCode);
                 gamersMatchCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>());
+                SetCharacterColor(gamertag, matchCode);
                 ShowPlayerProfilesInMatch(matchCode);
             }
             catch (Exception ex)
@@ -41,7 +42,7 @@ namespace GameService.Services
 
                         if (gamersMatchCallback.ContainsKey(gamertag))
                         {
-                            gamersMatchCallback[gamertag].ReceiveGamersInMatch(GetGamersByMatch(matchCode));
+                            gamersMatchCallback[gamertag].ReceiveGamersInMatch(GetCharactersInMatch(matchCode));
                         }
                     }
                 }
@@ -55,14 +56,7 @@ namespace GameService.Services
 
         public void GetGamersInMatch(string gamertag, string code)
         {
-            if (gamersInMatch.ContainsKey(gamertag))
-            {
-                OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>().ReceiveGamersInMatch(new List<string>(gamersInMatch.Keys));
-            }
-            else
-            {
-                OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>().ReceiveGamersInMatch(GetGamersByMatch(code));
-            }
+            OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>().ReceiveGamersInMatch(GetCharactersInMatch(code));
         }
 
         public Match GetMatchInformation(string code)
@@ -89,52 +83,74 @@ namespace GameService.Services
             gamersInMatch.Remove(gamertag);
             gamersMatchCallback.Remove(gamertag);
             gamersLobbyCallback.Remove(gamertag);
-            chatCallbacks.Remove(gamertag);
             charactersPerGamer.Remove(gamertag);
             ShowPlayerProfilesInMatch(matchCode);
         }
 
-        private static List<Character> characters = new List<Character>
+        public static readonly List<string> characters = new List<string>
         {
-            new Character { CharacterName = "BlueCharacter", PawnName = "BluePawn" },
-            new Character { CharacterName = "GreenCharacter", PawnName = "GreenPawn" },
-            new Character { CharacterName = "PurpleCharacter", PawnName = "PurplePawn"},
-            new Character { CharacterName = "RedCharacter", PawnName = "RedPawn" },
-            new Character { CharacterName = "WhiteCharacter", PawnName = "WhitePawn" },
-            new Character { CharacterName = "YellowCharacter", PawnName = "YellowPawn"}
+            "Green",
+            "Yellow",
+            "White",
+            "Red",
+            "Purple",
+            "Blue"
         };
 
-        private static readonly Dictionary<string, Character> charactersPerGamer = new Dictionary<string, Character>();
+        private static readonly Dictionary<string, string> charactersPerGamer = new Dictionary<string, string>();
 
-        public Character GetCharacterColor(string gamertag, string matchCode)
+        private void SetCharacterColor(string gamertag, string matchCode)
         {
-            Random random = new Random();
-            Character assignedCharacter = null;
-
-            while (assignedCharacter == null || !IsCharacterAvailable(matchCode, assignedCharacter))
+            if (!charactersPerGamer.ContainsKey(gamertag))
             {
-                int index = random.Next(characters.Count);
-                assignedCharacter = characters[index];
-            }
+                Random random = new Random();
+                string assignedCharacter = string.Empty;
 
-            charactersPerGamer.Add(gamertag, assignedCharacter);
-            return assignedCharacter;
+                while (assignedCharacter == string.Empty || !IsCharacterAvailable(matchCode, assignedCharacter))
+                {
+                    int index = random.Next(characters.Count);
+                    assignedCharacter = characters[index];
+                }
+
+                charactersPerGamer.Add(gamertag, assignedCharacter);
+            }
         }
 
 
-        public bool IsCharacterAvailable(string matchCode, Character characterSelected)
+        private bool IsCharacterAvailable(string matchCode, string characterSelected)
         {
-            bool isCharacterAvailable = false;
-
             var assignedCharactersInMatch = charactersPerGamer
-                .Where(gamerCharacterPair => gamersInMatch.ContainsValue(matchCode))
-                .Select(gamerCharacterPair => gamerCharacterPair.Value)
+                .Where(gamerPair => gamersInMatch.ContainsKey(gamerPair.Key) && gamersInMatch[gamerPair.Key] == matchCode)
+                .Select(gamerPair => gamerPair.Value)
                 .ToList();
 
-            isCharacterAvailable = !assignedCharactersInMatch.Contains(characterSelected);
-
-            return isCharacterAvailable;
+            return !assignedCharactersInMatch.Contains(characterSelected);
         }
 
+        public string GetCharacterPerGamer(string gamertag)
+        {
+            string character = null;
+
+            if (charactersPerGamer.ContainsKey(gamertag))
+            {
+                character = charactersPerGamer[gamertag];
+            }
+
+            return character;
+        }
+
+        public Dictionary<string, string> GetCharactersInMatch(string code)
+        {
+            List<string> gamers = GetGamersByMatch(code);
+            Dictionary<string, string> charactersInMatch = new Dictionary<string, string>();
+
+            foreach (string gamer in gamers)
+            {
+                string character = GetCharacterPerGamer(gamer);
+                charactersInMatch.Add(gamer, character);
+            }
+
+            return charactersInMatch;
+        }
     }
 }

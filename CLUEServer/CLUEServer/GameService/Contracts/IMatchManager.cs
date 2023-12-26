@@ -23,16 +23,13 @@ namespace GameService.Contracts
 
         [OperationContract(IsOneWay = true)]
         void GetGamersInMatch(string gamertag, string code);
-
-        [OperationContract]
-        Character GetCharacterColor(string gamertag, string matchCode);
     }
 
     [ServiceContract]
     public interface IMatchManagerCallback
     {
         [OperationContract]
-        void ReceiveGamersInMatch(List<string> gamertags);
+        void ReceiveGamersInMatch(Dictionary<string, string> gamers);
     }
 
     [DataContract]
@@ -48,15 +45,4 @@ namespace GameService.Contracts
         public string CreatedBy { get {  return createdBy; } set {  createdBy = value; } }
     }
 
-    [DataContract]
-    public class Character
-    {
-        private string characterName;
-        private string pawnName;
-
-        [DataMember]
-        public string CharacterName { get {  return characterName; } set {  characterName = value; } }
-        [DataMember]
-        public string PawnName { get { return pawnName; } set {  pawnName = value; } }
-    }
 }

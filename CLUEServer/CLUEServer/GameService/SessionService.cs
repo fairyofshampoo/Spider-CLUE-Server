@@ -8,15 +8,23 @@ namespace GameService.Services
     {
         public void Connect(string gamertag)
         {
-            UsersConnected.Add(gamertag);
-            UpdateConnectedFriends(gamertag);
+            if (!UsersConnected.Contains(gamertag))
+            {
+                UsersConnected.Add(gamertag);
+                UpdateConnectedFriends(gamertag);
+            } 
         }
 
         public void Disconnect(string gamertag)
         {
             RemoveFromUsersConnected(gamertag);
-            RemoveFromMatch(gamertag);
         }
+
+        public bool IsGamerAlreadyOnline(string gamertag)
+        {
+            return UsersConnected.Contains(gamertag);
+        }
+
         private void RemoveFromUsersConnected(string gamertag)
         {
             if (UsersConnected.Contains(gamertag))
@@ -35,15 +43,6 @@ namespace GameService.Services
                 {
                     gamersFriendsManagerCallback[connectedFriend].ReceiveConnectedFriends(SetConnectedFriendsList(connectedFriend));
                 }
-            }
-        }
-
-        private void RemoveFromMatch(string gamertag)
-        {
-            if (gamersInMatch.ContainsKey(gamertag))
-            {
-                string matchCode = gamersInMatch[gamertag];
-                LeaveMatch(gamertag, matchCode);
             }
         }
     }

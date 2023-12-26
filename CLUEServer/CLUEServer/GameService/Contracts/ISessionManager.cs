@@ -15,5 +15,8 @@ namespace GameService.Contracts
 
         [OperationContract]
         void Disconnect(string gamertag);
+
+        [OperationContract]
+        bool IsGamerAlreadyOnline(string gamertag);
     }
 }
