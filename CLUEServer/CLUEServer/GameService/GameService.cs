@@ -42,11 +42,13 @@ namespace GameService.Services
         {
             if (IsAValidMove(column, row, gamertag))
             {
-                //Mover
+                //Crear un pawn con la columan, fila y color 
+                //Mandar el pawn
+                //Cambiar la posición actual del pawn
             }
             else
             {
-                //Avisar que el movimiento es inválido
+                //Envíar el pawn nulo
             }
         }
 
