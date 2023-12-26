@@ -16,24 +16,23 @@ namespace GameService.Services
             clueDeck.Add(card);
         }
 
-
         Dictionary <string, List<Card>> decks = new Dictionary<string, List<Card>>();
 
         public List<Card> ChooseCards(List<Card> firstDeck, List<Card> secondDeck, List<Card> thirdDeck)
         {
             Random random = new Random();
-            int cardChoosed = random.Next(0, 7);
+            int cardChoosed = random.Next(1, 7);
 
             Card characterCard = firstDeck[cardChoosed];
             firstDeck.RemoveAt(cardChoosed);
             this.AddCard(characterCard);
 
-            cardChoosed = random.Next(0, 10);
+            cardChoosed = random.Next(1, 10);
             Card placeCard = secondDeck[cardChoosed];
             secondDeck.RemoveAt(cardChoosed);
             this.AddCard(placeCard);
 
-            cardChoosed = random.Next(0, 7);
+            cardChoosed = random.Next(1, 7);
             Card motiveCard = thirdDeck[cardChoosed];
             thirdDeck.RemoveAt(cardChoosed);
             this.AddCard(motiveCard);
@@ -91,7 +90,6 @@ namespace GameService.Services
             firstDeck.Add(card6);
             return firstDeck;
         }   
-
         public List<Card> CreatePlaceCards()
         {
             Card card7 = new Card { ID = "place1", Type = "Place" };
