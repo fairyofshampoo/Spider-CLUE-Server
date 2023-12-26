@@ -87,26 +87,18 @@ namespace GameService.Services
             ShowPlayerProfilesInMatch(matchCode);
         }
 
-        public static readonly List<string> characters = new List<string>
-        {
-            "Green",
-            "Yellow",
-            "White",
-            "Red",
-            "Purple",
-            "Blue"
-        };
-
-        private static readonly Dictionary<string, string> charactersPerGamer = new Dictionary<string, string>();
+        private static readonly Dictionary<string, Pawn> charactersPerGamer = new Dictionary<string, Pawn>();
 
         private void SetCharacterColor(string gamertag, string matchCode)
         {
+            List<Pawn> characters = CreatePawns();
+
             if (!charactersPerGamer.ContainsKey(gamertag))
             {
                 Random random = new Random();
-                string assignedCharacter = string.Empty;
+                Pawn assignedCharacter = null;
 
-                while (assignedCharacter == string.Empty || !IsCharacterAvailable(matchCode, assignedCharacter))
+                while (assignedCharacter == null || !IsCharacterAvailable(matchCode, assignedCharacter))
                 {
                     int index = random.Next(characters.Count);
                     assignedCharacter = characters[index];
@@ -117,7 +109,7 @@ namespace GameService.Services
         }
 
 
-        private bool IsCharacterAvailable(string matchCode, string characterSelected)
+        private bool IsCharacterAvailable(string matchCode, Pawn characterSelected)
         {
             var assignedCharactersInMatch = charactersPerGamer
                 .Where(gamerPair => gamersInMatch.ContainsKey(gamerPair.Key) && gamersInMatch[gamerPair.Key] == matchCode)
@@ -127,9 +119,9 @@ namespace GameService.Services
             return !assignedCharactersInMatch.Contains(characterSelected);
         }
 
-        public string GetCharacterPerGamer(string gamertag)
+        public Pawn GetCharacterPerGamer(string gamertag)
         {
-            string character = null;
+            Pawn character = null;
 
             if (charactersPerGamer.ContainsKey(gamertag))
             {
@@ -139,14 +131,14 @@ namespace GameService.Services
             return character;
         }
 
-        public Dictionary<string, string> GetCharactersInMatch(string code)
+        public Dictionary<string, Pawn> GetCharactersInMatch(string code)
         {
             List<string> gamers = GetGamersByMatch(code);
-            Dictionary<string, string> charactersInMatch = new Dictionary<string, string>();
+            Dictionary<string, Pawn> charactersInMatch = new Dictionary<string, Pawn>();
 
             foreach (string gamer in gamers)
             {
-                string character = GetCharacterPerGamer(gamer);
+                Pawn character = GetCharacterPerGamer(gamer);
                 charactersInMatch.Add(gamer, character);
             }
 
