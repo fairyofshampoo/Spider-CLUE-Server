@@ -25,6 +25,7 @@ namespace GameService.Contracts
 
         [OperationContract]
         List<Card> GetDeck(string gamertag);
+
     }
 
     [DataContract]

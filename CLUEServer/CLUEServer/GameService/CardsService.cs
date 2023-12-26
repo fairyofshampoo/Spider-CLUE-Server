@@ -11,7 +11,7 @@ namespace GameService.Services
     {
         private List<Card> clueDeck = new List<Card>();
 
-        public void addCard (Card card)
+        public void AddCard (Card card)
         {
             clueDeck.Add(card);
         }
@@ -26,17 +26,17 @@ namespace GameService.Services
 
             Card characterCard = firstDeck[cardChoosed];
             firstDeck.RemoveAt(cardChoosed);
-            this.addCard(characterCard);
+            this.AddCard(characterCard);
 
             cardChoosed = random.Next(0, 10);
             Card placeCard = secondDeck[cardChoosed];
             secondDeck.RemoveAt(cardChoosed);
-            this.addCard(placeCard);
+            this.AddCard(placeCard);
 
             cardChoosed = random.Next(0, 7);
             Card motiveCard = thirdDeck[cardChoosed];
             thirdDeck.RemoveAt(cardChoosed);
-            this.addCard(motiveCard);
+            this.AddCard(motiveCard);
 
             List<Card> cards = firstDeck.Concat(secondDeck).Concat(thirdDeck).ToList();
             return cards;
