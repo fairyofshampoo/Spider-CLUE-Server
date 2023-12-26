@@ -23,6 +23,8 @@ namespace GameService.Services
         public List<GridNode> InvalidZones = new List<GridNode>();
         public List<Door> Doors = new List<Door>();
 
+        private static readonly Dictionary<string, IGameManagerCallback> gamersGameBoardCallback = new Dictionary<string, IGameManagerCallback>();
+
         public void AddToDoorsList(Door door)
         {
             Doors.Add(door);
