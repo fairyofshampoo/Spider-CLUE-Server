@@ -22,7 +22,10 @@ namespace GameService.Contracts
     public interface IGameManagerCallback
     {
         [OperationContract]
-        void ReceivePawnsMove();    
+        void ReceivePawnsMove();
+
+        [OperationContract]
+        void ReceiveRollDice(int diceRoll);
     }
 
     [DataContract]
@@ -44,10 +47,26 @@ namespace GameService.Contracts
     }
 
     [DataContract]
-    public class RestrictedSquare
+    public class GridNode
     {
         private int xPosition;
         private int yPosition;
+
+        [DataMember]
+        public int Xposition { get { return xPosition; } set { xPosition = value; } }
+
+        [DataMember]
+        public int Yposition { get { return yPosition; } set { yPosition = value; } }
+    }
+
+    [DataContract]
+    public class Door {
+        private int xPosition;
+        private int yPosition;
+        private string zoneName;
+
+        [DataMember]
+        public string ZoneName { get {  return zoneName; } set {  zoneName = value; } }
 
         [DataMember]
         public int Xposition { get { return xPosition; } set { xPosition = value; } }
