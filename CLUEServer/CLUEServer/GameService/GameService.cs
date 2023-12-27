@@ -25,6 +25,7 @@ namespace GameService.Services
         public List<Door> Doors = new List<Door>();
 
         private static readonly Dictionary<string, IGameManagerCallback> GamersInGameBoardCallback = new Dictionary<string, IGameManagerCallback>();
+        private static readonly Dictionary<string, string> GamersInGameBoard = new Dictionary<string, string>();
 
         public void AddToDoorsList(Door door)
         {
@@ -55,8 +56,9 @@ namespace GameService.Services
             }
         }
 
-        public void ConnectGamerToGameBoard(string gamertag)
+        public void ConnectGamerToGameBoard(string gamertag, string matchCode)
         {
+            GamersInGameBoard.Add(gamertag, matchCode);
             GamersInGameBoardCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<IGameManagerCallback>());
         }
 
