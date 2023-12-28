@@ -220,14 +220,12 @@ namespace GameService.Services
         public void ConnectGamerToGameBoard(string gamertag, string matchCode)
         {
             var callback = OperationContext.Current.GetCallbackChannel<IGameManagerCallback>();
-
             if (!GamersInGameBoardCallback.ContainsKey(gamertag))
             {
                 GamersInGameBoardCallback.Add(gamertag, callback);
                 GamersInGameBoard.Add(gamertag, matchCode);
             }
         }
-
         public async Task CheckPlayersAfterDelay(string matchCode)
         {
             await Task.Delay(30000);
@@ -239,7 +237,6 @@ namespace GameService.Services
                 DisconnectAllPlayers(matchCode);
             }
         }
-
         private void DisconnectAllPlayers(string matchCode)
         {
             lock (GamersInGameBoardCallback) 
@@ -279,14 +276,12 @@ namespace GameService.Services
             string gamer1 = gamerByBoard[0];
             string gamer2 = gamerByBoard[1];
             string gamer3 = gamerByBoard[2];
-
             List<GamerLeftAndRight> gamerLeftAndRights = new List<GamerLeftAndRight>()
             {
                 new GamerLeftAndRight { Gamertag = gamer1, Left = gamer2, Right = gamer3},
                 new GamerLeftAndRight { Gamertag = gamer2, Left = gamer3, Right = gamer1},
                 new GamerLeftAndRight { Gamertag = gamer3, Left = gamer1, Right =  gamer2}
             };
-
             TurnsGameBoard.Add(matchCode, gamerLeftAndRights);
         }
 
@@ -302,8 +297,11 @@ namespace GameService.Services
                     charactersPerGamer[gamertag].XPosition = column;
                     charactersPerGamer[gamertag].YPosition = row;
                 }
+                ShowMovePawn(pawn, GetMatchCode(gamertag));
+            } else
+            {
+                ShowMoveIsInvalid(gamertag);
             }
-            ShowMovePawn(pawn, GetMatchCode(gamertag));
         }
 
         private string GetMatchCode(string gamertag)
@@ -319,7 +317,7 @@ namespace GameService.Services
             return matchCode;
         }
 
-        private void ShowMovePawn(Pawn pawn, string matchCode)
+        public void ShowMovePawn(Pawn pawn, string matchCode)
         {
                 foreach (var gamer in GamersInGameBoard.ToList())
                 {
@@ -334,6 +332,17 @@ namespace GameService.Services
                     }
                 }
         }
+
+        public void ShowMoveIsInvalid(string gamertag)
+        {
+            if(GamersInGameBoard.ContainsKey(gamertag))
+            {
+                if (GamersInGameBoardCallback.ContainsKey(gamertag))
+                {
+                    GamersInGameBoardCallback[gamertag].ReceivInvalidMove();
+                }
+            }
+        } 
 
         public GridNode GetPawnPosition(string gamertag)
         {
