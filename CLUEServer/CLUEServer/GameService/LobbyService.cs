@@ -28,9 +28,16 @@ namespace GameService.Services
             await CheckPlayersAfterDelay(matchCode);
         }
 
+        public void ConnectToLobby(string gamertag)
+        {
+            if (!gamersLobbyCallback.ContainsKey(gamertag))
+            {
+                gamersLobbyCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<ILobbyManagerCallback>());
+            }
+        }
+
         public bool IsOwnerOfTheMatch(string gamertag, string matchCode)
         {
-            gamersLobbyCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<ILobbyManagerCallback>());
             using (var context = new SpiderClueDbEntities()) 
             {
                 bool isOwner = context.matches.Any(match => match.codeMatch == matchCode && match.createdBy == gamertag);
