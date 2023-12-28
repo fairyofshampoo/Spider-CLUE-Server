@@ -80,11 +80,16 @@ namespace GameService.Services
 
         public void LeaveMatch(string gamertag, string matchCode)
         {
+            RemoveFromMatch(gamertag);
+            ShowPlayerProfilesInMatch(matchCode);
+        }
+
+        private void RemoveFromMatch(string gamertag)
+        {
             gamersInMatch.Remove(gamertag);
             gamersMatchCallback.Remove(gamertag);
             gamersLobbyCallback.Remove(gamertag);
             charactersPerGamer.Remove(gamertag);
-            ShowPlayerProfilesInMatch(matchCode);
         }
 
         private static readonly Dictionary<string, Pawn> charactersPerGamer = new Dictionary<string, Pawn>();

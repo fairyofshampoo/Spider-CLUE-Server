@@ -18,7 +18,13 @@ namespace GameService.Contracts
         int RollDice();
 
         [OperationContract(IsOneWay = true)]
-        void ConnectGamerToGameBoard(string gamertag);
+        void ConnectGamerToGameBoard(string gamertag, string matchCode);
+
+        [OperationContract]
+        void DisconnectFromBoard(string gamertag, string matchCode);
+
+        [OperationContract(IsOneWay = true)]
+        void GetGamersInGameboard(string gamertag, string code);
     }
 
     [ServiceContract]
@@ -29,6 +35,9 @@ namespace GameService.Contracts
 
         [OperationContract]
         void ReceiveTurn(bool isYourTurn);
+
+        [OperationContract]
+        void UpdateNumberOfPlayersInGameboard(int numberOfPlayers);
     }
 
     [DataContract]

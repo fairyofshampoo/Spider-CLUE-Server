@@ -55,9 +55,61 @@ namespace GameService.Services
             }
         }
 
-        public void ConnectGamerToGameBoard(string gamertag)
+        public void ConnectGamerToGameBoard(string gamertag, string matchCode)
         {
-            GamersInGameBoardCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<IGameManagerCallback>());
+            var callback = OperationContext.Current.GetCallbackChannel<IGameManagerCallback>();
+
+            if (!GamersInGameBoardCallback.ContainsKey(gamertag))
+            {
+                GamersInGameBoardCallback.Add(gamertag, callback);
+                BroadcastNumberOfPlayersInGame(matchCode);
+            }
+        }
+
+        private void BroadcastNumberOfPlayersInGame(string matchCode)
+        {
+            lock (GamersInGameBoardCallback)
+            {
+                foreach (var gamer in gamersInMatch)
+                {
+                    if (gamer.Value.Equals(matchCode) && GamersInGameBoardCallback.ContainsKey(gamer.Key))
+                    {
+                        GamersInGameBoardCallback[gamer.Key].UpdateNumberOfPlayersInGameboard(GetNumberOfGamers(matchCode));
+                    }
+                }
+            }
+        }
+
+        private int GetNumberOfGamers(string matchCode)
+        {
+            int count = 0;
+
+            foreach (var gamer in GetCharactersInMatch(matchCode))
+            {
+                if (GamersInGameBoardCallback.ContainsKey(gamer.Key))
+                {
+                    string gamertag = gamer.Key;
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        public void GetGamersInGameboard(string gamertag, string code)
+        {
+            OperationContext.Current.GetCallbackChannel<IGameManagerCallback>().UpdateNumberOfPlayersInGameboard(GetNumberOfGamers(code));
+        }
+
+        public void DisconnectFromBoard(string gamertag, string matchCode)
+        {
+            lock (GamersInGameBoardCallback)
+            {
+                GamersInGameBoardCallback.Remove(gamertag);
+            }
+
+            RemoveFromMatch(gamertag);
+            BroadcastNumberOfPlayersInGame(matchCode);
         }
 
         public GridNode GetPawnPosition(string gamertag) 
