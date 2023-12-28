@@ -1,4 +1,5 @@
 ﻿using GameService.Contracts;
+using GameService.Utilities;
 using System;
 using System.CodeDom;
 using System.Collections;
@@ -58,8 +59,16 @@ namespace GameService.Services
 
         public void ConnectGamerToGameBoard(string gamertag, string matchCode)
         {
-            GamersInGameBoard.Add(gamertag, matchCode);
-            GamersInGameBoardCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<IGameManagerCallback>());
+            LoggerManager logger = new LoggerManager(this.GetType());
+            try
+            {
+                GamersInGameBoard.Add(gamertag, matchCode);
+                GamersInGameBoardCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<IGameManagerCallback>());
+            }
+            catch (Exception ex)
+            {
+                logger.LogFatal(ex);
+            }
         }
 
         public GridNode GetPawnPosition(string gamertag) 
@@ -172,12 +181,28 @@ namespace GameService.Services
             }
         }
 
-        public int RollDice()
+        public void RollDice()
         {
             Random random = new Random();
             int rollDice = random.Next(2, 13);
-            DiceRoll = rollDice;
-            return rollDice;
+            DiceRoll = rollDice;   
+            ShowRollDice(rollDice);
+        }
+
+        private void ShowRollDice(int rollDice)
+        {
+            lock (GamersInGameBoardCallback)
+            {
+                foreach (var gamer in GamersInGameBoard.ToList())
+                {
+                        string gamertag = gamer.Key;
+
+                        if (GamersInGameBoardCallback.ContainsKey(gamertag))
+                            
+                            GamersInGameBoardCallback[gamertag].ReceiveRollDice(rollDice);
+                        }
+                }
+            }
         }
 
         public Boolean IsAnInvalidZone (int column, int row)
@@ -321,8 +346,6 @@ namespace GameService.Services
             GridNode corner8 = new GridNode { Xposition = 17, Yposition = 14, };
             GridNode corner9 = new GridNode { Xposition = 16, Yposition = 14, };
             GridNode corner10 = new GridNode { Xposition = 15, Yposition = 14, };
-            this.AddToAllowedCorners(corner1);
-            this.AddToAllowedCorners(corner2);
             this.AddToAllowedCorners(corner3);  
             this.AddToAllowedCorners(corner4);
             this.AddToAllowedCorners(corner5);

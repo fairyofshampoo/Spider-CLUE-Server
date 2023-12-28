@@ -14,11 +14,11 @@ namespace GameService.Contracts
         [OperationContract(IsOneWay = true)]
         void MovePawn(int columns, int rows, string gamertag);
 
-        [OperationContract]
-        int RollDice();
+        [OperationContract (IsOneWay = true)]
+        void RollDice();
 
         [OperationContract(IsOneWay = true)]
-        void ConnectGamerToGameBoard(string gamertag);
+        void ConnectGamerToGameBoard(string gamertag, string matchCode);
     }
 
     [ServiceContract]
@@ -29,6 +29,9 @@ namespace GameService.Contracts
 
         [OperationContract]
         void ReceiveTurn(bool isYourTurn);
+
+        [OperationContract]
+        void ReceiveRollDice(int rollDice);
     }
 
     [DataContract]
