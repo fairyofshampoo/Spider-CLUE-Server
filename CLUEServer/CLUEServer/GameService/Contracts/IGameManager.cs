@@ -87,4 +87,6 @@ namespace GameService.Contracts
         [DataMember]
         public int Yposition { get { return yPosition; } set { yPosition = value; } }
     }
+    
+    
 }

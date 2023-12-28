@@ -45,4 +45,6 @@ namespace GameService.Contracts
         public string CreatedBy { get {  return createdBy; } set {  createdBy = value; } }
     }
 
+
+
 }

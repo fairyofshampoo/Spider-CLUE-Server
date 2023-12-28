@@ -3,6 +3,7 @@ using System;
 using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
@@ -15,6 +16,17 @@ using System.Web.Configuration;
 
 namespace GameService.Services
 {
+    public class GamerLeftAndRight
+    {
+        private string gamertag;
+        private string left;
+        private string right;
+
+        public string Gamertag { get { return gamertag; } set { gamertag = value; } }
+        public string Left { get { return left; } set { left = value;} }
+        public string Right { get { return right; } set { right = value;} }
+    }
+
     public partial class GameService : IGameManager
     {
         public static int DiceRoll;
@@ -205,6 +217,7 @@ namespace GameService.Services
         private static readonly Dictionary<string, IGameManagerCallback> GamersInGameBoardCallback = new Dictionary<string, IGameManagerCallback>();
         private static readonly Dictionary<string, string> GamersInGameBoard = new Dictionary<string, string>();
 
+
         public void ConnectGamerToGameBoard(string gamertag, string matchCode)
         {
             var callback = OperationContext.Current.GetCallbackChannel<IGameManagerCallback>();
@@ -261,19 +274,13 @@ namespace GameService.Services
             RemoveFromMatch(gamertag);
         }
 
-        public void AddToDoorsList(Door door)
+        private void SaveTurns(string matchCode)
         {
-            Doors.Add(door);
-        }
-
-        public void AddToAllowedCorners(GridNode node)
-        {
-            AllowedCorners.Add(node);
-        }
-
-        public void AddToInvalidZones(GridNode node)
-        {
-            InvalidZones.Add(node);
+            List<string> gamerByBoard = GetGamersByGameBoard(matchCode);
+            GamerLeftAndRight gamer = new GamerLeftAndRight
+            {
+                
+            };
         }
 
         public void MovePawn(int column, int row, string gamertag)
@@ -307,8 +314,6 @@ namespace GameService.Services
 
         private void ShowMovePawn(Pawn pawn, string matchCode)
         {
-            lock (GamersInGameBoardCallback)
-            {
                 foreach (var gamer in GamersInGameBoard.ToList())
                 {
                     if (gamer.Value.Equals(matchCode))
@@ -321,7 +326,6 @@ namespace GameService.Services
                         }
                     }
                 }
-            }
         }
 
         public GridNode GetPawnPosition(string gamertag)
@@ -336,11 +340,9 @@ namespace GameService.Services
             return node;
         }
 
-        public Boolean IsAValidMove(int column, int row, string gamertag)
+        public bool IsAValidMove(int column, int row, string gamertag)
         {
-            Boolean isAValidMove;
-             
-
+            bool isAValidMove = false;
             if (IsADoor(column, row)) //Sí es una puerta
             {
                 GridNode start = GetPawnPosition(gamertag);
@@ -362,10 +364,6 @@ namespace GameService.Services
                         Yposition = row,
                     };
                     isAValidMove = AreTheStepsValid(start, finish, DiceRoll);
-                }
-                else
-                {
-                    isAValidMove = false;
                 }
             }
             else
@@ -414,24 +412,24 @@ namespace GameService.Services
 
         public IEnumerable<GridNode> GetNeighbors(GridNode node, HashSet<GridNode> visited)
         {
-            AddNeighbors(node.Xposition, node.Yposition - 1, visited);
-            AddNeighbors(node.Xposition, node.Yposition + 1, visited);
-            AddNeighbors(node.Xposition - 1, node.Yposition, visited);
-            AddNeighbors(node.Xposition + 1, node.Yposition, visited);
-
-            return visited;
+            return AddNeighbors(node.Xposition, node.Yposition - 1, visited)
+            .Concat(AddNeighbors(node.Xposition, node.Yposition + 1, visited))
+            .Concat(AddNeighbors(node.Xposition - 1, node.Yposition, visited))
+            .Concat(AddNeighbors(node.Xposition + 1, node.Yposition, visited));
         }
-
-        public void AddNeighbors(int colum, int row, HashSet<GridNode> visited)
+            
+        public IEnumerable<GridNode> AddNeighbors(int column, int row, HashSet<GridNode> visited)
         {
             var neighbor = new GridNode
             {
-                Xposition = colum,
+                Xposition = column,
                 Yposition = row,
             };
+
             if (!visited.Contains(neighbor) && !InvalidZones.Contains(neighbor))
             {
                 visited.Add(neighbor);
+                yield return neighbor;
             }
         }
 
@@ -443,9 +441,9 @@ namespace GameService.Services
             return rollDice;
         }
 
-        public Boolean IsAnInvalidZone(int column, int row)
+        public bool IsAnInvalidZone(int column, int row)
         {
-            Boolean isAnInvalidZone = false;
+            bool isAnInvalidZone = false;
             if (column < 6)
             {
                 if (row < 3) //Salón F103
@@ -499,7 +497,7 @@ namespace GameService.Services
             bool isADoor = false;
             foreach (var grid in Doors)
             {
-                if (grid.Xposition.Equals(column) && grid.Yposition.Equals(row))
+                if (grid.Xposition == column && grid.Yposition == row)
                 {
                     isADoor = true;
                     break;
