@@ -12,10 +12,10 @@ namespace GameService.Contracts
     public interface IGameManager
     {
         [OperationContract(IsOneWay = true)]
-        void MovePawn(int columns, int rows, string gamertag);
+        void MovePawn(int columns, int rows, string gamertag, string matchCode);
 
         [OperationContract]
-        int RollDice();
+        int RollDice(string matchCode);
 
         [OperationContract(IsOneWay = true)]
         void ConnectGamerToGameBoard(string gamertag, string matchCode);
