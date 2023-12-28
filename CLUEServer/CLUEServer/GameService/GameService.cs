@@ -1,5 +1,4 @@
 ﻿using GameService.Contracts;
-using GameService.Utilities;
 using System;
 using System.CodeDom;
 using System.Collections;
@@ -27,6 +26,62 @@ namespace GameService.Services
 
         private static readonly Dictionary<string, IGameManagerCallback> GamersInGameBoardCallback = new Dictionary<string, IGameManagerCallback>();
         private static readonly Dictionary<string, string> GamersInGameBoard = new Dictionary<string, string>();
+
+        public void ConnectGamerToGameBoard(string gamertag, string matchCode)
+        {
+            var callback = OperationContext.Current.GetCallbackChannel<IGameManagerCallback>();
+
+            if (!GamersInGameBoardCallback.ContainsKey(gamertag))
+            {
+                GamersInGameBoardCallback.Add(gamertag, callback);
+                GamersInGameBoard.Add(gamertag, matchCode);
+            }
+        }
+
+        public async Task CheckPlayersAfterDelay(string matchCode)
+        {
+            await Task.Delay(30000);
+
+            int numberOfGamers = GetNumberOfGamers(matchCode);
+
+            if (numberOfGamers != 3)
+            {
+                DisconnectAllPlayers(matchCode);
+            }
+        }
+
+        private void DisconnectAllPlayers(string matchCode)
+        {
+            lock (GamersInGameBoardCallback) 
+            {
+                foreach (var gamer in GamersInGameBoard)
+                {
+                    if (gamer.Value.Equals(matchCode) && GamersInGameBoardCallback.ContainsKey(gamer.Key))
+                    {
+                        GamersInGameBoardCallback[gamer.Key].LeaveGameBoard(); 
+                    }
+                }
+            }
+        }
+
+        public int GetNumberOfGamers(string matchCode)
+        {
+            return GetGamersByGameBoard(matchCode).Count();
+        }
+
+        private List<string> GetGamersByGameBoard(string matchCode)
+        {
+            return GamersInGameBoard.Where(gamer => gamer.Value == matchCode).Select(gamer => gamer.Key).ToList();
+        }
+
+        public void DisconnectFromBoard(string gamertag, string matchCode)
+        {
+            lock (GamersInGameBoardCallback)
+            {
+                GamersInGameBoardCallback.Remove(gamertag);
+            }
+            RemoveFromMatch(gamertag);
+        }
 
         public void AddToDoorsList(Door door)
         {
@@ -57,21 +112,7 @@ namespace GameService.Services
             }
         }
 
-        public void ConnectGamerToGameBoard(string gamertag, string matchCode)
-        {
-            LoggerManager logger = new LoggerManager(this.GetType());
-            try
-            {
-                GamersInGameBoard.Add(gamertag, matchCode);
-                GamersInGameBoardCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<IGameManagerCallback>());
-            }
-            catch (Exception ex)
-            {
-                logger.LogFatal(ex);
-            }
-        }
-
-        public GridNode GetPawnPosition(string gamertag) 
+        public GridNode GetPawnPosition(string gamertag)
         {
             GridNode node = new GridNode();
             if (PawnsGamer.ContainsKey(gamertag))
@@ -85,7 +126,7 @@ namespace GameService.Services
 
         public Boolean IsAValidMove(int column, int row, string gamertag)
         {
-            Boolean isAValidMove    ;
+            Boolean isAValidMove;
             Door door = IsADoor(column, row);
 
             if (door != null) //Sí es una puerta
@@ -140,18 +181,19 @@ namespace GameService.Services
             {
                 return true;
             }
-            if (steps <= 0 || visited.Contains(current) || InvalidZones.Contains(current)) 
+            if (steps <= 0 || visited.Contains(current) || InvalidZones.Contains(current))
             {
                 return false;
             }
-            
+
             visited.Add(current);
 
             var neighbors = GetNeighbors(current, visited);
 
-            foreach(var neighbor in neighbors)
+            foreach (var neighbor in neighbors)
             {
-                if(DFSAlgoritm(neighbor, finish, steps-1, visited)){
+                if (DFSAlgoritm(neighbor, finish, steps - 1, visited))
+                {
                     return true;
                 }
             }
@@ -167,7 +209,7 @@ namespace GameService.Services
 
             return visited;
         }
-        
+
         public void AddNeighbors(int colum, int row, HashSet<GridNode> visited)
         {
             var neighbor = new GridNode
@@ -181,66 +223,58 @@ namespace GameService.Services
             }
         }
 
-        public void RollDice()
+        public int RollDice()
         {
             Random random = new Random();
             int rollDice = random.Next(2, 13);
-            DiceRoll = rollDice;   
-            ShowRollDice(rollDice);
+            DiceRoll = rollDice;
+            return rollDice;
         }
 
-        private void ShowRollDice(int rollDice)
-        {
-            lock (GamersInGameBoardCallback)
-            {
-                foreach (var gamer in GamersInGameBoard.ToList())
-                {
-                        string gamertag = gamer.Key;
-
-                        if (GamersInGameBoardCallback.ContainsKey(gamertag))
-                            
-                            GamersInGameBoardCallback[gamertag].ReceiveRollDice(rollDice);
-                        }
-                }
-            }
-        }
-
-        public Boolean IsAnInvalidZone (int column, int row)
+        public Boolean IsAnInvalidZone(int column, int row)
         {
             Boolean isAnInvalidZone = false;
-            if(column < 6)
+            if (column < 6)
             {
                 if (row < 3) //Salón F103
                 {
                     isAnInvalidZone = true;
-                } else if(row > 4 && row < 10) //Salón cristal
-                {
-                    isAnInvalidZone = true;
-                } else if (row > 10 && row < 16) //Laboratorio
-                {
-                    isAnInvalidZone = true;
-                } else if (column < 5 && row > 17) //Cubículo
+                }
+                else if (row > 4 && row < 10) //Salón cristal
                 {
                     isAnInvalidZone = true;
                 }
-            } else if(column >= 7 && column <= 14 ) 
-            {
-                if( row < 6 && column > 7 && column < 14)//Anfiteatro
-                {
-                    isAnInvalidZone = true;
-                } else if (row > 15) //Centro de cómputo
+                else if (row > 10 && row < 16) //Laboratorio
                 {
                     isAnInvalidZone = true;
                 }
-            }else
+                else if (column < 5 && row > 17) //Cubículo
+                {
+                    isAnInvalidZone = true;
+                }
+            }
+            else if (column >= 7 && column <= 14)
             {
-                if(column > 15 && row < 5) //Cancha
+                if (row < 6 && column > 7 && column < 14)//Anfiteatro
                 {
                     isAnInvalidZone = true;
-                } else if(row > 7 && row < 15) //Estacionamiento
+                }
+                else if (row > 15) //Centro de cómputo
                 {
                     isAnInvalidZone = true;
-                }else if(column > 16 && row > 16) //Salón de profesores
+                }
+            }
+            else
+            {
+                if (column > 15 && row < 5) //Cancha
+                {
+                    isAnInvalidZone = true;
+                }
+                else if (row > 7 && row < 15) //Estacionamiento
+                {
+                    isAnInvalidZone = true;
+                }
+                else if (column > 16 && row > 16) //Salón de profesores
                 {
                     isAnInvalidZone = true;
                 }
@@ -251,9 +285,9 @@ namespace GameService.Services
         public Door IsADoor(int column, int row)
         {
             Door door = null;
-            foreach(var grid in Doors)
+            foreach (var grid in Doors)
             {
-                if(grid.Xposition.Equals(column) && grid.Yposition.Equals(row))
+                if (grid.Xposition.Equals(column) && grid.Yposition.Equals(row))
                 {
                     door.Xposition = grid.Xposition;
                     door.Yposition = grid.Yposition;
@@ -267,9 +301,9 @@ namespace GameService.Services
         public Boolean IsAValidCorner(int column, int row)
         {
             Boolean isAValidCorner = false;
-            foreach(var grid in AllowedCorners)
+            foreach (var grid in AllowedCorners)
             {
-                if(grid.Xposition.Equals(column) && grid.Yposition.Equals(row))
+                if (grid.Xposition.Equals(column) && grid.Yposition.Equals(row))
                 {
                     isAValidCorner = true;
                 }
@@ -306,7 +340,7 @@ namespace GameService.Services
             Door cubicle = new Door { Xposition = 3, Yposition = 18, ZoneName = "place7" };
             Door amphitheater = new Door { Xposition = 8, Yposition = 3, ZoneName = "place9" };
             Door amphitheater2 = new Door { Xposition = 10, Yposition = 5, ZoneName = "place9" };
-            Door amphitheater3= new Door { Xposition = 11, Yposition = 5, ZoneName = "place9" };
+            Door amphitheater3 = new Door { Xposition = 11, Yposition = 5, ZoneName = "place9" };
             Door computingCenter = new Door { Xposition = 8, Yposition = 16, ZoneName = "place2" };
             Door computingCenter2 = new Door { Xposition = 13, Yposition = 16, ZoneName = "place2" };
             Door computingCenter3 = new Door { Xposition = 7, Yposition = 18, ZoneName = "place2" };
@@ -346,7 +380,9 @@ namespace GameService.Services
             GridNode corner8 = new GridNode { Xposition = 17, Yposition = 14, };
             GridNode corner9 = new GridNode { Xposition = 16, Yposition = 14, };
             GridNode corner10 = new GridNode { Xposition = 15, Yposition = 14, };
-            this.AddToAllowedCorners(corner3);  
+            this.AddToAllowedCorners(corner1);
+            this.AddToAllowedCorners(corner2);
+            this.AddToAllowedCorners(corner3);
             this.AddToAllowedCorners(corner4);
             this.AddToAllowedCorners(corner5);
             this.AddToAllowedCorners(corner6);
@@ -455,54 +491,54 @@ namespace GameService.Services
 
             GridNode corner88 = new GridNode { Xposition = 15, Yposition = 8, };
             GridNode corner89 = new GridNode { Xposition = 15, Yposition = 9, };
-            GridNode corner90 = new GridNode { Xposition = 15, Yposition = 10, }; 
-            GridNode corner91 = new GridNode { Xposition = 16, Yposition = 11, }; 
-            GridNode corner92 = new GridNode { Xposition = 15, Yposition = 12, }; 
-            GridNode corner93 = new GridNode { Xposition = 15, Yposition = 13, }; 
-            GridNode corner94 = new GridNode { Xposition = 16, Yposition = 13, }; 
-            GridNode corner95 = new GridNode { Xposition = 17, Yposition = 13, }; 
-            GridNode corner96 = new GridNode { Xposition = 18, Yposition = 14, }; 
-            GridNode corner97 = new GridNode { Xposition = 19, Yposition = 14, }; 
-            GridNode corner98 = new GridNode { Xposition = 20, Yposition = 14, }; 
-            GridNode corner99 = new GridNode { Xposition = 21, Yposition = 14, }; 
-            GridNode corner100 = new GridNode { Xposition = 16, Yposition = 9, }; 
-            GridNode corner101 = new GridNode { Xposition = 17, Yposition = 8, }; 
-            GridNode corner102 = new GridNode { Xposition = 18, Yposition = 8, }; 
-            GridNode corner103 = new GridNode { Xposition = 19, Yposition = 8, }; 
-            GridNode corner104 = new GridNode { Xposition = 20, Yposition = 8, }; 
+            GridNode corner90 = new GridNode { Xposition = 15, Yposition = 10, };
+            GridNode corner91 = new GridNode { Xposition = 16, Yposition = 11, };
+            GridNode corner92 = new GridNode { Xposition = 15, Yposition = 12, };
+            GridNode corner93 = new GridNode { Xposition = 15, Yposition = 13, };
+            GridNode corner94 = new GridNode { Xposition = 16, Yposition = 13, };
+            GridNode corner95 = new GridNode { Xposition = 17, Yposition = 13, };
+            GridNode corner96 = new GridNode { Xposition = 18, Yposition = 14, };
+            GridNode corner97 = new GridNode { Xposition = 19, Yposition = 14, };
+            GridNode corner98 = new GridNode { Xposition = 20, Yposition = 14, };
+            GridNode corner99 = new GridNode { Xposition = 21, Yposition = 14, };
+            GridNode corner100 = new GridNode { Xposition = 16, Yposition = 9, };
+            GridNode corner101 = new GridNode { Xposition = 17, Yposition = 8, };
+            GridNode corner102 = new GridNode { Xposition = 18, Yposition = 8, };
+            GridNode corner103 = new GridNode { Xposition = 19, Yposition = 8, };
+            GridNode corner104 = new GridNode { Xposition = 20, Yposition = 8, };
             GridNode corner105 = new GridNode { Xposition = 21, Yposition = 8, };
-            
-            GridNode corner106 = new GridNode { Xposition = 21, Yposition = 17, }; 
-            GridNode corner107 = new GridNode { Xposition = 20, Yposition = 17, }; 
-            GridNode corner108 = new GridNode { Xposition = 19, Yposition = 17, };  
-            GridNode corner109 = new GridNode { Xposition = 17, Yposition = 18, }; 
-            GridNode corner110 = new GridNode { Xposition = 17, Yposition = 19, }; 
-            GridNode corner111 = new GridNode { Xposition = 17, Yposition = 20, }; 
+
+            GridNode corner106 = new GridNode { Xposition = 21, Yposition = 17, };
+            GridNode corner107 = new GridNode { Xposition = 20, Yposition = 17, };
+            GridNode corner108 = new GridNode { Xposition = 19, Yposition = 17, };
+            GridNode corner109 = new GridNode { Xposition = 17, Yposition = 18, };
+            GridNode corner110 = new GridNode { Xposition = 17, Yposition = 19, };
+            GridNode corner111 = new GridNode { Xposition = 17, Yposition = 20, };
             GridNode corner112 = new GridNode { Xposition = 17, Yposition = 21, };
             GridNode corner113 = new GridNode { Xposition = 17, Yposition = 17, };
             GridNode corner114 = new GridNode { Xposition = 18, Yposition = 18, };
-            
-            GridNode corner115 = new GridNode { Xposition = -1, Yposition = 17, }; 
-            GridNode corner116 = new GridNode { Xposition = -1, Yposition = 16, }; 
-            GridNode corner117 = new GridNode { Xposition = -1  , Yposition = 10,}; 
-            GridNode corner118 = new GridNode { Xposition = -1, Yposition = 4, }; 
-            GridNode corner119 = new GridNode { Xposition = -1, Yposition = 3, }; 
-            GridNode corner120 = new GridNode { Xposition = 6, Yposition = -1, }; 
-            GridNode corner121 = new GridNode { Xposition = 7, Yposition = -1, }; 
-            GridNode corner122 = new GridNode { Xposition = 14, Yposition = -1, }; 
-            GridNode corner123 = new GridNode { Xposition = 15, Yposition = -1, }; 
-            GridNode corner124 = new GridNode { Xposition = 22, Yposition = 5, }; 
-            GridNode corner125 = new GridNode { Xposition = 22, Yposition = 6, }; 
-            GridNode corner126 = new GridNode { Xposition = 22, Yposition = 7, }; 
-            GridNode corner127 = new GridNode { Xposition = 22, Yposition = 15, }; 
-            GridNode corner128 = new GridNode { Xposition = 22, Yposition = 16, }; 
-            GridNode corner129 = new GridNode { Xposition = 16, Yposition = 22, }; 
-            GridNode corner130 = new GridNode { Xposition = 15, Yposition = 23, }; 
-            GridNode corner131 = new GridNode { Xposition = 14, Yposition = 23, }; 
-            GridNode corner132 = new GridNode { Xposition = 13, Yposition = 23, }; 
-            GridNode corner133 = new GridNode { Xposition = 8, Yposition = 23, }; 
-            GridNode corner134 = new GridNode { Xposition = 7, Yposition = 23, }; 
-            GridNode corner135 = new GridNode { Xposition = 6, Yposition = 23, }; 
+
+            GridNode corner115 = new GridNode { Xposition = -1, Yposition = 17, };
+            GridNode corner116 = new GridNode { Xposition = -1, Yposition = 16, };
+            GridNode corner117 = new GridNode { Xposition = -1, Yposition = 10, };
+            GridNode corner118 = new GridNode { Xposition = -1, Yposition = 4, };
+            GridNode corner119 = new GridNode { Xposition = -1, Yposition = 3, };
+            GridNode corner120 = new GridNode { Xposition = 6, Yposition = -1, };
+            GridNode corner121 = new GridNode { Xposition = 7, Yposition = -1, };
+            GridNode corner122 = new GridNode { Xposition = 14, Yposition = -1, };
+            GridNode corner123 = new GridNode { Xposition = 15, Yposition = -1, };
+            GridNode corner124 = new GridNode { Xposition = 22, Yposition = 5, };
+            GridNode corner125 = new GridNode { Xposition = 22, Yposition = 6, };
+            GridNode corner126 = new GridNode { Xposition = 22, Yposition = 7, };
+            GridNode corner127 = new GridNode { Xposition = 22, Yposition = 15, };
+            GridNode corner128 = new GridNode { Xposition = 22, Yposition = 16, };
+            GridNode corner129 = new GridNode { Xposition = 16, Yposition = 22, };
+            GridNode corner130 = new GridNode { Xposition = 15, Yposition = 23, };
+            GridNode corner131 = new GridNode { Xposition = 14, Yposition = 23, };
+            GridNode corner132 = new GridNode { Xposition = 13, Yposition = 23, };
+            GridNode corner133 = new GridNode { Xposition = 8, Yposition = 23, };
+            GridNode corner134 = new GridNode { Xposition = 7, Yposition = 23, };
+            GridNode corner135 = new GridNode { Xposition = 6, Yposition = 23, };
             GridNode corner136 = new GridNode { Xposition = 5, Yposition = 21, };
 
             this.AddToInvalidZones(corner1);
@@ -614,7 +650,7 @@ namespace GameService.Services
             this.AddToInvalidZones(corner99);
             this.AddToInvalidZones(corner100);
             this.AddToInvalidZones(corner101);
-                
+
             this.AddToInvalidZones(corner102);
             this.AddToInvalidZones(corner103);
             this.AddToInvalidZones(corner104);
@@ -627,7 +663,7 @@ namespace GameService.Services
             this.AddToInvalidZones(corner111);
             this.AddToInvalidZones(corner112);
             this.AddToInvalidZones(corner113);
-                
+
             this.AddToInvalidZones(corner114);
             this.AddToInvalidZones(corner115);
             this.AddToInvalidZones(corner116);
