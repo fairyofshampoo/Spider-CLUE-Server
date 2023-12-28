@@ -27,7 +27,7 @@ namespace GameService.Services
             {
                 logger.LogFatal(ex);
             }
-            
+
         }
 
         private void ShowPlayerProfilesInMatch(string matchCode)

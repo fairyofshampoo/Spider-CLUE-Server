@@ -23,8 +23,8 @@ namespace GameService.Contracts
         [OperationContract]
         void DisconnectFromBoard(string gamertag, string matchCode);
 
-        [OperationContract(IsOneWay = true)]
-        void GetGamersInGameboard(string gamertag, string code);
+        [OperationContract]
+        int GetNumberOfGamers(string matchCode);
     }
 
     [ServiceContract]
@@ -37,7 +37,7 @@ namespace GameService.Contracts
         void ReceiveTurn(bool isYourTurn);
 
         [OperationContract]
-        void UpdateNumberOfPlayersInGameboard(int numberOfPlayers);
+        void LeaveGameBoard();
     }
 
     [DataContract]
@@ -51,10 +51,10 @@ namespace GameService.Contracts
         public string Color { get { return color; } set { color = value; } }
 
         [DataMember]
-        public int XPosition { get {  return xPosition; } set {  xPosition = value; } }
+        public int XPosition { get { return xPosition; } set { xPosition = value; } }
 
         [DataMember]
-        public int YPosition { get { return yPosition; } set {  yPosition = value; } }
+        public int YPosition { get { return yPosition; } set { yPosition = value; } }
 
     }
 
@@ -72,13 +72,14 @@ namespace GameService.Contracts
     }
 
     [DataContract]
-    public class Door {
+    public class Door
+    {
         private int xPosition;
         private int yPosition;
         private string zoneName;
 
         [DataMember]
-        public string ZoneName { get {  return zoneName; } set {  zoneName = value; } }
+        public string ZoneName { get { return zoneName; } set { zoneName = value; } }
 
         [DataMember]
         public int Xposition { get { return xPosition; } set { xPosition = value; } }
