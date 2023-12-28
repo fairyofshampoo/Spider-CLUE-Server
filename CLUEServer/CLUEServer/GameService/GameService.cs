@@ -236,6 +236,15 @@ namespace GameService.Services
             {
                 DisconnectAllPlayers(matchCode);
             }
+            else
+            {
+
+            }
+        }
+
+        private void SendFirstTurn(string matchCode)
+        {
+
         }
         private void DisconnectAllPlayers(string matchCode)
         {
@@ -269,6 +278,7 @@ namespace GameService.Services
             }
 
             RemoveFromMatch(gamertag);
+            //sacar a los de la partida
         }
 
         private void SaveTurns(string matchCode)
@@ -303,6 +313,7 @@ namespace GameService.Services
             } else
             {
                 ShowMoveIsInvalid(gamertag);
+                GamersInGameBoardCallback[gamertag].ReceiveTurn(true);
             }
         }
 
@@ -362,7 +373,8 @@ namespace GameService.Services
             {
                 if (GamersInGameBoardCallback.ContainsKey(gamertag))
                 {
-                    GamersInGameBoardCallback[gamertag].ReceivInvalidMove();
+                    GamersInGameBoardCallback[gamertag].ReceiveInvalidMove();
+                    GamersInGameBoardCallback[gamertag].ReceiveInvalidMove();
                 }
             }
         } 
