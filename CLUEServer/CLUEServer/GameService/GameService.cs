@@ -299,6 +299,7 @@ namespace GameService.Services
                     charactersPerGamer[gamertag].YPosition = row;
                 }
                 ShowMovePawn(pawn, GetMatchCode(gamertag));
+                ChangeTurn(matchCode, gamertag);
             } else
             {
                 ShowMoveIsInvalid(gamertag);
@@ -316,6 +317,27 @@ namespace GameService.Services
                 }
             }
             return matchCode;
+        }
+
+        public void ChangeTurn(string matchCode, string gamertag)
+        {
+            foreach (var turn in TurnsGameBoard)
+            {
+                if (turn.Key.Equals(matchCode))
+                {
+                    List<GamerLeftAndRight> GamersTurns = turn.Value;
+                    foreach (var gamer in GamersTurns)
+                    {
+                        if(gamer.Gamertag == gamertag)
+                        {
+                            GamersInGameBoardCallback[gamertag].ReceiveTurn(false);
+                            GamersInGameBoardCallback[gamer.Left].ReceiveTurn(true);
+                        }
+                        break;
+                    }
+                    break;
+                }
+            }
         }
 
         public void ShowMovePawn(Pawn pawn, string matchCode)
@@ -357,7 +379,7 @@ namespace GameService.Services
             return node;
         }
 
-        private int getGameBoardRillDice(string matchCode)
+        private int GetGameBoardRillDice(string matchCode)
         {
             int rollDice = 0;
             foreach(var match in GameBoardDiceRoll)
@@ -373,7 +395,7 @@ namespace GameService.Services
         public bool IsAValidMove(int column, int row, string gamertag, string matchCode)
         {
             bool isAValidMove = false;
-            int rollDice = getGameBoardRillDice(matchCode);
+            int rollDice = GetGameBoardRillDice(matchCode);
             if (IsADoor(column, row)) //Sí es una puerta
             {
                 GridNode start = GetPawnPosition(gamertag);
@@ -411,12 +433,12 @@ namespace GameService.Services
             return isAValidMove;
         }
 
-        public Boolean AreTheStepsValid(GridNode start, GridNode finish, int steps)
+        public bool AreTheStepsValid(GridNode start, GridNode finish, int steps)
         {
             return DFSAlgoritm(start, finish, steps, new HashSet<GridNode>());
         }
 
-        public Boolean DFSAlgoritm(GridNode current, GridNode finish, int steps, HashSet<GridNode> visited)
+        public bool DFSAlgoritm(GridNode current, GridNode finish, int steps, HashSet<GridNode> visited)
         {
             if (current.Xposition == finish.Xposition && current.Yposition == finish.Yposition && steps >= 0)
             {
