@@ -290,10 +290,10 @@ namespace GameService.Services
             TurnsGameBoard.Add(matchCode, gamerLeftAndRights);
         }
 
-        public void MovePawn(int column, int row, string gamertag)
+        public void MovePawn(int column, int row, string gamertag, string matchCode)
         {
             Pawn pawn = new Pawn();
-            if (IsAValidMove(column, row, gamertag))
+            if (IsAValidMove(column, row, gamertag, matchCode))
             {
                 pawn.XPosition = column;
                 pawn.YPosition = row;
@@ -347,9 +347,23 @@ namespace GameService.Services
             return node;
         }
 
-        public bool IsAValidMove(int column, int row, string gamertag)
+        private int getGameBoardRillDice(string matchCode)
+        {
+            int rollDice = 0;
+            foreach(var match in GameBoardDiceRoll)
+            {
+                if(match.Key == matchCode)
+                {
+                    rollDice = match.Value;
+                }
+            }
+            return rollDice;
+        }
+
+        public bool IsAValidMove(int column, int row, string gamertag, string matchCode)
         {
             bool isAValidMove = false;
+            int rollDice = getGameBoardRillDice(matchCode);
             if (IsADoor(column, row)) //Sí es una puerta
             {
                 GridNode start = GetPawnPosition(gamertag);
@@ -358,7 +372,7 @@ namespace GameService.Services
                     Xposition = column,
                     Yposition = row,
                 };
-                isAValidMove = AreTheStepsValid(start, finish, DiceRoll);
+                isAValidMove = AreTheStepsValid(start, finish, rollDice);
             }
             else if (IsAnInvalidZone(column, row)) //Sí es una zona prohibida
             {
@@ -370,7 +384,7 @@ namespace GameService.Services
                         Xposition = column,
                         Yposition = row,
                     };
-                    isAValidMove = AreTheStepsValid(start, finish, DiceRoll);
+                    isAValidMove = AreTheStepsValid(start, finish, rollDice);
                 }
             }
             else
@@ -381,7 +395,7 @@ namespace GameService.Services
                     Xposition = column,
                     Yposition = row,
                 };
-                isAValidMove = AreTheStepsValid(start, finish, DiceRoll);
+                isAValidMove = AreTheStepsValid(start, finish, rollDice);
             }
 
             return isAValidMove;
