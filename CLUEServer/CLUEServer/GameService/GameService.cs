@@ -270,6 +270,7 @@ namespace GameService.Services
             {
                 GamersInGameBoardCallback.Remove(gamertag);
             }
+
             RemoveFromMatch(gamertag);
         }
 
