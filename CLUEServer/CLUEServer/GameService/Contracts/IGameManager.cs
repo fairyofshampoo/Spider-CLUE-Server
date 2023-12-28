@@ -15,7 +15,7 @@ namespace GameService.Contracts
         void MovePawn(int columns, int rows, string gamertag);
 
         [OperationContract]
-        int RollDice();
+        int RollDice(string matchCode);
 
         [OperationContract(IsOneWay = true)]
         void ConnectGamerToGameBoard(string gamertag, string matchCode);

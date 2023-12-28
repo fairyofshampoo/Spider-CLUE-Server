@@ -29,8 +29,6 @@ namespace GameService.Services
 
     public partial class GameService : IGameManager
     {
-        public static int DiceRoll;
-
         public List<GridNode> AllowedCorners = new List<GridNode>()
         {
             new GridNode { Xposition = 5, Yposition = 5,},
@@ -216,7 +214,8 @@ namespace GameService.Services
 
         private static readonly Dictionary<string, IGameManagerCallback> GamersInGameBoardCallback = new Dictionary<string, IGameManagerCallback>();
         private static readonly Dictionary<string, string> GamersInGameBoard = new Dictionary<string, string>();
-
+        private static readonly Dictionary<string, List<GamerLeftAndRight>> TurnsGameBoard = new Dictionary<string, List<GamerLeftAndRight>>();
+        private static readonly Dictionary<string, int> GameBoardDiceRoll = new Dictionary<string, int>();
 
         public void ConnectGamerToGameBoard(string gamertag, string matchCode)
         {
@@ -277,10 +276,18 @@ namespace GameService.Services
         private void SaveTurns(string matchCode)
         {
             List<string> gamerByBoard = GetGamersByGameBoard(matchCode);
-            GamerLeftAndRight gamer = new GamerLeftAndRight
+            string gamer1 = gamerByBoard[0];
+            string gamer2 = gamerByBoard[1];
+            string gamer3 = gamerByBoard[2];
+
+            List<GamerLeftAndRight> gamerLeftAndRights = new List<GamerLeftAndRight>()
             {
-                
+                new GamerLeftAndRight { Gamertag = gamer1, Left = gamer2, Right = gamer3},
+                new GamerLeftAndRight { Gamertag = gamer2, Left = gamer3, Right = gamer1},
+                new GamerLeftAndRight { Gamertag = gamer3, Left = gamer1, Right =  gamer2}
             };
+
+            TurnsGameBoard.Add(matchCode, gamerLeftAndRights);
         }
 
         public void MovePawn(int column, int row, string gamertag)
@@ -433,11 +440,14 @@ namespace GameService.Services
             }
         }
 
-        public int RollDice()
+        public int RollDice(string matchCode)
         {
             Random random = new Random();
             int rollDice = random.Next(2, 13);
-            DiceRoll = rollDice;
+            if (GameBoardDiceRoll.ContainsKey(matchCode))
+            {
+                GameBoardDiceRoll[matchCode] = rollDice;
+            }
             return rollDice;
         }
 
