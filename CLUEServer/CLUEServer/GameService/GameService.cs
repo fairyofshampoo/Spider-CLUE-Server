@@ -299,7 +299,8 @@ namespace GameService.Services
             {
                 return true;
             }
-            if (steps <= 0 || visited.Contains(current) || InvalidZones.Contains(current))
+
+            if (steps == 0 || visited.Contains(current) || InvalidZones.Contains(current))
             {
                 return false;
             }
