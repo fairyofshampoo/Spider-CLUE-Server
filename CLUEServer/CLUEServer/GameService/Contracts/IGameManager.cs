@@ -37,7 +37,7 @@ namespace GameService.Contracts
         void ReceiveTurn(bool isYourTurn);
 
         [OperationContract]
-        void ReceivInvalidMove();
+        void ReceiveInvalidMove();
 
         [OperationContract]
         void LeaveGameBoard();
