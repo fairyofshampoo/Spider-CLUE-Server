@@ -11,7 +11,7 @@ namespace GameService.Services
     {
 
         private static readonly Dictionary<string, ILobbyManagerCallback> gamersLobbyCallback = new Dictionary<string, ILobbyManagerCallback>();
-        public async void BeginMatch(string matchCode)
+        public void BeginMatch(string matchCode)
         {
             foreach (var gamer in gamersInMatch)
             {
@@ -25,7 +25,6 @@ namespace GameService.Services
                     }
                 }
             }
-            await CheckPlayersAfterDelay(matchCode);
         }
 
         public void ConnectToLobby(string gamertag)

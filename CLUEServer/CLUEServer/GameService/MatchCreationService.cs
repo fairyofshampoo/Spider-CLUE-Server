@@ -2,6 +2,7 @@
 using GameService.Contracts;
 using GameService.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity.Core;
 using System.Data.SqlClient;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace GameService.Services
                     if (databaseContext.SaveChanges() > 0)
                     {
                         matchcreationResult = match.codeMatch;
+                        AddPawnsToMatch(match.codeMatch, CreatePawns());
                     }
                 }
             }
@@ -47,6 +49,17 @@ namespace GameService.Services
             return matchcreationResult;
         }
 
+        private void AddPawnsToMatch(string matchCode, List<Pawn> pawns)
+        {
+            if (!pawnsAvailableInMatch.ContainsKey(matchCode))
+            {
+                pawnsAvailableInMatch.Add(matchCode, pawns);
+            }
+            else
+            {
+                pawnsAvailableInMatch[matchCode] = pawns;
+            }
+        }
         private string GenerateMatchCode()
         {
             string matchCode;

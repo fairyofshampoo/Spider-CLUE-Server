@@ -12,6 +12,7 @@ namespace GameService.Services
     {
         private static readonly Dictionary<string, string> gamersInMatch = new Dictionary<string, string>();
         private static readonly Dictionary<string, IMatchManagerCallback> gamersMatchCallback = new Dictionary<string, IMatchManagerCallback>();
+        private static readonly Dictionary<string, List<Pawn>> pawnsAvailableInMatch = new Dictionary<string, List<Pawn>>();
 
         public void ConnectToMatch(string gamertag, string matchCode)
         {
@@ -86,42 +87,49 @@ namespace GameService.Services
 
         private void RemoveFromMatch(string gamertag)
         {
+            string matchCode = gamersInMatch[gamertag];
             gamersInMatch.Remove(gamertag);
             gamersMatchCallback.Remove(gamertag);
             gamersLobbyCallback.Remove(gamertag);
-            charactersPerGamer.Remove(gamertag);
+            DisconnectFromChat(gamertag);
+            RestoreCharacterInMatch(gamertag, matchCode);
+
+
+        }
+
+        private void RestoreCharacterInMatch(string gamertag, string matchCode)
+        {
+            if (charactersPerGamer.ContainsKey(gamertag))
+            {
+                Pawn assignedCharacter = charactersPerGamer[gamertag];
+                charactersPerGamer.Remove(gamertag);
+                List<Pawn> characters = pawnsAvailableInMatch[matchCode];
+                characters.Add(assignedCharacter);
+                AddPawnsToMatch(matchCode, characters);
+            }
         }
 
         private static readonly Dictionary<string, Pawn> charactersPerGamer = new Dictionary<string, Pawn>();
 
         private void SetCharacterColor(string gamertag, string matchCode)
         {
-            List<Pawn> characters = CreatePawns();
+            List<Pawn> characters = pawnsAvailableInMatch[matchCode];
 
             if (!charactersPerGamer.ContainsKey(gamertag))
             {
                 Random random = new Random();
                 Pawn assignedCharacter = null;
 
-                while (assignedCharacter == null || !IsCharacterAvailable(matchCode, assignedCharacter))
+                while (assignedCharacter == null)
                 {
                     int index = random.Next(characters.Count);
                     assignedCharacter = characters[index];
                 }
 
+                characters.Remove(assignedCharacter);
+                AddPawnsToMatch(matchCode, characters);
                 charactersPerGamer.Add(gamertag, assignedCharacter);
             }
-        }
-
-
-        private bool IsCharacterAvailable(string matchCode, Pawn characterSelected)
-        {
-            var assignedCharactersInMatch = charactersPerGamer
-                .Where(gamerPair => gamersInMatch.ContainsKey(gamerPair.Key) && gamersInMatch[gamerPair.Key] == matchCode)
-                .Select(gamerPair => gamerPair.Value)
-                .ToList();
-
-            return !assignedCharactersInMatch.Contains(characterSelected);
         }
 
         public Pawn GetCharacterPerGamer(string gamertag)
