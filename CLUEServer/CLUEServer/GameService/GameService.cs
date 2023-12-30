@@ -24,8 +24,8 @@ namespace GameService.Services
         private string right;
 
         public string Gamertag { get { return gamertag; } set { gamertag = value; } }
-        public string Left { get { return left; } set { left = value;} }
-        public string Right { get { return right; } set { right = value;} }
+        public string Left { get { return left; } set { left = value; } }
+        public string Right { get { return right; } set { right = value; } }
     }
 
     public partial class GameService : IGameManager
@@ -44,7 +44,7 @@ namespace GameService.Services
                 GamersInGameBoard.Add(gamertag, matchCode);
                 StartMatchInGameBoard(matchCode);
             }
-            
+
         }
 
         private void StartMatchInGameBoard(string matchCode)
@@ -63,7 +63,7 @@ namespace GameService.Services
             bool areAllPlayersConnected = false;
 
             List<string> gamersInLobby = GetGamersByMatch(matchCode);
-            foreach(string gamer in gamersInLobby)
+            foreach (string gamer in gamersInLobby)
             {
                 if (GamersInGameBoard.ContainsKey(gamer))
                 {
@@ -71,7 +71,7 @@ namespace GameService.Services
                 }
             }
 
-            if(playersCount == 3)
+            if (playersCount == 3)
             {
                 areAllPlayersConnected = true;
             }
@@ -85,19 +85,19 @@ namespace GameService.Services
         }
         private void DisconnectAllPlayers(string matchCode)
         {
-            lock (GamersInGameBoardCallback) 
+            lock (GamersInGameBoardCallback)
             {
                 foreach (var gamer in GamersInGameBoard)
                 {
                     if (gamer.Value.Equals(matchCode) && GamersInGameBoardCallback.ContainsKey(gamer.Key))
                     {
-                        GamersInGameBoardCallback[gamer.Key].LeaveGameBoard(); 
+                        GamersInGameBoardCallback[gamer.Key].LeaveGameBoard();
                     }
                 }
             }
         }
 
-        public int GetNumberOfGamers(string matchCode)  
+        public int GetNumberOfGamers(string matchCode)
         {
             return GetGamersByGameBoard(matchCode).Count();
         }
@@ -111,7 +111,7 @@ namespace GameService.Services
         {
             lock (GamersInGameBoardCallback)
             {
-                lock(GamersInGameBoard)
+                lock (GamersInGameBoard)
                 {
                     GamersInGameBoardCallback.Remove(gamertag);
                     GamersInGameBoard.Remove(gamertag);
@@ -148,12 +148,14 @@ namespace GameService.Services
                 pawn.YPosition = row;
                 if (charactersPerGamer.ContainsKey(gamertag))
                 {
+                    pawn.Color = charactersPerGamer[gamertag].Color;
                     charactersPerGamer[gamertag].XPosition = column;
                     charactersPerGamer[gamertag].YPosition = row;
                 }
                 ShowMovePawn(pawn, GetMatchCode(gamertag));
                 ChangeTurn(matchCode, gamertag);
-            } else
+            }
+            else
             {
                 ShowMoveIsInvalid(gamertag);
                 GamersInGameBoardCallback[gamertag].ReceiveTurn(true);
@@ -163,7 +165,7 @@ namespace GameService.Services
         private string GetMatchCode(string gamertag)
         {
             string matchCode = string.Empty;
-            foreach(var gamer in GamersInGameBoard)
+            foreach (var gamer in GamersInGameBoard)
             {
                 if (gamer.Key == gamertag)
                 {
@@ -182,12 +184,12 @@ namespace GameService.Services
                     List<GamerLeftAndRight> GamersTurns = turn.Value;
                     foreach (var gamer in GamersTurns)
                     {
-                        if(gamer.Gamertag == gamertag)
+                        if (gamer.Gamertag == gamertag)
                         {
                             GamersInGameBoardCallback[gamertag].ReceiveTurn(false);
                             GamersInGameBoardCallback[gamer.Left].ReceiveTurn(true);
+                            break;
                         }
-                        break;
                     }
                     break;
                 }
@@ -196,30 +198,30 @@ namespace GameService.Services
 
         public void ShowMovePawn(Pawn pawn, string matchCode)
         {
-                foreach (var gamer in GamersInGameBoard.ToList())
+            foreach (var gamer in GamersInGameBoard.ToList())
+            {
+                if (gamer.Value.Equals(matchCode))
                 {
-                    if (gamer.Value.Equals(matchCode))
-                    {
-                        string gamertag = gamer.Key;
+                    string gamertag = gamer.Key;
 
-                        if (GamersInGameBoardCallback.ContainsKey(gamertag))
-                        {
-                            GamersInGameBoardCallback[gamertag].ReceivePawnsMove(pawn);
-                        }
+                    if (GamersInGameBoardCallback.ContainsKey(gamertag))
+                    {
+                        GamersInGameBoardCallback[gamertag].ReceivePawnsMove(pawn);
                     }
                 }
+            }
         }
 
         public void ShowMoveIsInvalid(string gamertag)
         {
-            if(GamersInGameBoard.ContainsKey(gamertag))
+            if (GamersInGameBoard.ContainsKey(gamertag))
             {
                 if (GamersInGameBoardCallback.ContainsKey(gamertag))
                 {
                     GamersInGameBoardCallback[gamertag].ReceiveInvalidMove();
                 }
             }
-        } 
+        }
 
         public GridNode GetPawnPosition(string gamertag)
         {
@@ -233,26 +235,26 @@ namespace GameService.Services
             return node;
         }
 
-        private int GetGameBoardRillDice(string matchCode)
+        private int GetGameBoardRollDice(string matchCode)
         {
             int rollDice = 0;
-            foreach(var match in GameBoardDiceRoll)
+
+            if (GameBoardDiceRoll.ContainsKey(matchCode))
             {
-                if(match.Key == matchCode)
-                {
-                    rollDice = match.Value;
-                }
+                rollDice = GameBoardDiceRoll[matchCode];
             }
+
             return rollDice;
         }
 
         public bool IsAValidMove(int column, int row, string gamertag, string matchCode)
         {
             bool isAValidMove = false;
-            int rollDice = GetGameBoardRillDice(matchCode);
+            int rollDice = GetGameBoardRollDice(matchCode);
             Console.WriteLine("dados son: " + rollDice);
             if (IsADoor(column, row)) //Si es una puerta
             {
+                Console.WriteLine("sí es una puerta");
                 GridNode start = GetPawnPosition(gamertag);
                 GridNode finish = new GridNode
                 {
@@ -263,8 +265,10 @@ namespace GameService.Services
             }
             else if (IsAnInvalidZone(column, row)) //Sí es una zona prohibida
             {
+                Console.WriteLine("sí es una zona inválida");
                 if (IsAValidCorner(column, row))
                 {
+                    Console.WriteLine("pero es una corner valida");
                     GridNode start = GetPawnPosition(gamertag);
                     GridNode finish = new GridNode
                     {
@@ -276,6 +280,7 @@ namespace GameService.Services
             }
             else
             {
+                Console.WriteLine("zona válida");
                 GridNode start = GetPawnPosition(gamertag);
                 GridNode finish = new GridNode
                 {
@@ -288,57 +293,99 @@ namespace GameService.Services
             return isAValidMove;
         }
 
-        public bool AreTheStepsValid(GridNode start, GridNode finish, int steps)
+        private bool AreTheStepsValid(GridNode start, GridNode finish, int rollDice)
         {
-            return DFSAlgoritm(start, finish, steps, new HashSet<GridNode>());
+            Console.WriteLine("AreTheStepsValid: start: " + start.Xposition + "," + start.Yposition + " fin: " + finish.Xposition + "," + finish.Yposition + " dados: " + rollDice);
+            return SearchMoves(start, start, finish, rollDice, new List<GridNode>(), new Queue<GridNode>());
         }
 
-        public bool DFSAlgoritm(GridNode current, GridNode finish, int steps, HashSet<GridNode> visited)
+        private bool SearchMoves(GridNode start, GridNode current, GridNode end, int steps, List<GridNode> visitedNodes, Queue<GridNode> nextNodes)
         {
-            if (current.Xposition == finish.Xposition && current.Yposition == finish.Yposition && steps >= 0)
+            Console.WriteLine("actual: " + current.Xposition + "," + current.Yposition);
+            if (current.Xposition == end.Xposition && current.Yposition == end.Yposition && GetNumberOfSteps(start, current) >= 0)
             {
+                Console.WriteLine("se encontró un camino");
                 return true;
             }
-            if (steps <= 0 || visited.Contains(current) || InvalidZones.Contains(current))
+            if (GetNumberOfSteps(start, current) > steps)
             {
+                Console.WriteLine("numero de pasos invalido");
                 return false;
             }
-
-            visited.Add(current);
-
-            var neighbors = GetNeighbors(current, visited);
-
-            foreach (var neighbor in neighbors)
-            {
-                if (DFSAlgoritm(neighbor, finish, steps - 1, visited))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public IEnumerable<GridNode> GetNeighbors(GridNode node, HashSet<GridNode> visited)
-        {
-            return AddNeighbors(node.Xposition, node.Yposition - 1, visited)
-            .Concat(AddNeighbors(node.Xposition, node.Yposition + 1, visited))
-            .Concat(AddNeighbors(node.Xposition - 1, node.Yposition, visited))
-            .Concat(AddNeighbors(node.Xposition + 1, node.Yposition, visited));
-        }
             
-        public IEnumerable<GridNode> AddNeighbors(int column, int row, HashSet<GridNode> visited)
+            visitedNodes.Add(current);
+            nextNodes = GetNeighbors(current, nextNodes, visitedNodes);
+            GridNode nextNode = nextNodes.Dequeue();
+            return SearchMoves(start, nextNode, end, steps, visitedNodes, nextNodes);
+        }
+
+        private int GetNumberOfSteps(GridNode start, GridNode end)
         {
-            var neighbor = new GridNode
-            {
-                Xposition = column,
-                Yposition = row,
+            int differenceColumn = start.Xposition - end.Xposition;
+            int differentRow = start.Yposition - end.Yposition;
+            int total = Math.Abs(differenceColumn) + Math.Abs(differentRow);
+
+            return total;
+        }
+
+        private Queue<GridNode> GetNeighbors(GridNode current, Queue<GridNode> nextNodes, List<GridNode> visitedNodes)
+        {
+            List<GridNode> neighbors = new List<GridNode>() {
+                new GridNode() { Xposition = current.Xposition, Yposition = current.Yposition - 1 },
+                new GridNode() { Xposition = current.Xposition, Yposition = current.Yposition + 1 },
+                new GridNode() { Xposition = current.Xposition - 1, Yposition = current.Yposition },
+                new GridNode() { Xposition = current.Xposition + 1, Yposition = current.Yposition },
             };
 
-            if (!visited.Contains(neighbor) && !InvalidZones.Contains(neighbor))
+            foreach(GridNode node in neighbors) 
             {
-                visited.Add(neighbor);
-                yield return neighbor;
+                if (IsNeighborValid(node, visitedNodes))
+                {
+                    nextNodes.Enqueue(node);
+                    Console.WriteLine("se agregó el siguiente nodo a vecinos: " + node.Xposition + "," + node.Yposition);
+                }
             }
+
+            return nextNodes;
+        }
+
+        private bool IsNeighborValid (GridNode neighbor, List<GridNode> visitedNodes)
+        {
+            bool isNeighborValid = false;
+            if (!IsNeighborInVisitedNodes(neighbor, visitedNodes) && !IsNeighborInInvalidZone(neighbor))
+            {
+                isNeighborValid = true;
+            }
+
+            return isNeighborValid;
+        }
+
+        private bool IsNeighborInVisitedNodes(GridNode neighbor, List<GridNode> visitedNodes)
+        {
+            bool isNeighborVisited = false;
+            foreach (GridNode node in visitedNodes) 
+            {
+                if(node.Xposition == neighbor.Xposition && node.Yposition == neighbor.Yposition)
+                {
+                    isNeighborVisited = true;
+                }
+            }
+
+            return isNeighborVisited;
+        }
+
+        private bool IsNeighborInInvalidZone(GridNode neighbor)
+        {
+            bool isNeighborInvalid = false;
+            foreach (GridNode node in InvalidZones)
+            {
+                if (node.Xposition == neighbor.Xposition && node.Yposition == neighbor.Yposition)
+                {
+                    isNeighborInvalid = true;
+                }
+            }
+
+            return isNeighborInvalid;
         }
 
         public int RollDice(string matchCode)
