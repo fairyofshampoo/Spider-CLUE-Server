@@ -12,10 +12,10 @@ namespace GameService.Contracts
     public interface IGameManager
     {
         [OperationContract(IsOneWay = true)]
-        void MovePawn(int columns, int rows, string gamertag);
+        void MovePawn(int columns, int rows, string gamertag, string matchCode);
 
         [OperationContract]
-        int RollDice();
+        int RollDice(string matchCode);
 
         [OperationContract(IsOneWay = true)]
         void ConnectGamerToGameBoard(string gamertag, string matchCode);
@@ -25,11 +25,29 @@ namespace GameService.Contracts
 
         [OperationContract]
         int GetNumberOfGamers(string matchCode);
+
+        [OperationContract(IsOneWay = true)]
+        void MakeFinalAccusation(List<Card> cards, string matchCode, string gamertag);
+
+        [OperationContract(IsOneWay = true)]
+        void RequestAccusation(List<Card> cards, string matchCode, string gamertag);
+
+        [OperationContract(IsOneWay = true)]
+        void ShowCard(Card card, string matchCode);
     }
 
     [ServiceContract]
     public interface IGameManagerCallback
     {
+        [OperationContract]
+        void ReceiveFinalAccusationOption(bool isEnabled);
+
+        [OperationContract]
+        void ReceiveCommonAccusationOption(bool isEnabled);
+
+        [OperationContract]
+        void RequestShowCard(List<Card> cards);
+
         [OperationContract]
         void ReceivePawnsMove(Pawn pawn);
 
@@ -37,7 +55,12 @@ namespace GameService.Contracts
         void ReceiveTurn(bool isYourTurn);
 
         [OperationContract]
+        void ReceiveInvalidMove();
+
+        [OperationContract]
         void LeaveGameBoard();
+
+
     }
 
     [DataContract]
@@ -87,4 +110,6 @@ namespace GameService.Contracts
         [DataMember]
         public int Yposition { get { return yPosition; } set { yPosition = value; } }
     }
+    
+    
 }

@@ -10,6 +10,8 @@ namespace GameService.Contracts
     [ServiceContract(CallbackContract = typeof(ILobbyManagerCallback))]
     public interface ILobbyManager
     {
+        [OperationContract(IsOneWay = true)]
+        void ConnectToLobby(string gamertag);
 
         [OperationContract(IsOneWay = true)]
         void KickPlayer(string gamertag);

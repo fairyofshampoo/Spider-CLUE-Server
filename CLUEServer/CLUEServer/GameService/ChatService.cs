@@ -43,7 +43,10 @@ namespace GameService.Services
 
         public void DisconnectFromChat(string gamertag)
         {
-            chatCallbacks.Remove(gamertag);
+            if (chatCallbacks.ContainsKey(gamertag))
+            {
+                chatCallbacks.Remove(gamertag);
+            }
         }
 
         public void BroadcastMessage(String matchCode, Message message)
