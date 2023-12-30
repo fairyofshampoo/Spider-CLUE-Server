@@ -25,11 +25,29 @@ namespace GameService.Contracts
 
         [OperationContract]
         int GetNumberOfGamers(string matchCode);
+
+        [OperationContract(IsOneWay = true)]
+        void MakeFinalAccusation(List<Card> cards, string matchCode, string gamertag);
+
+        [OperationContract(IsOneWay = true)]
+        void RequestAccusation(List<Card> cards, string matchCode, string gamertag);
+
+        [OperationContract(IsOneWay = true)]
+        void ShowCard(Card card, string matchCode);
     }
 
     [ServiceContract]
     public interface IGameManagerCallback
     {
+        [OperationContract]
+        void ReceiveFinalAccusationOption(bool isEnabled);
+
+        [OperationContract]
+        void ReceiveCommonAccusationOption(bool isEnabled);
+
+        [OperationContract]
+        void RequestShowCard(List<Card> cards);
+
         [OperationContract]
         void ReceivePawnsMove(Pawn pawn);
 
@@ -41,6 +59,8 @@ namespace GameService.Contracts
 
         [OperationContract]
         void LeaveGameBoard();
+
+
     }
 
     [DataContract]

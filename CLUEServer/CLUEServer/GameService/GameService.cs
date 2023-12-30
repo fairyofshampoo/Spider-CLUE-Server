@@ -210,6 +210,15 @@ namespace GameService.Services
                     }
                 }
             }
+            ResetDice(matchCode);
+        }
+
+        private void ResetDice(string matchCode)
+        {
+            if (GameBoardDiceRoll.ContainsKey(matchCode))
+            {
+                GameBoardDiceRoll[matchCode] = 0;
+            }
         }
 
         public void ShowMoveIsInvalid(string gamertag)
@@ -247,6 +256,14 @@ namespace GameService.Services
             return rollDice;
         }
 
+        private void SendAccusationOption(string gamertag)
+        {
+            if (GamersInGameBoardCallback.ContainsKey(gamertag))
+            {
+                GamersInGameBoardCallback[gamertag].ReceiveCommonAccusationOption(true);
+            }
+        }
+
         public bool IsAValidMove(int column, int row, string gamertag, string matchCode)
         {
             bool isAValidMove = false;
@@ -262,6 +279,12 @@ namespace GameService.Services
                     Yposition = row,
                 };
                 isAValidMove = AreTheStepsValid(start, finish, rollDice);
+
+                if (isAValidMove)
+                {
+                    SendAccusationOption(gamertag);
+                }
+                
             }
             else if (IsAnInvalidZone(column, row)) //Sí es una zona prohibida
             {
@@ -295,8 +318,13 @@ namespace GameService.Services
 
         private bool AreTheStepsValid(GridNode start, GridNode finish, int rollDice)
         {
+            bool isValidStep = false;
             Console.WriteLine("AreTheStepsValid: start: " + start.Xposition + "," + start.Yposition + " fin: " + finish.Xposition + "," + finish.Yposition + " dados: " + rollDice);
-            return SearchMoves(start, start, finish, rollDice, new List<GridNode>(), new Queue<GridNode>());
+            if(rollDice != 0)
+            {
+                isValidStep = SearchMoves(start, start, finish, rollDice, new List<GridNode>(), new Queue<GridNode>());
+            }
+            return isValidStep;
         }
 
         private bool SearchMoves(GridNode start, GridNode current, GridNode end, int steps, List<GridNode> visitedNodes, Queue<GridNode> nextNodes)
@@ -500,6 +528,22 @@ namespace GameService.Services
             pawns.Add(greenPawn);
             return pawns;
         }
+
+        public void MakeFinalAccusation(List<Card> cards, string matchCode, string gamertag)
+        {
+            //alo
+        }
+
+        public void RequestAccusation(List<Card> cards, string matchCode, string gamertag)
+        {
+            //acusar normal
+        }
+
+        public void ShowCard(Card card, string matchCode)
+        {
+            //enseñar tarjetita
+        }
+
         public List<GridNode> AllowedCorners = new List<GridNode>()
         {
             new GridNode { Xposition = 5, Yposition = 5,},
