@@ -188,8 +188,8 @@ namespace GameService.Services
                         {
                             GamersInGameBoardCallback[gamertag].ReceiveTurn(false);
                             GamersInGameBoardCallback[gamer.Left].ReceiveTurn(true);
+                            break;
                         }
-                        break;
                     }
                     break;
                 }
@@ -254,6 +254,7 @@ namespace GameService.Services
             Console.WriteLine("dados son: " + rollDice);
             if (IsADoor(column, row)) //Si es una puerta
             {
+                Console.WriteLine("sí es una puerta");
                 GridNode start = GetPawnPosition(gamertag);
                 GridNode finish = new GridNode
                 {
@@ -264,8 +265,10 @@ namespace GameService.Services
             }
             else if (IsAnInvalidZone(column, row)) //Sí es una zona prohibida
             {
+                Console.WriteLine("sí es una zona inválida");
                 if (IsAValidCorner(column, row))
                 {
+                    Console.WriteLine("pero es una corner valida");
                     GridNode start = GetPawnPosition(gamertag);
                     GridNode finish = new GridNode
                     {
@@ -277,6 +280,7 @@ namespace GameService.Services
             }
             else
             {
+                Console.WriteLine("zona válida");
                 GridNode start = GetPawnPosition(gamertag);
                 GridNode finish = new GridNode
                 {
@@ -291,22 +295,28 @@ namespace GameService.Services
 
         private bool AreTheStepsValid(GridNode start, GridNode finish, int rollDice)
         {
+            Console.WriteLine("AreTheStepsValid: start: " + start.Xposition + "," + start.Yposition + " fin: " + finish.Xposition + "," + finish.Yposition + " dados: " + rollDice);
             return SearchMoves(start, start, finish, rollDice, new List<GridNode>(), new Queue<GridNode>());
         }
 
         private bool SearchMoves(GridNode start, GridNode current, GridNode end, int steps, List<GridNode> visitedNodes, Queue<GridNode> nextNodes)
         {
-            if(current.Xposition == end.Xposition && current.Yposition == end.Yposition && GetNumberOfSteps(start, current) >= 0)
+            Console.WriteLine("actual: " + current.Xposition + "," + current.Yposition);
+            if (current.Xposition == end.Xposition && current.Yposition == end.Yposition && GetNumberOfSteps(start, current) >= 0)
             {
+                Console.WriteLine("se encontró un camino");
                 return true;
             }
             if (GetNumberOfSteps(start, current) > steps)
             {
+                Console.WriteLine("numero de pasos invalido");
                 return false;
             }
+            
             visitedNodes.Add(current);
             nextNodes = GetNeighbors(current, nextNodes, visitedNodes);
-            return SearchMoves(start, nextNodes.Dequeue(), end, steps, visitedNodes, nextNodes);
+            GridNode nextNode = nextNodes.Dequeue();
+            return SearchMoves(start, nextNode, end, steps, visitedNodes, nextNodes);
         }
 
         private int GetNumberOfSteps(GridNode start, GridNode end)
@@ -332,6 +342,7 @@ namespace GameService.Services
                 if (IsNeighborValid(node, visitedNodes))
                 {
                     nextNodes.Enqueue(node);
+                    Console.WriteLine("se agregó el siguiente nodo a vecinos: " + node.Xposition + "," + node.Yposition);
                 }
             }
 
@@ -341,12 +352,40 @@ namespace GameService.Services
         private bool IsNeighborValid (GridNode neighbor, List<GridNode> visitedNodes)
         {
             bool isNeighborValid = false;
-            if (!visitedNodes.Contains(neighbor) && !InvalidZones.Contains(neighbor))
+            if (!IsNeighborInVisitedNodes(neighbor, visitedNodes) && !IsNeighborInInvalidZone(neighbor))
             {
                 isNeighborValid = true;
             }
 
             return isNeighborValid;
+        }
+
+        private bool IsNeighborInVisitedNodes(GridNode neighbor, List<GridNode> visitedNodes)
+        {
+            bool isNeighborVisited = false;
+            foreach (GridNode node in visitedNodes) 
+            {
+                if(node.Xposition == neighbor.Xposition && node.Yposition == neighbor.Yposition)
+                {
+                    isNeighborVisited = true;
+                }
+            }
+
+            return isNeighborVisited;
+        }
+
+        private bool IsNeighborInInvalidZone(GridNode neighbor)
+        {
+            bool isNeighborInvalid = false;
+            foreach (GridNode node in InvalidZones)
+            {
+                if (node.Xposition == neighbor.Xposition && node.Yposition == neighbor.Yposition)
+                {
+                    isNeighborInvalid = true;
+                }
+            }
+
+            return isNeighborInvalid;
         }
 
         public int RollDice(string matchCode)
