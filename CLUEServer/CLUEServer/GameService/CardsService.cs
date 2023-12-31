@@ -10,8 +10,8 @@ namespace GameService.Services
 {
     public partial class GameService : ICardManager
     {
-        public readonly Dictionary<string, List<Card>> decks = new Dictionary<string, List<Card>>();
-        public readonly Dictionary<string, List<Card>> clueDeckByMatch = new Dictionary<string, List<Card>>();
+        public static readonly Dictionary<string, List<Card>> decks = new Dictionary<string, List<Card>>();
+        public static readonly Dictionary<string, List<Card>> clueDeckByMatch = new Dictionary<string, List<Card>>();
 
         public List<Card> ChooseCards(List<Card> firstDeck, List<Card> secondDeck, List<Card> thirdDeck, string matchCode)
         {
