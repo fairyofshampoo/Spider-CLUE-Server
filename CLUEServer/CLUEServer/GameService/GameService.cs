@@ -55,7 +55,6 @@ namespace GameService.Services
                 SendFirstTurn(matchCode);
                 
             }
-
         }
 
         private bool AreAllPlayersConnected(string matchCode)
