@@ -33,6 +33,9 @@ namespace GameService.Contracts
         void RequestAccusation(List<Card> cards, string matchCode, string gamertag);
 
         [OperationContract(IsOneWay = true)]
+        void ShowCommonAccusation(string[] accusation, string matchCode);
+
+        [OperationContract(IsOneWay = true)]
         void ShowCard(Card card, string matchCode);
     }
 
@@ -43,7 +46,10 @@ namespace GameService.Contracts
         void ReceiveFinalAccusationOption(bool isEnabled);
 
         [OperationContract]
-        void ReceiveCommonAccusationOption(bool isEnabled);
+        void ReceiveCommonAccusationOption(bool isEnabled, Door door);
+
+        [OperationContract]
+        void ReceiveCommonAccusationByOtherGamer(string[] accusation);
 
         [OperationContract]
         void RequestShowCard(List<Card> cards);
@@ -59,8 +65,6 @@ namespace GameService.Contracts
 
         [OperationContract]
         void LeaveGameBoard();
-
-
     }
 
     [DataContract]
