@@ -529,17 +529,12 @@ namespace GameService.Services
             //alo
         }
 
-        public void RequestAccusation(List<Card> cards, string matchCode, string gamertag)
+        public void ShowCard(Card card, string matchCode, string accuser)
         {
-            //acusar normal
+            GamersInGameBoardCallback[accuser].ReceiveCardAccused(card);
         }
 
-        public void ShowCard(Card card, string matchCode)
-        {
-            //enseñar tarjetita
-        }
-
-        public void ShowCommonAccusation(string[] accusation, string matchCode)
+        public void ShowCommonAccusation(string[] accusation, string matchCode, string accuser)
         {
             foreach (var gamer in GamersInGameBoard.ToList())
             {
@@ -553,6 +548,59 @@ namespace GameService.Services
                     }
                 }
             }
+            string leftGamer = GetLeftGamer(matchCode, accuser);
+            IsLeftOwnerOfCards(accusation, accuser, leftGamer, matchCode);
+
+        }
+
+        private void IsLeftOwnerOfCards(string[] accusation, string accuser, string leftGamer,string matchCode)
+        {
+            if(accuser != leftGamer)
+            {
+                List<Card> leftGamerDeck = GetDeck(leftGamer);
+                List<Card> cardsInCommon = new List<Card>();
+
+                if (leftGamerDeck.Any())
+                {
+                    foreach (var card in leftGamerDeck)
+                    {
+                        if (accusation.Contains(card.ID))
+                        {
+                            cardsInCommon.Add(card);
+                        }
+                    }
+                }
+                if (cardsInCommon.Any())
+                {
+                    GamersInGameBoardCallback[leftGamer].RequestShowCard(cardsInCommon, accuser);
+
+                } else
+                {
+                    string leftOfLeftGamer = GetLeftGamer(matchCode, leftGamer);
+                    IsLeftOwnerOfCards(accusation, accuser, leftOfLeftGamer, matchCode);
+                }
+            }
+            else
+            {
+                GamersInGameBoardCallback[accuser].ShowNobodyAnswers();
+            }
+        }
+
+        private string GetLeftGamer(string matchCode, string gamertag)
+        {
+            string leftGamer = string.Empty;
+            if(TurnsGameBoard.ContainsKey(matchCode))
+            {
+                foreach (var gamer in TurnsGameBoard[matchCode])
+                {
+                    if(gamer.Right == gamertag)
+                    {
+                        leftGamer = gamer.Gamertag;
+                    }
+                }
+            }
+
+            return leftGamer;
         }
 
         public List<Pawn> CreatePawns()
