@@ -44,7 +44,6 @@ namespace GameService.Services
                 GamersInGameBoard.Add(gamertag, matchCode);
                 StartMatchInGameBoard(matchCode);
             }
-
         }
 
         private void StartMatchInGameBoard(string matchCode)
@@ -52,7 +51,9 @@ namespace GameService.Services
             if (AreAllPlayersConnected(matchCode))
             {
                 SetTurns(matchCode);
+                CreatCards(matchCode);
                 SendFirstTurn(matchCode);
+                
             }
 
         }
@@ -61,7 +62,6 @@ namespace GameService.Services
         {
             int playersCount = 0;
             bool areAllPlayersConnected = false;
-
             List<string> gamersInLobby = GetGamersByMatch(matchCode);
             foreach (string gamer in gamersInLobby)
             {
@@ -135,7 +135,6 @@ namespace GameService.Services
                 new GamerLeftAndRight { Gamertag = gamer2, Left = gamer3, Right = gamer1},
                 new GamerLeftAndRight { Gamertag = gamer3, Left = gamer1, Right =  gamer2}
             };
-
             TurnsGameBoard.Add(matchCode, gamerLeftAndRights);
         }
 
@@ -315,7 +314,21 @@ namespace GameService.Services
                     isAValidMove = AreTheStepsValid(start, finish, rollDice);
                 }
             }
-            else
+            else if(IsTheCenter(column, row))
+            {
+                Console.WriteLine("Es el centro");
+                GridNode start = GetPawnPosition(gamertag);
+                GridNode finish = new GridNode
+                {
+                    Xposition = column,
+                    Yposition = row,
+                };
+                isAValidMove = AreTheStepsValid(start, finish, rollDice);
+                if(isAValidMove)
+                {
+                    GamersInGameBoardCallback[gamertag].ReceiveFinalAccusationOption(true);
+                }
+            } else
             {
                 Console.WriteLine("zona válida");
                 GridNode start = GetPawnPosition(gamertag);
@@ -326,8 +339,17 @@ namespace GameService.Services
                 };
                 isAValidMove = AreTheStepsValid(start, finish, rollDice);
             }
-
             return isAValidMove;
+        }
+
+        private bool IsTheCenter(int column, int row)
+        {
+            bool isTheCenter = false;
+            if(column >= 8 && column <= 12 && row >= 7 && row <= 13)
+            {
+                isTheCenter = true;
+            }
+            return isTheCenter;
         }
 
         private bool AreTheStepsValid(GridNode start, GridNode finish, int rollDice)
@@ -353,8 +375,7 @@ namespace GameService.Services
             {
                 Console.WriteLine("numero de pasos invalido");
                 return false;
-            }
-            
+            }      
             visitedNodes.Add(current);
             nextNodes = GetNeighbors(current, nextNodes, visitedNodes);
             GridNode nextNode = nextNodes.Dequeue();
@@ -366,7 +387,6 @@ namespace GameService.Services
             int differenceColumn = start.Xposition - end.Xposition;
             int differentRow = start.Yposition - end.Yposition;
             int total = Math.Abs(differenceColumn) + Math.Abs(differentRow);
-
             return total;
         }
 
@@ -387,7 +407,6 @@ namespace GameService.Services
                     Console.WriteLine("se agregó el siguiente nodo a vecinos: " + node.Xposition + "," + node.Yposition);
                 }
             }
-
             return nextNodes;
         }
 
@@ -398,7 +417,6 @@ namespace GameService.Services
             {
                 isNeighborValid = true;
             }
-
             return isNeighborValid;
         }
 
@@ -412,7 +430,6 @@ namespace GameService.Services
                     isNeighborVisited = true;
                 }
             }
-
             return isNeighborVisited;
         }
 
@@ -524,9 +541,33 @@ namespace GameService.Services
             return isAValidCorner;
         }
 
-        public void MakeFinalAccusation(List<Card> cards, string matchCode, string gamertag)
+        public void MakeFinalAccusation(List<string> cards, string matchCode, string gamertag)
         {
-            //alo
+            //Saca el sobre de la partida
+            //Si es igual ganó 
+            //Si no lo saca de los turnos
+            RemoveFromTurns(gamertag, matchCode);
+        }
+
+        private void RemoveFromTurns(string gamertag, string matchCode)
+        {
+            string leftGamer = string.Empty;
+            string rightGamer = string.Empty;
+            if (TurnsGameBoard.ContainsKey(matchCode))
+            {
+                foreach (var gamer in TurnsGameBoard[matchCode])
+                {
+                    if (gamer.Gamertag == gamertag)
+                    {
+                        leftGamer = gamer.Left;
+                        rightGamer = gamer.Right;
+                        break;
+                    }
+                }
+                //borrar al que falló para que no pase
+
+
+            }
         }
 
         public void ShowCard(Card card, string matchCode, string accuser)
@@ -550,7 +591,6 @@ namespace GameService.Services
             }
             string leftGamer = GetLeftGamer(matchCode, accuser);
             IsLeftOwnerOfCards(accusation, accuser, leftGamer, matchCode);
-
         }
 
         private void IsLeftOwnerOfCards(string[] accusation, string accuser, string leftGamer,string matchCode)
@@ -599,7 +639,6 @@ namespace GameService.Services
                     }
                 }
             }
-
             return leftGamer;
         }
 
@@ -620,6 +659,25 @@ namespace GameService.Services
             pawns.Add(yellowPawn);
             pawns.Add(greenPawn);
             return pawns;
+        }
+
+        public List<Card> GetDeck(string gamertag)
+        {
+            List<Card> gamerDeck = new List<Card>();
+            if (decks.ContainsKey(gamertag))
+            {
+                Console.WriteLine("Sí está el jugador en el diccionario");
+                gamerDeck = decks[gamertag];
+            }
+            else
+            {
+                Console.WriteLine("No se encontró al jugador: " + gamertag);
+                Console.WriteLine("Los mazos guardados son los siguientes");
+                Show();
+            }
+
+            Console.WriteLine("Sí pasé por el getDeck");
+            return gamerDeck;
         }
 
         public List<GridNode> AllowedCorners = new List<GridNode>()

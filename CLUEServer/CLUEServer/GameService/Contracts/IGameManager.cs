@@ -27,13 +27,16 @@ namespace GameService.Contracts
         int GetNumberOfGamers(string matchCode);
 
         [OperationContract(IsOneWay = true)]
-        void MakeFinalAccusation(List<Card> cards, string matchCode, string gamertag);
+        void MakeFinalAccusation(List<string> cards, string matchCode, string gamertag);
 
         [OperationContract(IsOneWay = true)]
         void ShowCommonAccusation(string[] accusation, string matchCode, string gamertag);
 
         [OperationContract(IsOneWay = true)]
         void ShowCard(Card card, string matchCode, string accuser);
+
+        [OperationContract]
+        List<Card> GetDeck(string gamertag);
     }
 
     [ServiceContract]
