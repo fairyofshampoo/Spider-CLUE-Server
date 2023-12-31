@@ -1,14 +1,14 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\miche\\Downloads\\Repos\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\SpiderClueServerTest\\SpiderClueServerTest.csproj": {}
+    "D:\\Semestre 5\\Tecnologías\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\SpiderClueServerTest\\SpiderClueServerTest.csproj": {}
   },
   "projects": {
-    "C:\\Users\\miche\\Downloads\\Repos\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\DataBaseManager\\DataBaseManager.csproj": {
+    "D:\\Semestre 5\\Tecnologías\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\DataBaseManager\\DataBaseManager.csproj": {
       "restore": {
-        "projectUniqueName": "C:\\Users\\miche\\Downloads\\Repos\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\DataBaseManager\\DataBaseManager.csproj",
+        "projectUniqueName": "D:\\Semestre 5\\Tecnologías\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\DataBaseManager\\DataBaseManager.csproj",
         "projectName": "DataBaseManager",
-        "projectPath": "C:\\Users\\miche\\Downloads\\Repos\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\DataBaseManager\\DataBaseManager.csproj",
+        "projectPath": "D:\\Semestre 5\\Tecnologías\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\DataBaseManager\\DataBaseManager.csproj",
         "frameworks": {
           "net472": {
             "projectReferences": {}
@@ -19,16 +19,16 @@
         "net472": {}
       }
     },
-    "C:\\Users\\miche\\Downloads\\Repos\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\GameService\\GameService.csproj": {
+    "D:\\Semestre 5\\Tecnologías\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\GameService\\GameService.csproj": {
       "restore": {
-        "projectUniqueName": "C:\\Users\\miche\\Downloads\\Repos\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\GameService\\GameService.csproj",
+        "projectUniqueName": "D:\\Semestre 5\\Tecnologías\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\GameService\\GameService.csproj",
         "projectName": "GameService",
-        "projectPath": "C:\\Users\\miche\\Downloads\\Repos\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\GameService\\GameService.csproj",
+        "projectPath": "D:\\Semestre 5\\Tecnologías\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\GameService\\GameService.csproj",
         "frameworks": {
           "net472": {
             "projectReferences": {
-              "C:\\Users\\miche\\Downloads\\Repos\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\DataBaseManager\\DataBaseManager.csproj": {
-                "projectPath": "C:\\Users\\miche\\Downloads\\Repos\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\DataBaseManager\\DataBaseManager.csproj"
+              "D:\\Semestre 5\\Tecnologías\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\DataBaseManager\\DataBaseManager.csproj": {
+                "projectPath": "D:\\Semestre 5\\Tecnologías\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\DataBaseManager\\DataBaseManager.csproj"
               }
             }
           }
@@ -38,17 +38,17 @@
         "net472": {}
       }
     },
-    "C:\\Users\\miche\\Downloads\\Repos\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\SpiderClueServerTest\\SpiderClueServerTest.csproj": {
+    "D:\\Semestre 5\\Tecnologías\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\SpiderClueServerTest\\SpiderClueServerTest.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\miche\\Downloads\\Repos\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\SpiderClueServerTest\\SpiderClueServerTest.csproj",
+        "projectUniqueName": "D:\\Semestre 5\\Tecnologías\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\SpiderClueServerTest\\SpiderClueServerTest.csproj",
         "projectName": "SpiderClueServerTest",
-        "projectPath": "C:\\Users\\miche\\Downloads\\Repos\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\SpiderClueServerTest\\SpiderClueServerTest.csproj",
-        "packagesPath": "C:\\Users\\miche\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\miche\\Downloads\\Repos\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\SpiderClueServerTest\\obj\\",
+        "projectPath": "D:\\Semestre 5\\Tecnologías\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\SpiderClueServerTest\\SpiderClueServerTest.csproj",
+        "packagesPath": "C:\\Users\\eduar\\.nuget\\packages\\",
+        "outputPath": "D:\\Semestre 5\\Tecnologías\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\SpiderClueServerTest\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\miche\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\eduar\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -62,8 +62,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\miche\\Downloads\\Repos\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\GameService\\GameService.csproj": {
-                "projectPath": "C:\\Users\\miche\\Downloads\\Repos\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\GameService\\GameService.csproj"
+              "D:\\Semestre 5\\Tecnologías\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\GameService\\GameService.csproj": {
+                "projectPath": "D:\\Semestre 5\\Tecnologías\\Spider-CLUE-Server\\CLUEServer\\CLUEServer\\GameService\\GameService.csproj"
               }
             }
           }
@@ -77,28 +77,6 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "dependencies": {
-            "Microsoft.NET.Test.Sdk": {
-              "target": "Package",
-              "version": "[17.8.0, )"
-            },
-            "coverlet.collector": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[6.0.0, )"
-            },
-            "xunit": {
-              "target": "Package",
-              "version": "[2.6.4, )"
-            },
-            "xunit.runner.visualstudio": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[2.5.6, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",
@@ -110,12 +88,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
         }
       }
     }
