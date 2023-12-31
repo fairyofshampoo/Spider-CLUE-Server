@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
+using System.Data.Entity.ModelConfiguration.Configuration;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -542,16 +543,37 @@ namespace GameService.Services
 
         public void MakeFinalAccusation(List<string> cards, string matchCode, string gamertag)
         {
-            //Saca el sobre de la partida
-            //Si es igual ganó 
-            //Si no lo saca de los turnos
-            RemoveFromTurns(gamertag, matchCode);
+            int cardsCount = 0;
+            if (clueDeckByMatch.ContainsKey(matchCode))
+            {
+                List<Card> clueDeck = clueDeckByMatch[matchCode];
+                foreach(var card in clueDeck)
+                {
+                    foreach(var gamerCard in cards)
+                    {
+                        if(card.ID == gamerCard)
+                        {
+                            cardsCount++;
+                        }
+                    }
+                }
+
+            }
+
+            if(cardsCount == 3)
+            {
+
+            }else
+            {
+                RemoveFromTurns(gamertag, matchCode);
+            }
         }
 
         private void RemoveFromTurns(string gamertag, string matchCode)
         {
             string leftGamer = string.Empty;
             string rightGamer = string.Empty;
+            int index = 0;
             if (TurnsGameBoard.ContainsKey(matchCode))
             {
                 foreach (var gamer in TurnsGameBoard[matchCode])
@@ -563,11 +585,20 @@ namespace GameService.Services
                         break;
                     }
                 }
-                //borrar al que falló para que no pase
 
-
+                foreach(var gamer in TurnsGameBoard[matchCode])
+                {
+                    if(gamer.Gamertag == rightGamer)
+                    {
+                        break;
+                    }
+                    index++;
+                }
+                TurnsGameBoard[matchCode][index].Left = leftGamer;
             }
         }
+
+
 
         public void ShowCard(Card card, string matchCode, string accuser)
         {
@@ -621,7 +652,18 @@ namespace GameService.Services
             }
             else
             {
-                GamersInGameBoardCallback[accuser].ShowNobodyAnswers();
+                foreach (var gamer in GamersInGameBoard.ToList())
+                {
+                    if (gamer.Value.Equals(matchCode))
+                    {
+                        string gamertag = gamer.Key;
+
+                        if (GamersInGameBoardCallback.ContainsKey(gamertag))
+                        {
+                            GamersInGameBoardCallback[gamertag].ShowNobodyAnswers();
+                        }
+                    }
+                }
             }
         }
 

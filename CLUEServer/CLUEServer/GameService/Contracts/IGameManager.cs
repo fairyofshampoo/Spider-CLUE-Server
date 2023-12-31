@@ -71,6 +71,9 @@ namespace GameService.Contracts
 
         [OperationContract]
         void ReceiveCardAccused(Card card);
+
+        [OperationContract]
+        void ReceiveWinner();
     }
 
     [DataContract]
