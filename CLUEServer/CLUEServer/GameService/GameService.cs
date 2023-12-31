@@ -247,21 +247,35 @@ namespace GameService.Services
         private int GetGameBoardRollDice(string matchCode)
         {
             int rollDice = 0;
-
             if (GameBoardDiceRoll.ContainsKey(matchCode))
             {
                 rollDice = GameBoardDiceRoll[matchCode];
             }
-
             return rollDice;
         }
 
-        private void SendAccusationOption(string gamertag)
+        private void SendAccusationOption(string gamertag, Door door)
         {
             if (GamersInGameBoardCallback.ContainsKey(gamertag))
             {
-                GamersInGameBoardCallback[gamertag].ReceiveCommonAccusationOption(true);
+                GamersInGameBoardCallback[gamertag].ReceiveCommonAccusationOption(true, door);
             }
+        }
+
+        private Door GetDoor(int column, int row)
+        {
+            Door doorData = new Door();
+            foreach (var door in Doors)
+            {
+                if (door.Xposition == column && door.Yposition == row)
+                {
+                    doorData.Xposition = door.Xposition;
+                    doorData.Yposition = door.Yposition;
+                    doorData.ZoneName = door.ZoneName;
+                    break;
+                }
+            }
+            return doorData;
         }
 
         public bool IsAValidMove(int column, int row, string gamertag, string matchCode)
@@ -282,9 +296,9 @@ namespace GameService.Services
 
                 if (isAValidMove)
                 {
-                    SendAccusationOption(gamertag);
-                }
-                
+                    Door door = GetDoor(column, row);
+                    SendAccusationOption(gamertag, door);
+                } 
             }
             else if (IsAnInvalidZone(column, row)) //Sí es una zona prohibida
             {
@@ -510,6 +524,37 @@ namespace GameService.Services
             return isAValidCorner;
         }
 
+        public void MakeFinalAccusation(List<Card> cards, string matchCode, string gamertag)
+        {
+            //alo
+        }
+
+        public void RequestAccusation(List<Card> cards, string matchCode, string gamertag)
+        {
+            //acusar normal
+        }
+
+        public void ShowCard(Card card, string matchCode)
+        {
+            //enseñar tarjetita
+        }
+
+        public void ShowCommonAccusation(string[] accusation, string matchCode)
+        {
+            foreach (var gamer in GamersInGameBoard.ToList())
+            {
+                if (gamer.Value.Equals(matchCode))
+                {
+                    string gamertag = gamer.Key;
+
+                    if (GamersInGameBoardCallback.ContainsKey(gamertag))
+                    {
+                        GamersInGameBoardCallback[gamertag].ReceiveCommonAccusationByOtherGamer(accusation);
+                    }
+                }
+            }
+        }
+
         public List<Pawn> CreatePawns()
         {
             Pawn bluePawn = new Pawn { Color = "BluePawn.png", XPosition = 0, YPosition = 17 };
@@ -527,21 +572,6 @@ namespace GameService.Services
             pawns.Add(yellowPawn);
             pawns.Add(greenPawn);
             return pawns;
-        }
-
-        public void MakeFinalAccusation(List<Card> cards, string matchCode, string gamertag)
-        {
-            //alo
-        }
-
-        public void RequestAccusation(List<Card> cards, string matchCode, string gamertag)
-        {
-            //acusar normal
-        }
-
-        public void ShowCard(Card card, string matchCode)
-        {
-            //enseñar tarjetita
         }
 
         public List<GridNode> AllowedCorners = new List<GridNode>()
@@ -708,22 +738,22 @@ namespace GameService.Services
         };
         public List<Door> Doors { get; set; } = new List<Door>
         {
-            new Door { Xposition = 5, Yposition = 2, ZoneName = "place6" },
-            new Door { Xposition = 5, Yposition = 7, ZoneName = "place1" },
-            new Door { Xposition = 2, Yposition = 9, ZoneName = "place1" },
-            new Door { Xposition = 4, Yposition = 14, ZoneName = "place8" },
-            new Door { Xposition = 3, Yposition = 18, ZoneName = "place7" },
-            new Door { Xposition = 8, Yposition = 3, ZoneName = "place9" },
-            new Door { Xposition = 10, Yposition = 5, ZoneName = "place9" },
-            new Door { Xposition = 11, Yposition = 5, ZoneName = "place9" },
-            new Door { Xposition = 8, Yposition = 16, ZoneName = "place2" },
-            new Door { Xposition = 13, Yposition = 16, ZoneName = "place2" },
-            new Door { Xposition = 7, Yposition = 18, ZoneName = "place2" },
-            new Door { Xposition = 14, Yposition = 18, ZoneName = "place2" },
-            new Door { Xposition = 16, Yposition = 4, ZoneName = "place4" },
-            new Door { Xposition = 16, Yposition = 8, ZoneName = "place5" },
-            new Door { Xposition = 15, Yposition = 11, ZoneName = "place5" },
-            new Door { Xposition = 18, Yposition = 17, ZoneName = "place3" }
+            new Door { Xposition = 5, Yposition = 2, ZoneName = "place6.png" },
+            new Door { Xposition = 5, Yposition = 7, ZoneName = "place1.png" },
+            new Door { Xposition = 2, Yposition = 9, ZoneName = "place1.png" },
+            new Door { Xposition = 4, Yposition = 14, ZoneName = "place8.png" },
+            new Door { Xposition = 3, Yposition = 18, ZoneName = "place7.png" },
+            new Door { Xposition = 8, Yposition = 3, ZoneName = "place9.png" },
+            new Door { Xposition = 10, Yposition = 5, ZoneName = "place9.png" },
+            new Door { Xposition = 11, Yposition = 5, ZoneName = "place9.png" },
+            new Door { Xposition = 8, Yposition = 16, ZoneName = "place2.png" },
+            new Door { Xposition = 13, Yposition = 16, ZoneName = "place2.png" },
+            new Door { Xposition = 7, Yposition = 18, ZoneName = "place2.png" },
+            new Door { Xposition = 14, Yposition = 18, ZoneName = "place2.png" },
+            new Door { Xposition = 16, Yposition = 4, ZoneName = "place4.png" },
+            new Door { Xposition = 16, Yposition = 8, ZoneName = "place5.png" },
+            new Door { Xposition = 15, Yposition = 11, ZoneName = "place5.png" },
+            new Door { Xposition = 18, Yposition = 17, ZoneName = "place3.png" }
         };
 
     }
