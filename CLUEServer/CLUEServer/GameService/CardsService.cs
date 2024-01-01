@@ -77,12 +77,12 @@ namespace GameService.Services
 
         public List<Card> CreateCharacterCards()
         {
-            Card card1 =  new Card { ID = "Character1", Type = "Character"};
-            Card card2 =  new Card { ID = "Character2", Type = "Character" };
-            Card card3 =  new Card { ID = "Character3", Type = "Character" };
-            Card card4 =  new Card { ID = "Character4", Type = "Character" };
-            Card card5 =  new Card { ID = "Character5", Type = "Character" };
-            Card card6 =  new Card { ID = "Character6", Type = "Character" };
+            Card card1 =  new Card { ID = "DocOchCard.png", Type = "Character"};
+            Card card2 =  new Card { ID = "ElectroJuanCard.png", Type = "Character" };
+            Card card3 =  new Card { ID = "MysteRevoCard.png", Type = "Character" };
+            Card card4 =  new Card { ID = "RhinosidroCard.png", Type = "Character" };
+            Card card5 =  new Card { ID = "VernomCard.png", Type = "Character" };
+            Card card6 =  new Card { ID = "XandManCard.png", Type = "Character" };
 
             List<Card> firstDeck = new List<Card>();
             firstDeck.Add(card1);
@@ -95,15 +95,15 @@ namespace GameService.Services
         }   
         public List<Card> CreatePlaceCards()
         {
-            Card card7 = new Card { ID = "place1", Type = "Place" };
-            Card card8 = new Card { ID = "place2", Type = "Place" };
-            Card card9 = new Card { ID = "place3", Type = "Place" };
-            Card card10 = new Card { ID = "place4", Type = "Place" };
-            Card card11 = new Card { ID = "place5", Type = "Place" };
-            Card card12 = new Card { ID = "place6", Type = "Place" };
-            Card card13 = new Card { ID = "place7", Type = "Place" };
-            Card card14 = new Card { ID = "place8", Type = "Place" };
-            Card card15 = new Card { ID = "place9", Type = "Place" };
+            Card card7 = new Card { ID = "place1.png", Type = "Place" };
+            Card card8 = new Card { ID = "place2.png", Type = "Place" };
+            Card card9 = new Card { ID = "place3.png", Type = "Place" };
+            Card card10 = new Card { ID = "place4.png", Type = "Place" };
+            Card card11 = new Card { ID = "place5.png", Type = "Place" };
+            Card card12 = new Card { ID = "place6.png", Type = "Place" };
+            Card card13 = new Card { ID = "place7.png", Type = "Place" };
+            Card card14 = new Card { ID = "place8.png", Type = "Place" };
+            Card card15 = new Card { ID = "place9.png", Type = "Place" };
 
             List<Card> secondDeck = new List<Card>();
             secondDeck.Add(card7);
@@ -120,12 +120,12 @@ namespace GameService.Services
 
         public List<Card> CreateMotiveCards()
         {
-            Card card16 = new Card { ID = "motive1", Type = "Motive" };
-            Card card17 = new Card { ID = "motive2", Type = "Motive" };
-            Card card18 = new Card { ID = "motive3", Type = "Motive" };
-            Card card19 = new Card { ID = "motive4", Type = "Motive" };
-            Card card20 = new Card { ID = "motive5", Type = "Motive" };
-            Card card21 = new Card { ID = "motive6", Type = "Motive" };
+            Card card16 = new Card { ID = "motive1.png", Type = "Motive" };
+            Card card17 = new Card { ID = "motive2.png", Type = "Motive" };
+            Card card18 = new Card { ID = "motive3.png", Type = "Motive" };
+            Card card19 = new Card { ID = "motive4.png", Type = "Motive" };
+            Card card20 = new Card { ID = "motive5.png", Type = "Motive" };
+            Card card21 = new Card { ID = "motive6.png", Type = "Motive" };
 
             List<Card> thirdDeck = new List<Card>();
             thirdDeck.Add(card16);
