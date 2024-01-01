@@ -547,23 +547,35 @@ namespace GameService.Services
             if (clueDeckByMatch.ContainsKey(matchCode))
             {
                 List<Card> clueDeck = clueDeckByMatch[matchCode];
-                foreach(var card in clueDeck)
+                foreach (var card in clueDeck)
                 {
-                    foreach(var gamerCard in cards)
+                    foreach (var gamerCard in cards)
                     {
-                        if(card.ID == gamerCard)
+                        if (card.ID == gamerCard)
                         {
                             cardsCount++;
                         }
                     }
                 }
-
             }
 
             if(cardsCount == 3)
             {
+                string icon = GetIcon(gamertag);
+                foreach (var gamer in GamersInGameBoard.ToList())
+                {
+                    if (gamer.Value.Equals(matchCode))
+                    {
+                        string gamerFound = gamer.Key;
 
-            }else
+                        if (GamersInGameBoardCallback.ContainsKey(gamerFound))
+                        {
+                            GamersInGameBoardCallback[gamerFound].ReceiveWinner(gamertag, icon);
+                        }
+                    }
+                }
+            }
+            else
             {
                 RemoveFromTurns(gamertag, matchCode);
             }
@@ -733,7 +745,7 @@ namespace GameService.Services
             new GridNode { Xposition = 17, Yposition = 14,},
             new GridNode { Xposition = 16, Yposition = 14,},
             new GridNode { Xposition = 15, Yposition = 14,}
-    };
+        };
         public List<GridNode> InvalidZones { get; set; } = new List<GridNode>()
         {
             new GridNode { Xposition = 0, Yposition = 2, },

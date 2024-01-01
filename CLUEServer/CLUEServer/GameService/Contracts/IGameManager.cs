@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.SqlServer.Server;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -73,7 +74,7 @@ namespace GameService.Contracts
         void ReceiveCardAccused(Card card);
 
         [OperationContract]
-        void ReceiveWinner();
+        void ReceiveWinner(string winnerGamertag, string gamerIcon);
     }
 
     [DataContract]
