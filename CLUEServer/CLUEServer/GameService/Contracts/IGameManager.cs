@@ -25,6 +25,9 @@ namespace GameService.Contracts
         void DisconnectFromBoard(string gamertag, string matchCode);
 
         [OperationContract]
+        void RemovePlayerFromGameboard(string gamertag);
+
+        [OperationContract]
         int GetNumberOfGamers(string matchCode);
 
         [OperationContract(IsOneWay = true)]
@@ -38,6 +41,10 @@ namespace GameService.Contracts
 
         [OperationContract]
         List<Card> GetDeck(string gamertag);
+
+
+        [OperationContract]
+        void EndGameboard(string matchCode);
     }
 
     [ServiceContract]

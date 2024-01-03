@@ -1,20 +1,12 @@
-﻿using GameService.Contracts;
+﻿using DataBaseManager;
+using GameService.Contracts;
+using GameService.Utilities;
 using System;
-using System.CodeDom;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
-using System.Data.Entity.ModelConfiguration.Configuration;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Policy;
 using System.ServiceModel;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web.Configuration;
 
 namespace GameService.Services
 {
@@ -83,19 +75,6 @@ namespace GameService.Services
             List<GamerLeftAndRight> turnsList = TurnsGameBoard[matchCode];
             GamersInGameBoardCallback[turnsList[0].Gamertag].ReceiveTurn(true);
         }
-        private void DisconnectAllPlayers(string matchCode)
-        {
-            lock (GamersInGameBoardCallback)
-            {
-                foreach (var gamer in GamersInGameBoard)
-                {
-                    if (gamer.Value.Equals(matchCode) && GamersInGameBoardCallback.ContainsKey(gamer.Key))
-                    {
-                        GamersInGameBoardCallback[gamer.Key].LeaveGameBoard();
-                    }
-                }
-            }
-        }
 
         public int GetNumberOfGamers(string matchCode)
         {
@@ -106,21 +85,31 @@ namespace GameService.Services
         {
             return GamersInGameBoard.Where(gamer => gamer.Value == matchCode).Select(gamer => gamer.Key).ToList();
         }
+        private void RemoveFromGameboard(string gamertag)
+        {
+            decks.Remove(gamertag);
+            GamersInGameBoard.Remove(gamertag);
+            GamersInGameBoardCallback.Remove(gamertag);
+        }
 
         public void DisconnectFromBoard(string gamertag, string matchCode)
         {
-            lock (GamersInGameBoardCallback)
-            {
-                lock (GamersInGameBoard)
-                {
-                    GamersInGameBoardCallback.Remove(gamertag);
-                    GamersInGameBoard.Remove(gamertag);
-                }
-            }
-
+            RemoveFromGameboard(gamertag);
             RemoveFromMatch(gamertag);
-            //sacar a los de la partida
         }
+
+        public void RemovePlayerFromGameboard(string gamertag)
+        {
+            GamersInGameBoardCallback[gamertag].LeaveGameBoard();
+        }
+
+        public void EndGameboard(string matchCode)
+        {
+            TurnsGameBoard.Remove(matchCode);
+            GameBoardDiceRoll.Remove(matchCode);
+            clueDeckByMatch.Remove(matchCode);
+        }
+
 
         private void SetTurns(string matchCode)
         {
@@ -572,6 +561,7 @@ namespace GameService.Services
                         {
                             GamersInGameBoardCallback[gamerFound].ReceiveWinner(gamertag, icon);
                         }
+                        UpdateGamesWonByGamer(gamertag);
                     }
                 }
             }
@@ -579,6 +569,26 @@ namespace GameService.Services
             {
                 RemoveFromTurns(gamertag, matchCode);
             }
+        }
+
+        private int UpdateGamesWonByGamer(string gamertag)
+        {
+            int result = 0;
+            using (var dataBaseContext = new SpiderClueDbEntities())
+            {
+                var gamer = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == gamertag);
+                if (gamer != null)
+                {
+                    gamer.gamesWon = gamer.gamesWon++;
+                    dataBaseContext.SaveChanges();
+                    result = Constants.SUCCESS_IN_OPERATION; ;
+                }
+                else
+                {
+                    result = Constants.ERROR_IN_OPERATION;
+                }
+            }
+            return result;
         }
 
         private void RemoveFromTurns(string gamertag, string matchCode)

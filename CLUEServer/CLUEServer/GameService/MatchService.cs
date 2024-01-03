@@ -93,8 +93,6 @@ namespace GameService.Services
             gamersLobbyCallback.Remove(gamertag);
             DisconnectFromChat(gamertag);
             RestoreCharacterInMatch(gamertag, matchCode);
-
-
         }
 
         private void RestoreCharacterInMatch(string gamertag, string matchCode)
