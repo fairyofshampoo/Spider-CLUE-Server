@@ -591,9 +591,9 @@ namespace GameService.Services
                         {
                             GamersInGameBoardCallback[gamerFound].ReceiveWinner(gamertag, icon);
                         }
-                        UpdateGamesWonByGamer(gamertag);
                     }
                 }
+                Console.WriteLine(UpdateGamesWonByGamer(gamertag));
             }
             else
             {
@@ -609,7 +609,7 @@ namespace GameService.Services
                 var gamer = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == gamertag);
                 if (gamer != null)
                 {
-                    gamer.gamesWon = gamer.gamesWon++;
+                    gamer.gamesWon++;
                     dataBaseContext.SaveChanges();
                     result = Constants.SUCCESS_IN_OPERATION; ;
                 }
