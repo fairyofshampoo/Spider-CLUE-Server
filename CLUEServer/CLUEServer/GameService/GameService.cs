@@ -2,8 +2,8 @@
 using GameService.Contracts;
 using GameService.Utilities;
 using System;
+using System.Timers;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Linq;
 using System.ServiceModel;
@@ -23,9 +23,11 @@ namespace GameService.Services
 
     public partial class GameService : IGameManager
     {
+        private static Dictionary<string, Timer> turnTimers = new Dictionary<string, Timer>();
         private static readonly Dictionary<string, IGameManagerCallback> GamersInGameBoardCallback = new Dictionary<string, IGameManagerCallback>();
         private static readonly Dictionary<string, string> GamersInGameBoard = new Dictionary<string, string>();
-        private static readonly Dictionary<string, List<GamerLeftAndRight>> TurnsGameBoard = new Dictionary<string, List<GamerLeftAndRight>>();
+        private static readonly Dictionary<string, List<GamerLeftAndRight>> DirectionInGameBoard = new Dictionary<string, List<GamerLeftAndRight>>();
+        private static readonly Dictionary<string, string> TurnsInGameboard = new Dictionary<string, string>(); 
         private static readonly Dictionary<string, int> GameBoardDiceRoll = new Dictionary<string, int>();
 
         public void ConnectGamerToGameBoard(string gamertag, string matchCode)
@@ -46,9 +48,23 @@ namespace GameService.Services
                 SetTurns(matchCode);
                 CreatCards(matchCode);
                 SendFirstTurn(matchCode);
+                StartTurnTimer(matchCode);
             }
         }
 
+        private void StartTurnTimer(string matchCode)
+        {
+            Timer turnTimer = new Timer(30000);
+            turnTimer.Elapsed += (sender, e) => OnTurnTimerElapsed(matchCode);
+            turnTimer.AutoReset = false;
+            turnTimer.Start();
+
+            turnTimers[matchCode] = turnTimer;
+        }
+        private void OnTurnTimerElapsed(string matchCode)
+        {
+            ChangeTurn(matchCode, TurnsInGameboard[matchCode]);
+        }
         private bool AreAllPlayersConnected(string matchCode)
         {
             int playersCount = 0;
@@ -71,8 +87,10 @@ namespace GameService.Services
         }
         private void SendFirstTurn(string matchCode)
         {
-            List<GamerLeftAndRight> turnsList = TurnsGameBoard[matchCode];
-            GamersInGameBoardCallback[turnsList[0].Gamertag].ReceiveTurn(true);
+            List<GamerLeftAndRight> turnsList = DirectionInGameBoard[matchCode];
+            string gamertag = turnsList[0].Gamertag;
+            TurnsInGameboard.Add(matchCode, gamertag );
+            GamersInGameBoardCallback[gamertag].ReceiveTurn(true);
         }
 
         public int GetNumberOfGamers(string matchCode)
@@ -111,11 +129,10 @@ namespace GameService.Services
 
         private void RemoveGameboard(string matchCode)
         {
-            TurnsGameBoard.Remove(matchCode);
+            DirectionInGameBoard.Remove(matchCode);
             GameBoardDiceRoll.Remove(matchCode);
             clueDeckByMatch.Remove(matchCode);
         }
-
 
         private void SetTurns(string matchCode)
         {
@@ -130,7 +147,7 @@ namespace GameService.Services
                 new GamerLeftAndRight { Gamertag = gamer2, Left = gamer3, Right = gamer1},
                 new GamerLeftAndRight { Gamertag = gamer3, Left = gamer1, Right =  gamer2}
             };
-            TurnsGameBoard.Add(matchCode, gamerLeftAndRights);
+            DirectionInGameBoard.Add(matchCode, gamerLeftAndRights);
         }
 
         public void MovePawn(int column, int row, string gamertag, string matchCode)
@@ -171,7 +188,12 @@ namespace GameService.Services
 
         public void ChangeTurn(string matchCode, string gamertag)
         {
-            foreach (var turn in TurnsGameBoard)
+            if (turnTimers.ContainsKey(matchCode))
+            {
+                turnTimers[matchCode].Stop();
+            }
+
+            foreach (var turn in DirectionInGameBoard)
             {
                 if (turn.Key.Equals(matchCode))
                 {
@@ -181,7 +203,10 @@ namespace GameService.Services
                         if (gamer.Gamertag == gamertag)
                         {
                             GamersInGameBoardCallback[gamertag].ReceiveTurn(false);
+                            TurnsInGameboard[matchCode] = gamer.Left;
                             GamersInGameBoardCallback[gamer.Left].ReceiveTurn(true);
+                            StartTurnTimer(matchCode);
+
                             break;
                         }
                     }
@@ -189,6 +214,7 @@ namespace GameService.Services
                 }
             }
         }
+
 
         public void ShowMovePawn(Pawn pawn, string matchCode)
         {
@@ -276,10 +302,8 @@ namespace GameService.Services
         {
             bool isAValidMove = false;
             int rollDice = GetGameBoardRollDice(matchCode);
-            Console.WriteLine("dados son: " + rollDice);
             if (IsADoor(column, row)) //Si es una puerta
             {
-                Console.WriteLine("sí es una puerta");
                 GridNode start = GetPawnPosition(gamertag);
                 GridNode finish = new GridNode
                 {
@@ -567,9 +591,9 @@ namespace GameService.Services
                         {
                             GamersInGameBoardCallback[gamerFound].ReceiveWinner(gamertag, icon);
                         }
-                        UpdateGamesWonByGamer(gamertag);
                     }
                 }
+                Console.WriteLine(UpdateGamesWonByGamer(gamertag));
             }
             else
             {
@@ -585,7 +609,7 @@ namespace GameService.Services
                 var gamer = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == gamertag);
                 if (gamer != null)
                 {
-                    gamer.gamesWon = gamer.gamesWon++;
+                    gamer.gamesWon++;
                     dataBaseContext.SaveChanges();
                     result = Constants.SUCCESS_IN_OPERATION; ;
                 }
@@ -602,9 +626,9 @@ namespace GameService.Services
             string leftGamer = string.Empty;
             string rightGamer = string.Empty;
             int index = 0;
-            if (TurnsGameBoard.ContainsKey(matchCode))
+            if (DirectionInGameBoard.ContainsKey(matchCode))
             {
-                foreach (var gamer in TurnsGameBoard[matchCode])
+                foreach (var gamer in DirectionInGameBoard[matchCode])
                 {
                     if (gamer.Gamertag == gamertag)
                     {
@@ -614,7 +638,7 @@ namespace GameService.Services
                     }
                 }
 
-                foreach(var gamer in TurnsGameBoard[matchCode])
+                foreach(var gamer in DirectionInGameBoard[matchCode])
                 {
                     if(gamer.Gamertag == rightGamer)
                     {
@@ -622,7 +646,7 @@ namespace GameService.Services
                     }
                     index++;
                 }
-                TurnsGameBoard[matchCode][index].Left = leftGamer;
+                DirectionInGameBoard[matchCode][index].Left = leftGamer;
             }
         }
 
@@ -698,9 +722,9 @@ namespace GameService.Services
         private string GetLeftGamer(string matchCode, string gamertag)
         {
             string leftGamer = string.Empty;
-            if(TurnsGameBoard.ContainsKey(matchCode))
+            if(DirectionInGameBoard.ContainsKey(matchCode))
             {
-                foreach (var gamer in TurnsGameBoard[matchCode])
+                foreach (var gamer in DirectionInGameBoard[matchCode])
                 {
                     if(gamer.Right == gamertag)
                     {
