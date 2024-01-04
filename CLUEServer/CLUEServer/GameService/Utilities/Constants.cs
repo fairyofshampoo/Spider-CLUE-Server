@@ -14,5 +14,6 @@ namespace GameService.Utilities
         public const string DEFAULT_GUEST_NAME = "Guest";
         public const int DEFAULT_GAMES_WON = 0;
         public const string DEFAULT_GUEST_LAST_NAME = "Player";
+        public const int LIMIT_OF_GAMERS_IN_MATCH = 3;
     }
 }

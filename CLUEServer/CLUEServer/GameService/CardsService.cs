@@ -39,14 +39,6 @@ namespace GameService.Services
             return cards;
         }
 
-        private void DeleteGamerDeck(string gamertag)
-        {
-            if (decks.ContainsKey(gamertag))
-            {
-                decks.Remove(gamertag);
-            }
-        }
-
         public void CreatCards(string matchCode)
         {
             List<string> gamerByBoard = GetGamersByGameBoard(matchCode);
