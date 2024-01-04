@@ -46,7 +46,6 @@ namespace GameService.Services
                 SetTurns(matchCode);
                 CreatCards(matchCode);
                 SendFirstTurn(matchCode);
-                
             }
         }
 
@@ -92,18 +91,25 @@ namespace GameService.Services
             GamersInGameBoardCallback.Remove(gamertag);
         }
 
-        public void DisconnectFromBoard(string gamertag, string matchCode)
+        public void DisconnectFromBoard(string gamertag)
         {
-            RemoveFromGameboard(gamertag);
             RemoveFromMatch(gamertag);
+            RemoveFromGameboard(gamertag);
         }
 
-        public void RemovePlayerFromGameboard(string gamertag)
+        public void EndGame(string matchCode)
         {
-            GamersInGameBoardCallback[gamertag].LeaveGameBoard();
+            List<string> gamerByBoard = GetGamersByGameBoard(matchCode);
+            foreach(string gamer in gamerByBoard)
+            {
+                GamersInGameBoardCallback[gamer].LeaveGameBoard();
+                DisconnectFromBoard(gamer);
+            }
+
+            RemoveGameboard(matchCode);
         }
 
-        public void EndGameboard(string matchCode)
+        private void RemoveGameboard(string matchCode)
         {
             TurnsGameBoard.Remove(matchCode);
             GameBoardDiceRoll.Remove(matchCode);
