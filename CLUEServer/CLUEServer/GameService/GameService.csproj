@@ -84,6 +84,7 @@
     <Compile Include="Contracts\IMatchCreationManager.cs" />
     <Compile Include="Contracts\IMatchManager.cs" />
     <Compile Include="Contracts\ISessionManager.cs" />
+    <Compile Include="Contracts\IWinnersManager.cs" />
     <Compile Include="EmailService.cs" />
     <Compile Include="FriendRequestService.cs" />
     <Compile Include="FriendshipService.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Contracts\IEmailVerificationManager.cs" />
     <Compile Include="Contracts\IUserManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WinnersService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
