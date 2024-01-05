@@ -36,7 +36,7 @@ namespace GameService.Contracts
         Gamer GetGamerByGamertag(string gamertag);
 
         [OperationContract]
-        Gamer GetGamerByEmail(string gamertag);
+        Gamer GetGamerByEmail(string email);
 
         [OperationContract]
         int ModifyAccount (String gamertag, String firstName, String lastName);

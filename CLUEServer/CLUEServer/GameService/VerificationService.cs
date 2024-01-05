@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using GameService.Contracts;
 
 namespace GameService.Services
@@ -13,7 +14,8 @@ namespace GameService.Services
         {
             EmailService emailService = new EmailService();
             string verificationCode = GenerateRandomCode();
-            verificationDictionary[email] = new VerificationData(verificationCode, DateTime.Now);
+            Stopwatch localStopwatch = Stopwatch.StartNew();
+            verificationDictionary[email] = new VerificationData(verificationCode, localStopwatch);
 
             bool codeProcessResult = emailService.SendEmailWithCode(email, verificationCode);
 
@@ -29,7 +31,6 @@ namespace GameService.Services
                 if (data.IsValid(code, verificationCodeValidity))
                 {
                     verificationDictionary.Remove(email);
-
                     verificationStatus = true;
                 }
             }
@@ -53,17 +54,17 @@ namespace GameService.Services
     public class VerificationData
     {
         public string Code { get; private set; }
-        public DateTime CreationTime { get; private set; }
+        public Stopwatch LocalStopwatch { get; private set; }
 
-        public VerificationData(string code, DateTime creationTime)
+        public VerificationData(string code, Stopwatch localStopwatch)
         {
             Code = code;
-            CreationTime = creationTime;
+            LocalStopwatch = localStopwatch;
         }
 
         public bool IsValid(string code, TimeSpan validityPeriod)
         {
-            return Code == code && (DateTime.Now - CreationTime) <= validityPeriod;
+            return Code == code && LocalStopwatch.Elapsed <= validityPeriod;
         }
     }
 }
