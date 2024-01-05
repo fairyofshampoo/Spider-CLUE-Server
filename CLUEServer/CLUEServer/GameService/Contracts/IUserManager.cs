@@ -1,12 +1,6 @@
-﻿using DataBaseManager;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System;
 using System.Runtime.Serialization;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameService.Contracts
 {
@@ -36,7 +30,7 @@ namespace GameService.Contracts
         Gamer GetGamerByGamertag(string gamertag);
 
         [OperationContract]
-        Gamer GetGamerByEmail(string gamertag);
+        Gamer GetGamerByEmail(string email);
 
         [OperationContract]
         int ModifyAccount (String gamertag, String firstName, String lastName);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GameService.Utilities
 {
-    public class Constants
+    public static class Constants
     {
         public const int ERROR_IN_OPERATION = -1;
         public const int SUCCESS_IN_OPERATION = 1;
