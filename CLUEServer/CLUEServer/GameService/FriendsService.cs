@@ -16,6 +16,7 @@ namespace GameService.Services
         private static readonly Dictionary<string, IFriendsManagerCallback> gamersFriendsManagerCallback = new Dictionary<string, IFriendsManagerCallback>();
 
         private static readonly List<string> UsersConnected = new List<string>();
+
         public void GetConnectedFriends(string gamertag)
         {
             List<string> connectedFriends = SetConnectedFriendsList(gamertag);
@@ -35,15 +36,11 @@ namespace GameService.Services
         private List<string> SetConnectedFriendsList(string gamertag)
         {
             List<string> friendList = GetFriendList(gamertag);
-            List<string> connectedFriends = new List<string>();
-            foreach (string friend in friendList)
-            {
-                if (UsersConnected.Contains(friend))
-                {
-                    connectedFriends.Add(friend);
-                }
-            }
-            return connectedFriends;
+
+            return friendList
+                .Where(friend => UsersConnected.Contains(friend))
+                .ToList();
         }
+
     }
 }
