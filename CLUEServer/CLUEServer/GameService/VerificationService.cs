@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using GameService.Contracts;
 
 namespace GameService.Services
@@ -13,7 +14,8 @@ namespace GameService.Services
         {
             EmailService emailService = new EmailService();
             string verificationCode = GenerateRandomCode();
-            verificationDictionary[email] = new VerificationData(verificationCode, DateTime.Now);
+            Stopwatch localStopwatch = Stopwatch.StartNew();
+            verificationDictionary[email] = new VerificationData(verificationCode, localStopwatch);
 
             bool codeProcessResult = emailService.SendEmailWithCode(email, verificationCode);
 
@@ -29,7 +31,6 @@ namespace GameService.Services
                 if (data.IsValid(code, verificationCodeValidity))
                 {
                     verificationDictionary.Remove(email);
-
                     verificationStatus = true;
                 }
             }
@@ -42,28 +43,36 @@ namespace GameService.Services
             int lowerBound = 100000;
             int upperBound = 1000000;
 
-            Random random = new Random();
-            int codeNumber = random.Next(lowerBound, upperBound);
-            string code = codeNumber.ToString();
+            using (var rng = new System.Security.Cryptography.RNGCryptoServiceProvider())
+            {
+                byte[] randomNumber = new byte[4];
+                rng.GetBytes(randomNumber);
 
-            return code;
+                int codeNumber = BitConverter.ToInt32(randomNumber, 0) & Int32.MaxValue;
+                int range = upperBound - lowerBound;
+                int scaledNumber = lowerBound + (codeNumber % range);
+
+                string code = scaledNumber.ToString();
+                return code;
+            }
         }
+
     }
 
     public class VerificationData
     {
         public string Code { get; private set; }
-        public DateTime CreationTime { get; private set; }
+        public Stopwatch LocalStopwatch { get; private set; }
 
-        public VerificationData(string code, DateTime creationTime)
+        public VerificationData(string code, Stopwatch localStopwatch)
         {
             Code = code;
-            CreationTime = creationTime;
+            LocalStopwatch = localStopwatch;
         }
 
         public bool IsValid(string code, TimeSpan validityPeriod)
         {
-            return Code == code && (DateTime.Now - CreationTime) <= validityPeriod;
+            return Code == code && LocalStopwatch.Elapsed <= validityPeriod;
         }
     }
 }

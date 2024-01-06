@@ -14,6 +14,7 @@ namespace SpiderClueServerTest
         public void Dispose()
         {
             //aquí luego se liberan los recursos
+            GC.SuppressFinalize(this);
         }
     }
 }

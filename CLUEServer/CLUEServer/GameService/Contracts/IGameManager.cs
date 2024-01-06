@@ -13,7 +13,7 @@ namespace GameService.Contracts
     public interface IGameManager
     {
         [OperationContract(IsOneWay = true)]
-        void MovePawn(int columns, int rows, string gamertag, string matchCode);
+        void MovePawn(int column, int row, string gamertag, string matchCode);
 
         [OperationContract]
         int RollDice(string matchCode);
@@ -21,14 +21,11 @@ namespace GameService.Contracts
         [OperationContract(IsOneWay = true)]
         void ConnectGamerToGameBoard(string gamertag, string matchCode);
 
-        [OperationContract]
-        int GetNumberOfGamers(string matchCode);
-
         [OperationContract(IsOneWay = true)]
         void MakeFinalAccusation(List<string> cards, string matchCode, string gamertag);
 
         [OperationContract(IsOneWay = true)]
-        void ShowCommonAccusation(string[] accusation, string matchCode, string gamertag);
+        void ShowCommonAccusation(string[] accusation, string matchCode, string accuser);
 
         [OperationContract(IsOneWay = true)]
         void ShowCard(Card card, string matchCode, string accuser);
@@ -80,50 +77,49 @@ namespace GameService.Contracts
     [DataContract]
     public class Pawn
     {
-        private string color;
-        private int xPosition;
-        private int yPosition;
+        [DataMember]
+        public string Color { get; set; }
 
         [DataMember]
-        public string Color { get { return color; } set { color = value; } }
+        public int XPosition { get; set; }
 
         [DataMember]
-        public int XPosition { get { return xPosition; } set { xPosition = value; } }
-
-        [DataMember]
-        public int YPosition { get { return yPosition; } set { yPosition = value; } }
+        public int YPosition { get; set; }
 
     }
 
     [DataContract]
     public class GridNode
     {
-        private int xPosition;
-        private int yPosition;
+        [DataMember]
+        public int Xposition { get; set; }
 
         [DataMember]
-        public int Xposition { get { return xPosition; } set { xPosition = value; } }
-
-        [DataMember]
-        public int Yposition { get { return yPosition; } set { yPosition = value; } }
+        public int Yposition { get; set; }
     }
 
     [DataContract]
     public class Door
     {
-        private int xPosition;
-        private int yPosition;
-        private string zoneName;
+        [DataMember]
+        public string ZoneName { get; set; }
 
         [DataMember]
-        public string ZoneName { get { return zoneName; } set { zoneName = value; } }
+        public int Xposition { get; set; }
 
         [DataMember]
-        public int Xposition { get { return xPosition; } set { xPosition = value; } }
-
-        [DataMember]
-        public int Yposition { get { return yPosition; } set { yPosition = value; } }
+        public int Yposition { get; set; }
     }
-    
-    
+
+    [DataContract]
+    public class Card
+    {
+        [DataMember]
+        public string ID { get; set; }
+
+        [DataMember]
+        public string Type { get; set; }
+    }
+
+
 }

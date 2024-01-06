@@ -52,11 +52,10 @@ namespace GameService.Services
 
                         result = Constants.SUCCESS_IN_OPERATION;
                     }
-                    catch (SqlException sQLException)
+                    catch (SqlException)
                     {
                         dataBaseContextTransaction.Rollback();
                         result = Constants.ERROR_IN_OPERATION;
-                        throw sQLException;
                     }
                 }
             }
@@ -210,7 +209,7 @@ namespace GameService.Services
                     gamer.firstName = firstName;
                     gamer.lastName = lastName;
                     dataBaseContext.SaveChanges();
-                    result = Constants.SUCCESS_IN_OPERATION; ;
+                    result = Constants.SUCCESS_IN_OPERATION;
                 }
                 else
                 {
@@ -239,7 +238,7 @@ namespace GameService.Services
 
                     dataBaseContext.SaveChanges();
 
-                    result = Constants.SUCCESS_IN_OPERATION; ;
+                    result = Constants.SUCCESS_IN_OPERATION;
                 }
                 catch (SqlException sQLException)
                 {
@@ -260,7 +259,7 @@ namespace GameService.Services
                 {
                     gamer.imageCode = titleIcon;
                     dataBaseContext.SaveChanges();
-                    result = Constants.SUCCESS_IN_OPERATION; ;
+                    result = Constants.SUCCESS_IN_OPERATION;
                 }
                 else
                 {

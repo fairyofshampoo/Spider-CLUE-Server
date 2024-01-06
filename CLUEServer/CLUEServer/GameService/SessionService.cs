@@ -1,5 +1,6 @@
 ﻿using GameService.Contracts;
 using System.Collections.Generic;
+using System.Linq;
 using System.ServiceModel;
 
 namespace GameService.Services
@@ -37,13 +38,13 @@ namespace GameService.Services
         private void UpdateConnectedFriends(string gamertag)
         {
             List<string> connectedFriends = SetConnectedFriendsList(gamertag);
-            foreach (var connectedFriend in connectedFriends)
+
+            foreach (var connectedFriend in connectedFriends
+                .Where(friend => gamersFriendsManagerCallback.ContainsKey(friend)))
             {
-                if (gamersFriendsManagerCallback.ContainsKey(connectedFriend))
-                {
-                    gamersFriendsManagerCallback[connectedFriend].ReceiveConnectedFriends(SetConnectedFriendsList(connectedFriend));
-                }
+                gamersFriendsManagerCallback[connectedFriend].ReceiveConnectedFriends(SetConnectedFriendsList(connectedFriend));
             }
         }
+
     }
 }

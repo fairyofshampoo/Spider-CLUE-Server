@@ -12,13 +12,9 @@ namespace GameService.Services
 {
     public class GamerLeftAndRight
     {
-        private string gamertag;
-        private string left;
-        private string right;
-
-        public string Gamertag { get { return gamertag; } set { gamertag = value; } }
-        public string Left { get { return left; } set { left = value; } }
-        public string Right { get { return right; } set { right = value; } }
+        public string Gamertag { get; set; }
+        public string Left { get; set; }
+        public string Right { get; set; }
     }
 
     public partial class GameService : IGameManager
@@ -46,7 +42,7 @@ namespace GameService.Services
             if (AreAllPlayersConnected(matchCode))
             {
                 SetTurns(matchCode);
-                CreatCards(matchCode);
+                CreateCards(matchCode);
                 SendFirstTurn(matchCode);
                 StartTurnTimer(matchCode);
             }
@@ -67,16 +63,9 @@ namespace GameService.Services
         }
         private bool AreAllPlayersConnected(string matchCode)
         {
-            int playersCount = 0;
             bool areAllPlayersConnected = false;
             List<string> gamersInLobby = GetGamersByMatch(matchCode);
-            foreach (string gamer in gamersInLobby)
-            {
-                if (GamersInGameBoard.ContainsKey(gamer))
-                {
-                    playersCount++;
-                }
-            }
+            int playersCount = gamersInLobby.Count(gamer => GamersInGameBoard.ContainsKey(gamer));
 
             if (playersCount == 3)
             {
@@ -91,11 +80,6 @@ namespace GameService.Services
             string gamertag = turnsList[0].Gamertag;
             TurnsInGameboard.Add(matchCode, gamertag );
             GamersInGameBoardCallback[gamertag].ReceiveTurn(true);
-        }
-
-        public int GetNumberOfGamers(string matchCode)
-        {
-            return GetGamersByGameBoard(matchCode).Count();
         }
 
         private List<string> GetGamersByGameBoard(string matchCode)
@@ -218,19 +202,19 @@ namespace GameService.Services
 
         public void ShowMovePawn(Pawn pawn, string matchCode)
         {
-            foreach (var gamer in GamersInGameBoard.ToList())
+            foreach (var gamer in GamersInGameBoard 
+                .Where(entry => entry.Value.Equals(matchCode))
+                .Select(entry => entry.Key)
+                .Where(gamertag => GamersInGameBoardCallback.ContainsKey(gamertag)))
             {
-                if (gamer.Value.Equals(matchCode))
+                if (GamersInGameBoardCallback.ContainsKey(gamer))
                 {
-                    string gamertag = gamer.Key;
-
-                    if (GamersInGameBoardCallback.ContainsKey(gamertag))
-                    {
-                        GamersInGameBoardCallback[gamertag].ReceivePawnsMove(pawn);
-                    }
+                    GamersInGameBoardCallback[gamer].ReceivePawnsMove(pawn);
                 }
             }
+
             ResetDice(matchCode);
+
         }
 
         private void ResetDice(string matchCode)
@@ -243,12 +227,9 @@ namespace GameService.Services
 
         public void ShowMoveIsInvalid(string gamertag)
         {
-            if (GamersInGameBoard.ContainsKey(gamertag))
+            if (GamersInGameBoard.ContainsKey(gamertag) && GamersInGameBoardCallback.ContainsKey(gamertag))
             {
-                if (GamersInGameBoardCallback.ContainsKey(gamertag))
-                {
-                    GamersInGameBoardCallback[gamertag].ReceiveInvalidMove();
-                }
+                GamersInGameBoardCallback[gamertag].ReceiveInvalidMove();
             }
         }
 
@@ -302,7 +283,7 @@ namespace GameService.Services
         {
             bool isAValidMove = false;
             int rollDice = GetGameBoardRollDice(matchCode);
-            if (IsADoor(column, row)) //Si es una puerta
+            if (IsADoor(column, row)) 
             {
                 GridNode start = GetPawnPosition(gamertag);
                 GridNode finish = new GridNode
@@ -318,12 +299,10 @@ namespace GameService.Services
                     SendAccusationOption(gamertag, door);
                 } 
             }
-            else if (IsAnInvalidZone(column, row)) //Sí es una zona prohibida
+            else if (IsAnInvalidZone(column, row)) 
             {
-                Console.WriteLine("sí es una zona inválida");
                 if (IsAValidCorner(column, row))
                 {
-                    Console.WriteLine("pero es una corner valida");
                     GridNode start = GetPawnPosition(gamertag);
                     GridNode finish = new GridNode
                     {
@@ -335,7 +314,6 @@ namespace GameService.Services
             }
             else if(IsTheCenter(column, row))
             {
-                Console.WriteLine("Es el centro");
                 GridNode start = GetPawnPosition(gamertag);
                 GridNode finish = new GridNode
                 {
@@ -349,7 +327,6 @@ namespace GameService.Services
                 }
             } else
             {
-                Console.WriteLine("zona válida");
                 GridNode start = GetPawnPosition(gamertag);
                 GridNode finish = new GridNode
                 {
@@ -374,7 +351,6 @@ namespace GameService.Services
         private bool AreTheStepsValid(GridNode start, GridNode finish, int rollDice)
         {
             bool isValidStep = false;
-            Console.WriteLine("AreTheStepsValid: start: " + start.Xposition + "," + start.Yposition + " fin: " + finish.Xposition + "," + finish.Yposition + " dados: " + rollDice);
             if(rollDice != 0)
             {
                 isValidStep = SearchMoves(start, start, finish, rollDice, new List<GridNode>(), new Queue<GridNode>());
@@ -384,15 +360,12 @@ namespace GameService.Services
 
         private bool SearchMoves(GridNode start, GridNode current, GridNode end, int steps, List<GridNode> visitedNodes, Queue<GridNode> nextNodes)
         {
-            Console.WriteLine("actual: " + current.Xposition + "," + current.Yposition);
             if (current.Xposition == end.Xposition && current.Yposition == end.Yposition && GetNumberOfSteps(start, current) >= 0)
             {
-                Console.WriteLine("se encontró un camino");
                 return true;
             }
             if (GetNumberOfSteps(start, current) > steps)
             {
-                Console.WriteLine("numero de pasos invalido");
                 return false;
             }      
             visitedNodes.Add(current);
@@ -418,14 +391,11 @@ namespace GameService.Services
                 new GridNode() { Xposition = current.Xposition + 1, Yposition = current.Yposition },
             };
 
-            foreach(GridNode node in neighbors) 
+            foreach (GridNode neighborNode in neighbors.Where(node => IsNeighborValid(node, visitedNodes)).ToList())
             {
-                if (IsNeighborValid(node, visitedNodes))
-                {
-                    nextNodes.Enqueue(node);
-                    Console.WriteLine("se agregó el siguiente nodo a vecinos: " + node.Xposition + "," + node.Yposition);
-                }
+                nextNodes.Enqueue(neighborNode);
             }
+
             return nextNodes;
         }
 
@@ -483,55 +453,78 @@ namespace GameService.Services
 
         public bool IsAnInvalidZone(int column, int row)
         {
-            bool isAnInvalidZone = false;
+            bool isAnInvalidZone;
+
             if (column < 6)
             {
-                if (row < 3) //Salón F103
-                {
-                    isAnInvalidZone = true;
-                }
-                else if (row > 4 && row < 10) //Salón cristal
-                {
-                    isAnInvalidZone = true;
-                }
-                else if (row > 10 && row < 16 && column < 5) //Laboratorio
-                {
-                    isAnInvalidZone = true;
-                }
-                else if (column < 5 && row > 17) //Cubículo
-                {
-                    isAnInvalidZone = true;
-                }
+                isAnInvalidZone = IsAnInvalidZoneOfTheFirstSection(column, row);
             }
             else if (column >= 7 && column <= 14)
             {
-                if (row < 6 && column > 7 && column < 14)//Anfiteatro
-                {
-                    isAnInvalidZone = true;
-                }
-                else if (row > 15) //Centro de cómputo
-                {
-                    isAnInvalidZone = true;
-                }
+                isAnInvalidZone = IsAnInvalidZoneOfTheSecondSection(column, row);
             }
             else
             {
-                if (column > 15 && row < 5) //Cancha
-                {
-                    isAnInvalidZone = true;
-                }
-                else if (row > 7 && row < 15 && column >= 15) //Estacionamiento
-                {
-                    isAnInvalidZone = true;
-                }
-                else if (column > 16 && row > 16) //Salón de profesores
-                {
-                    isAnInvalidZone = true;
-                }
+                isAnInvalidZone = IsAnInvalidZoneOfTheThirdSection(column, row);
             }
-            Console.WriteLine("es zona inválida " + isAnInvalidZone);
             return isAnInvalidZone;
         }
+
+        private bool IsAnInvalidZoneOfTheFirstSection (int column, int row)
+        {
+            bool isAnInvalidZone = false;
+            if (row < 3) 
+            {
+                isAnInvalidZone = true;
+            }
+            else if (row > 4 && row < 10) 
+            {
+                isAnInvalidZone = true;
+            }
+            else if (row > 10 && row < 16 && column < 5) 
+            {
+                isAnInvalidZone = true;
+            }
+            else if (column < 5 && row > 17) 
+            {
+                isAnInvalidZone = true;
+            }
+            return isAnInvalidZone;
+        }
+
+        private bool IsAnInvalidZoneOfTheSecondSection(int column, int row)
+        {
+            bool isAnInvalidZone = false;
+            if (row < 6 && column > 7 && column < 14)
+            {
+                isAnInvalidZone = true;
+            }
+            else if (row > 15) 
+            {
+                isAnInvalidZone = true;
+            }
+            return isAnInvalidZone;
+        }
+
+        private bool IsAnInvalidZoneOfTheThirdSection(int column, int row)
+        {
+            bool isAnInvalidZone = false;
+            if (column > 15 && row < 5) 
+            {
+                isAnInvalidZone = true;
+            }
+            else if (row > 7 && row < 15 && column >= 15) 
+            {
+                isAnInvalidZone = true;
+            }
+            else if (column > 16 && row > 16) 
+            {
+                isAnInvalidZone = true;
+            }
+            return isAnInvalidZone;
+        }
+
+
 
         public bool IsADoor(int column, int row)
         {
@@ -562,42 +555,43 @@ namespace GameService.Services
 
         public void MakeFinalAccusation(List<string> cards, string matchCode, string gamertag)
         {
-            int cardsCount = 0;
-            if (clueDeckByMatch.ContainsKey(matchCode))
-            {
-                List<Card> clueDeck = clueDeckByMatch[matchCode];
-                foreach (var card in clueDeck)
-                {
-                    foreach (var gamerCard in cards)
-                    {
-                        if (card.ID == gamerCard)
-                        {
-                            cardsCount++;
-                        }
-                    }
-                }
-            }
+            int cardsCount = CountMatchingCards(cards, matchCode);
 
-            if(cardsCount == 3)
+            if (cardsCount == 3)
             {
-                string icon = GetIcon(gamertag);
-                foreach (var gamer in GamersInGameBoard.ToList())
-                {
-                    if (gamer.Value.Equals(matchCode))
-                    {
-                        string gamerFound = gamer.Key;
-
-                        if (GamersInGameBoardCallback.ContainsKey(gamerFound))
-                        {
-                            GamersInGameBoardCallback[gamerFound].ReceiveWinner(gamertag, icon);
-                        }
-                    }
-                }
-                Console.WriteLine(UpdateGamesWonByGamer(gamertag));
+                NotifyWinner(gamertag, matchCode);
+                UpdateGamesWonByGamer(gamertag);
             }
             else
             {
                 RemoveFromTurns(gamertag, matchCode);
+            }
+        }
+
+        private int CountMatchingCards(List<string> cards, string matchCode)
+        {
+            int cardsCount = 0;
+
+            if (clueDeckByMatch.TryGetValue(matchCode, out List<Card> clueDeck))
+            {
+                cardsCount = clueDeck.Count(card => cards.Contains(card.ID));
+            }
+
+            return cardsCount;
+        }
+
+        private void NotifyWinner(string winnerGamertag, string matchCode)
+        {
+            string winnerIcon = GetIcon(winnerGamertag);
+
+            foreach (var gamerEntry in GamersInGameBoard.Where(entry => entry.Value.Equals(matchCode)))
+            {
+                string gamerFound = gamerEntry.Key;
+
+                if (GamersInGameBoardCallback.ContainsKey(gamerFound))
+                {
+                    GamersInGameBoardCallback[gamerFound].ReceiveWinner(winnerGamertag, winnerIcon);
+                }
             }
         }
 
@@ -611,7 +605,7 @@ namespace GameService.Services
                 {
                     gamer.gamesWon++;
                     dataBaseContext.SaveChanges();
-                    result = Constants.SUCCESS_IN_OPERATION; ;
+                    result = Constants.SUCCESS_IN_OPERATION;
                 }
                 else
                 {
@@ -650,14 +644,57 @@ namespace GameService.Services
             }
         }
 
-
-
         public void ShowCard(Card card, string matchCode, string accuser)
         {
             GamersInGameBoardCallback[accuser].ReceiveCardAccused(card);
         }
 
         public void ShowCommonAccusation(string[] accusation, string matchCode, string accuser)
+        {
+            foreach (var gamerEntry in GamersInGameBoard.Where(entry => entry.Value.Equals(matchCode)))
+            {
+                string gamertag = gamerEntry.Key;
+
+                if (GamersInGameBoardCallback.ContainsKey(gamertag))
+                {
+                    GamersInGameBoardCallback[gamertag].ReceiveCommonAccusationByOtherGamer(accusation);
+                }
+            }
+
+            string leftGamer = GetLeftGamer(matchCode, accuser);
+            IsLeftOwnerOfCards(accusation, accuser, leftGamer, matchCode);
+        }
+
+
+        private void IsLeftOwnerOfCards(string[] accusation, string accuser, string leftGamer, string matchCode)
+        {
+            if (accuser != leftGamer)
+            {
+                List<Card> leftGamerDeck = GetDeck(leftGamer);
+                List<Card> cardsInCommon = FindCardsInCommon(accusation, leftGamerDeck);
+
+                if (cardsInCommon.Any())
+                {
+                    GamersInGameBoardCallback[leftGamer].RequestShowCard(cardsInCommon, accuser);
+                }
+                else
+                {
+                    string leftOfLeftGamer = GetLeftGamer(matchCode, leftGamer);
+                    IsLeftOwnerOfCards(accusation, accuser, leftOfLeftGamer, matchCode);
+                }
+            }
+            else
+            {
+                ShowNobodyAnswers(matchCode);
+            }
+        }
+
+        private List<Card> FindCardsInCommon(string[] accusation, List<Card> deck)
+        {
+            return deck.Where(card => accusation.Contains(card.ID)).ToList();
+        }
+
+        private void ShowNobodyAnswers(string matchCode)
         {
             foreach (var gamer in GamersInGameBoard.ToList())
             {
@@ -667,57 +704,12 @@ namespace GameService.Services
 
                     if (GamersInGameBoardCallback.ContainsKey(gamertag))
                     {
-                        GamersInGameBoardCallback[gamertag].ReceiveCommonAccusationByOtherGamer(accusation);
-                    }
-                }
-            }
-            string leftGamer = GetLeftGamer(matchCode, accuser);
-            IsLeftOwnerOfCards(accusation, accuser, leftGamer, matchCode);
-        }
-
-        private void IsLeftOwnerOfCards(string[] accusation, string accuser, string leftGamer,string matchCode)
-        {
-            if(accuser != leftGamer)
-            {
-                List<Card> leftGamerDeck = GetDeck(leftGamer);
-                List<Card> cardsInCommon = new List<Card>();
-
-                if (leftGamerDeck.Any())
-                {
-                    foreach (var card in leftGamerDeck)
-                    {
-                        if (accusation.Contains(card.ID))
-                        {
-                            cardsInCommon.Add(card);
-                        }
-                    }
-                }
-                if (cardsInCommon.Any())
-                {
-                    GamersInGameBoardCallback[leftGamer].RequestShowCard(cardsInCommon, accuser);
-
-                } else
-                {
-                    string leftOfLeftGamer = GetLeftGamer(matchCode, leftGamer);
-                    IsLeftOwnerOfCards(accusation, accuser, leftOfLeftGamer, matchCode);
-                }
-            }
-            else
-            {
-                foreach (var gamer in GamersInGameBoard.ToList())
-                {
-                    if (gamer.Value.Equals(matchCode))
-                    {
-                        string gamertag = gamer.Key;
-
-                        if (GamersInGameBoardCallback.ContainsKey(gamertag))
-                        {
-                            GamersInGameBoardCallback[gamertag].ShowNobodyAnswers();
-                        }
+                        GamersInGameBoardCallback[gamertag].ShowNobodyAnswers();
                     }
                 }
             }
         }
+
 
         private string GetLeftGamer(string matchCode, string gamertag)
         {
@@ -759,21 +751,12 @@ namespace GameService.Services
             List<Card> gamerDeck = new List<Card>();
             if (decks.ContainsKey(gamertag))
             {
-                Console.WriteLine("Sí está el jugador en el diccionario");
                 gamerDeck = decks[gamertag];
             }
-            else
-            {
-                Console.WriteLine("No se encontró al jugador: " + gamertag);
-                Console.WriteLine("Los mazos guardados son los siguientes");
-                Show();
-            }
-
-            Console.WriteLine("Sí pasé por el getDeck");
             return gamerDeck;
         }
 
-        public List<GridNode> AllowedCorners = new List<GridNode>()
+        private readonly List<GridNode> AllowedCorners = new List<GridNode>()
         {
             new GridNode { Xposition = 5, Yposition = 5,},
             new GridNode { Xposition = 5, Yposition = 9,},

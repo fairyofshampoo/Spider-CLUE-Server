@@ -16,10 +16,10 @@ namespace GameService.Contracts
         Match GetMatchInformation(string code);
 
         [OperationContract(IsOneWay = true)]
-        void ConnectToMatch(string gamertag, string code);
+        void ConnectToMatch(string gamertag, string matchCode);
 
         [OperationContract]
-        void LeaveMatch(string gamertag, string code);
+        void LeaveMatch(string gamertag, string matchCode);
 
         [OperationContract(IsOneWay = true)]
         void GetGamersInMatch(string gamertag, string code);
@@ -35,14 +35,12 @@ namespace GameService.Contracts
     [DataContract]
     public class Match
     {
-        private string code;
-        private string createdBy;
+ 
+        [DataMember]
+        public string Code { get; set; }
 
         [DataMember]
-        public string Code { get { return code; } set { code = value; } }
-
-        [DataMember]
-        public string CreatedBy { get {  return createdBy; } set {  createdBy = value; } }
+        public string CreatedBy { get; set; }
     }
 
 

@@ -21,9 +21,8 @@ namespace GameService.Services
 
         private void DisplayMessages(String matchCode)
         {
-            foreach(var gamer in gamersInMatch)
+            foreach (var gamertag in gamersInMatch.Select(gamer => gamer.Key))
             {
-                string gamertag = gamer.Key;
                 if (chatCallbacks.ContainsKey(gamertag))
                 {
                     chatCallbacks[gamertag].ReceiveMessages(RetrieveMessagesForMatch(matchCode));
