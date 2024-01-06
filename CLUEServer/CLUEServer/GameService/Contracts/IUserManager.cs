@@ -18,13 +18,13 @@ namespace GameService.Contracts
         string RequestGuestPlayer();
 
         [OperationContract]
-        bool IsEmailExisting(string email);
+        bool IsEmailExisting(String email);
 
         [OperationContract]
-        int UpdatePassword(string gamertag,  string password);
+        int UpdatePassword(String gamertag,  String password);
 
         [OperationContract]
-        bool IsGamertagExisting (string gamertag);
+        bool IsGamertagExisting (String gamertag);
 
         [OperationContract]
         Gamer GetGamerByGamertag(string gamertag);
@@ -33,13 +33,13 @@ namespace GameService.Contracts
         Gamer GetGamerByEmail(string email);
 
         [OperationContract]
-        int ModifyAccount (string gamertag, string firstName, string lastName);
+        int ModifyAccount (String gamertag, String firstName, String lastName);
         
         [OperationContract]
-        int ChangeIcon (string gamertag, string titleIcon);
+        int ChangeIcon (string gamertag, String titleIcon);
 
         [OperationContract]
-        string GetIcon (string gamertag);
+        string GetIcon (String gamertag);
 
         [OperationContract]
         int DeleteGuestPlayer(string gamertag);
@@ -48,6 +48,7 @@ namespace GameService.Contracts
     [DataContract]
     public class Gamer : AccessAccount
     {
+
         [DataMember]
         public string FirstName { get; set; }
 
@@ -65,6 +66,7 @@ namespace GameService.Contracts
     [DataContract]
     public class AccessAccount
     {
+
         [DataMember]
         public string Email { get; set; }
 

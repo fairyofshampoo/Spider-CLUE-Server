@@ -94,44 +94,34 @@ namespace GameService.Contracts
     [DataContract]
     public class GridNode
     {
-        private int xPosition;
-        private int yPosition;
+        [DataMember]
+        public int Xposition { get; set; }
 
         [DataMember]
-        public int Xposition { get { return xPosition; } set { xPosition = value; } }
-
-        [DataMember]
-        public int Yposition { get { return yPosition; } set { yPosition = value; } }
+        public int Yposition { get; set; }
     }
 
     [DataContract]
     public class Door
     {
-        private int xPosition;
-        private int yPosition;
-        private string zoneName;
+        [DataMember]
+        public string ZoneName { get; set; }
 
         [DataMember]
-        public string ZoneName { get { return zoneName; } set { zoneName = value; } }
+        public int Xposition { get; set; }
 
         [DataMember]
-        public int Xposition { get { return xPosition; } set { xPosition = value; } }
-
-        [DataMember]
-        public int Yposition { get { return yPosition; } set { yPosition = value; } }
+        public int Yposition { get; set; }
     }
 
     [DataContract]
     public class Card
     {
-        private string id;
-        private string type;
+        [DataMember]
+        public string ID { get; set; }
 
         [DataMember]
-        public string ID { get { return id; } set { id = value; } }
-
-        [DataMember]
-        public string Type { get { return type; } set { type = value; } }
+        public string Type { get; set; }
     }
 
 

@@ -27,6 +27,7 @@ namespace GameService.Contracts
     [DataContract]
     public class FriendRequest
     {
+
         [DataMember]
         public string SenderGamertag { get; set; }
 
