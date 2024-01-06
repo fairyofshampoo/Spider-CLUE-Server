@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GameService.Services
 {
-    
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant)]
     public partial class GameService : IChatManager
     {
         private static readonly Dictionary<string, IChatManagerCallback> chatCallbacks = new Dictionary<string, IChatManagerCallback>();
