@@ -1,4 +1,5 @@
 ﻿using GameService.Contracts;
+using GameService.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace GameService.Services
         private static readonly Dictionary<String, List<Message>> messagesforMatch = new Dictionary<String, List<Message>>();
         public void ConnectToChat(string gamertag, String matchCode)
         {
+            HostBehaviorManager.ChangeToReentrant();
             chatCallbacks.Add(gamertag, OperationContext.Current.GetCallbackChannel<IChatManagerCallback>());
             DisplayMessages(matchCode);
         }
@@ -42,6 +44,7 @@ namespace GameService.Services
 
         public void DisconnectFromChat(string gamertag)
         {
+            HostBehaviorManager.ChangeToReentrant();
             if (chatCallbacks.ContainsKey(gamertag))
             {
                 chatCallbacks.Remove(gamertag);
@@ -50,6 +53,7 @@ namespace GameService.Services
 
         public void BroadcastMessage(String matchCode, Message message)
         {
+            HostBehaviorManager.ChangeToReentrant();
             messagesforMatch[matchCode].Add(message);
             DisplayMessages(matchCode);
         }

@@ -1,4 +1,5 @@
 ﻿using GameService.Contracts;
+using GameService.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
@@ -9,6 +10,7 @@ namespace GameService.Services
     {
         public void Connect(string gamertag)
         {
+            HostBehaviorManager.ChangeToReentrant();
             if (!UsersConnected.Contains(gamertag))
             {
                 UsersConnected.Add(gamertag);
@@ -18,6 +20,7 @@ namespace GameService.Services
 
         public void Disconnect(string gamertag)
         {
+            HostBehaviorManager.ChangeToReentrant();
             RemoveFromUsersConnected(gamertag);
         }
 

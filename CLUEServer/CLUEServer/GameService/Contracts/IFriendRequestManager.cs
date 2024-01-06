@@ -12,7 +12,7 @@ namespace GameService.Contracts
     interface IFriendRequestManager
     {
         [OperationContract]
-        string [] GetFriendsRequets(string gamertag);
+        string [] GetFriendsRequest(string gamertag);
 
         [OperationContract]
         void CreateFriendRequest(string gamertag, string friendGamertag);

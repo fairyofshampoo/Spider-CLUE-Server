@@ -16,6 +16,7 @@ namespace GameService.Services
 
         public void ConnectToMatch(string gamertag, string matchCode)
         {
+            HostBehaviorManager.ChangeToReentrant();
             LoggerManager logger = new LoggerManager(this.GetType());
             try
             {
@@ -33,6 +34,7 @@ namespace GameService.Services
 
         private void ShowPlayerProfilesInMatch(string matchCode)
         {
+            HostBehaviorManager.ChangeToReentrant();
             lock (gamersMatchCallback)
             {
                 foreach (var gamerEntry in gamersInMatch
@@ -57,11 +59,13 @@ namespace GameService.Services
 
         public void GetGamersInMatch(string gamertag, string code)
         {
+            HostBehaviorManager.ChangeToReentrant();
             OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>().ReceiveGamersInMatch(GetCharactersInMatch(code));
         }
 
         public Match GetMatchInformation(string code)
         {
+            HostBehaviorManager.ChangeToReentrant();
             using (var databaseContext = new SpiderClueDbEntities())
             {
                 Match result = new Match();
@@ -81,6 +85,7 @@ namespace GameService.Services
 
         public void LeaveMatch(string gamertag, string matchCode)
         {
+            HostBehaviorManager.ChangeToReentrant();
             RemoveFromMatch(gamertag);
             ShowPlayerProfilesInMatch(matchCode);
         }

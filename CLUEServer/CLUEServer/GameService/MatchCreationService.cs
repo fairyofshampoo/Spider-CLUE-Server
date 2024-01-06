@@ -13,6 +13,7 @@ namespace GameService.Services
     {
         public string CreateMatch(string gamertag)
         {
+            HostBehaviorManager.ChangeToSingle();
             LoggerManager logger = new LoggerManager(this.GetType());
             string matchcreationResult = string.Empty;
             try
@@ -45,7 +46,7 @@ namespace GameService.Services
             {
                 logger.LogFatal(exception);
             }
-
+            HostBehaviorManager.ChangeToReentrant();
             return matchcreationResult;
         }
 
