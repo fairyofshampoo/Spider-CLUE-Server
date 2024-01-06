@@ -18,13 +18,13 @@ namespace GameService.Contracts
         string RequestGuestPlayer();
 
         [OperationContract]
-        bool IsEmailExisting(String email);
+        bool IsEmailExisting(string email);
 
         [OperationContract]
-        int UpdatePassword(String gamertag,  String password);
+        int UpdatePassword(string gamertag,  string password);
 
         [OperationContract]
-        bool IsGamertagExisting (String gamertag);
+        bool IsGamertagExisting (string gamertag);
 
         [OperationContract]
         Gamer GetGamerByGamertag(string gamertag);
@@ -33,13 +33,13 @@ namespace GameService.Contracts
         Gamer GetGamerByEmail(string email);
 
         [OperationContract]
-        int ModifyAccount (String gamertag, String firstName, String lastName);
+        int ModifyAccount (string gamertag, string firstName, string lastName);
         
         [OperationContract]
-        int ChangeIcon (string gamertag, String titleIcon);
+        int ChangeIcon (string gamertag, string titleIcon);
 
         [OperationContract]
-        string GetIcon (String gamertag);
+        string GetIcon (string gamertag);
 
         [OperationContract]
         int DeleteGuestPlayer(string gamertag);
@@ -48,40 +48,30 @@ namespace GameService.Contracts
     [DataContract]
     public class Gamer : AccessAccount
     {
-        private string firstName;
-        private string lastName;
-        private int gamesWon;
-        private string imageCode;
-
+        [DataMember]
+        public string FirstName { get; set; }
 
         [DataMember]
-        public string FirstName { get { return firstName; } set { firstName = value; } }
+        public string LastName { get; set; }
 
         [DataMember]
-        public string LastName { get { return lastName; } set { lastName = value; } }
+        public int GamesWon { get; set; }
 
         [DataMember]
-        public int GamesWon { get { return gamesWon; } set { gamesWon = value; } }
-
-        [DataMember]
-        public string ImageCode { get { return imageCode; } set { imageCode = value; } }
+        public string ImageCode { get; set; }
 
     }
 
     [DataContract]
     public class AccessAccount
     {
-        private string email;
-        private string gamertag;
-        private string password;
+        [DataMember]
+        public string Email { get; set; }
 
         [DataMember]
-        public string Email { get { return email; } set { email = value; } }
+        public string Gamertag { get; set; }
 
         [DataMember]
-        public string Gamertag { get { return gamertag; } set { gamertag = value; } }
-
-        [DataMember]
-        public string Password { get { return password; } set { password = value; } }
+        public string Password { get; set; }
     }
 }

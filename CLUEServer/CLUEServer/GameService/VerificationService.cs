@@ -43,12 +43,20 @@ namespace GameService.Services
             int lowerBound = 100000;
             int upperBound = 1000000;
 
-            Random random = new Random();
-            int codeNumber = random.Next(lowerBound, upperBound);
-            string code = codeNumber.ToString();
+            using (var rng = new System.Security.Cryptography.RNGCryptoServiceProvider())
+            {
+                byte[] randomNumber = new byte[4];
+                rng.GetBytes(randomNumber);
 
-            return code;
+                int codeNumber = BitConverter.ToInt32(randomNumber, 0) & Int32.MaxValue;
+                int range = upperBound - lowerBound;
+                int scaledNumber = lowerBound + (codeNumber % range);
+
+                string code = scaledNumber.ToString();
+                return code;
+            }
         }
+
     }
 
     public class VerificationData

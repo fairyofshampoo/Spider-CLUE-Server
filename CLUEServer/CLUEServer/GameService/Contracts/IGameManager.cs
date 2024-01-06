@@ -80,18 +80,14 @@ namespace GameService.Contracts
     [DataContract]
     public class Pawn
     {
-        private string color;
-        private int xPosition;
-        private int yPosition;
+        [DataMember]
+        public string Color { get; set; }
 
         [DataMember]
-        public string Color { get { return color; } set { color = value; } }
+        public int XPosition { get; set; }
 
         [DataMember]
-        public int XPosition { get { return xPosition; } set { xPosition = value; } }
-
-        [DataMember]
-        public int YPosition { get { return yPosition; } set { yPosition = value; } }
+        public int YPosition { get; set; }
 
     }
 

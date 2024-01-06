@@ -474,7 +474,8 @@ namespace GameService.Services
 
         public bool IsAnInvalidZone(int column, int row)
         {
-            bool isAnInvalidZone = false;
+            bool isAnInvalidZone;
+
             if (column < 6)
             {
                 isAnInvalidZone = IsAnInvalidZoneOfTheFirstSection(column, row);
