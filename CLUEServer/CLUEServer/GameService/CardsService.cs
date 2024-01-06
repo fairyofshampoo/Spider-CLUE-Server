@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace GameService.Services
 {
-    public partial class GameService : ICardManager
+    public partial class GameService
     {
-        public static readonly Dictionary<string, List<Card>> decks = new Dictionary<string, List<Card>>();
-        public static readonly Dictionary<string, List<Card>> clueDeckByMatch = new Dictionary<string, List<Card>>();
+        private static readonly Dictionary<string, List<Card>> decks = new Dictionary<string, List<Card>>();
+        private static readonly Dictionary<string, List<Card>> clueDeckByMatch = new Dictionary<string, List<Card>>();
 
-        public List<Card> ChooseCards(List<Card> firstDeck, List<Card> secondDeck, List<Card> thirdDeck, string matchCode)
+        private List<Card> ChooseCards(List<Card> firstDeck, List<Card> secondDeck, List<Card> thirdDeck, string matchCode)
         {
             List<Card> clueDeck = new List<Card>();
 
@@ -39,7 +39,7 @@ namespace GameService.Services
             return cards;
         }
 
-        public void CreatCards(string matchCode)
+        private void CreateCards(string matchCode)
         {
             List<string> gamerByBoard = GetGamersByGameBoard(matchCode);
             List<Card> firstDeck = CreateCharacterCards();
@@ -48,26 +48,9 @@ namespace GameService.Services
             List<Card> cards = ChooseCards(firstDeck, secondDeck, thirdDeck, matchCode);
 
             DealCards(gamerByBoard, ShuffleCards(cards));
-            Show();
         }
 
-        private void Show()
-        {
-            foreach(var valor in decks)
-            {
-                Console.WriteLine($"Gamertag: {valor.Key}");
-
-                Console.WriteLine("Cartas");
-                foreach(var card in valor.Value)
-                {
-                    Console.WriteLine($"{card.ID}");
-                }
-                Console.WriteLine("--------------------");
-            }
-            Console.WriteLine("Cartas en el sobre");
-        }
-
-        public List<Card> CreateCharacterCards()
+        private List<Card> CreateCharacterCards()
         {
             Card card1 =  new Card { ID = "DocOchCard.png", Type = "Character"};
             Card card2 =  new Card { ID = "ElectroJuanCard.png", Type = "Character" };
@@ -85,7 +68,7 @@ namespace GameService.Services
             firstDeck.Add(card6);
             return firstDeck;
         }   
-        public List<Card> CreatePlaceCards()
+        private List<Card> CreatePlaceCards()
         {
             Card card7 = new Card { ID = "place1.png", Type = "Place" };
             Card card8 = new Card { ID = "place2.png", Type = "Place" };
@@ -110,7 +93,7 @@ namespace GameService.Services
             return secondDeck;
         }
 
-        public List<Card> CreateMotiveCards()
+        private List<Card> CreateMotiveCards()
         {
             Card card16 = new Card { ID = "motive1.png", Type = "Motive" };
             Card card17 = new Card { ID = "motive2.png", Type = "Motive" };
@@ -129,7 +112,7 @@ namespace GameService.Services
             return thirdDeck;
         }
 
-        public void DealCards(List<string> gamers, List<Card> cards)
+        private void DealCards(List<string> gamers, List<Card> cards)
         {
             List<Card> firstDeck = cards.GetRange(0, 6);
             List<Card> secondDeck = cards.GetRange(6, 6);
@@ -141,7 +124,7 @@ namespace GameService.Services
             decks.Add(gamers[2], thirdDeck);
         }
 
-        public List<Card> ShuffleCards(List<Card> cards)
+        private List<Card> ShuffleCards(List<Card> cards)
         {
             Random random = new Random();
             int index = cards.Count;    

@@ -13,16 +13,13 @@ namespace GameService.Services
         private static readonly Dictionary<string, ILobbyManagerCallback> gamersLobbyCallback = new Dictionary<string, ILobbyManagerCallback>();
         public void BeginMatch(string matchCode)
         {
-            foreach (var gamer in gamersInMatch)
+            foreach (var gamer in gamersInMatch
+                .Where(entry => entry.Value.Equals(matchCode))
+                .Where(entry => gamersLobbyCallback.ContainsKey(entry.Key)))
             {
-                if (gamer.Value.Equals(matchCode))
+                if (gamersLobbyCallback.ContainsKey(gamer.Key))
                 {
-                    string gamertag = gamer.Key;
-
-                    if (gamersLobbyCallback.ContainsKey(gamertag))
-                    {
-                        gamersLobbyCallback[gamertag].StartGame();
-                    }
+                    gamersLobbyCallback[gamer.Key].StartGame();
                 }
             }
         }
