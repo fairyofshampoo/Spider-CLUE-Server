@@ -28,7 +28,7 @@ namespace GameService.Contracts
         void MakeFinalAccusation(List<string> cards, string matchCode, string gamertag);
 
         [OperationContract(IsOneWay = true)]
-        void ShowCommonAccusation(string[] accusation, string matchCode, string gamertag);
+        void ShowCommonAccusation(string[] accusation, string matchCode, string accuser);
 
         [OperationContract(IsOneWay = true)]
         void ShowCard(Card card, string matchCode, string accuser);
@@ -124,6 +124,19 @@ namespace GameService.Contracts
         [DataMember]
         public int Yposition { get { return yPosition; } set { yPosition = value; } }
     }
-    
-    
+
+    [DataContract]
+    public class Card
+    {
+        private string id;
+        private string type;
+
+        [DataMember]
+        public string ID { get { return id; } set { id = value; } }
+
+        [DataMember]
+        public string Type { get { return type; } set { type = value; } }
+    }
+
+
 }

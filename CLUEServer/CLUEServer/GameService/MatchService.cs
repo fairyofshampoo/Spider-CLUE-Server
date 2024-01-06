@@ -35,20 +35,20 @@ namespace GameService.Services
         {
             lock (gamersMatchCallback)
             {
-                foreach (var gamer in gamersInMatch.ToList())
+                foreach (var gamerEntry in gamersInMatch
+                    .Where(entry => entry.Value.Equals(matchCode))
+                    .Select(entry => entry.Key)
+                    .Where(gamertag => gamersMatchCallback.ContainsKey(gamertag))
+                    .ToList())
                 {
-                    if (gamer.Value.Equals(matchCode))
+                    if (gamersMatchCallback.ContainsKey(gamerEntry))
                     {
-                        string gamertag = gamer.Key;
-
-                        if (gamersMatchCallback.ContainsKey(gamertag))
-                        {
-                            gamersMatchCallback[gamertag].ReceiveGamersInMatch(GetCharactersInMatch(matchCode));
-                        }
+                        gamersMatchCallback[gamerEntry].ReceiveGamersInMatch(GetCharactersInMatch(matchCode));
                     }
                 }
             }
         }
+
 
         private List<string> GetGamersByMatch(string matchCode)
         {

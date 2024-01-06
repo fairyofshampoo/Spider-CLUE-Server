@@ -16,10 +16,10 @@ namespace GameService.Contracts
         Match GetMatchInformation(string code);
 
         [OperationContract(IsOneWay = true)]
-        void ConnectToMatch(string gamertag, string code);
+        void ConnectToMatch(string gamertag, string matchCode);
 
         [OperationContract]
-        void LeaveMatch(string gamertag, string code);
+        void LeaveMatch(string gamertag, string matchCode);
 
         [OperationContract(IsOneWay = true)]
         void GetGamersInMatch(string gamertag, string code);

@@ -46,7 +46,7 @@ namespace GameService.Services
             if (AreAllPlayersConnected(matchCode))
             {
                 SetTurns(matchCode);
-                CreatCards(matchCode);
+                CreateCards(matchCode);
                 SendFirstTurn(matchCode);
                 StartTurnTimer(matchCode);
             }
@@ -320,10 +320,8 @@ namespace GameService.Services
             }
             else if (IsAnInvalidZone(column, row)) //Sí es una zona prohibida
             {
-                Console.WriteLine("sí es una zona inválida");
                 if (IsAValidCorner(column, row))
                 {
-                    Console.WriteLine("pero es una corner valida");
                     GridNode start = GetPawnPosition(gamertag);
                     GridNode finish = new GridNode
                     {
@@ -335,7 +333,6 @@ namespace GameService.Services
             }
             else if(IsTheCenter(column, row))
             {
-                Console.WriteLine("Es el centro");
                 GridNode start = GetPawnPosition(gamertag);
                 GridNode finish = new GridNode
                 {
@@ -349,7 +346,6 @@ namespace GameService.Services
                 }
             } else
             {
-                Console.WriteLine("zona válida");
                 GridNode start = GetPawnPosition(gamertag);
                 GridNode finish = new GridNode
                 {
@@ -529,7 +525,6 @@ namespace GameService.Services
                     isAnInvalidZone = true;
                 }
             }
-            Console.WriteLine("es zona inválida " + isAnInvalidZone);
             return isAnInvalidZone;
         }
 
@@ -562,42 +557,43 @@ namespace GameService.Services
 
         public void MakeFinalAccusation(List<string> cards, string matchCode, string gamertag)
         {
-            int cardsCount = 0;
-            if (clueDeckByMatch.ContainsKey(matchCode))
-            {
-                List<Card> clueDeck = clueDeckByMatch[matchCode];
-                foreach (var card in clueDeck)
-                {
-                    foreach (var gamerCard in cards)
-                    {
-                        if (card.ID == gamerCard)
-                        {
-                            cardsCount++;
-                        }
-                    }
-                }
-            }
+            int cardsCount = CountMatchingCards(cards, matchCode);
 
-            if(cardsCount == 3)
+            if (cardsCount == 3)
             {
-                string icon = GetIcon(gamertag);
-                foreach (var gamer in GamersInGameBoard.ToList())
-                {
-                    if (gamer.Value.Equals(matchCode))
-                    {
-                        string gamerFound = gamer.Key;
-
-                        if (GamersInGameBoardCallback.ContainsKey(gamerFound))
-                        {
-                            GamersInGameBoardCallback[gamerFound].ReceiveWinner(gamertag, icon);
-                        }
-                    }
-                }
-                Console.WriteLine(UpdateGamesWonByGamer(gamertag));
+                NotifyWinner(gamertag, matchCode);
+                UpdateGamesWonByGamer(gamertag);
             }
             else
             {
                 RemoveFromTurns(gamertag, matchCode);
+            }
+        }
+
+        private int CountMatchingCards(List<string> cards, string matchCode)
+        {
+            int cardsCount = 0;
+
+            if (clueDeckByMatch.TryGetValue(matchCode, out List<Card> clueDeck))
+            {
+                cardsCount = clueDeck.Count(card => cards.Contains(card.ID));
+            }
+
+            return cardsCount;
+        }
+
+        private void NotifyWinner(string winnerGamertag, string matchCode)
+        {
+            string winnerIcon = GetIcon(winnerGamertag);
+
+            foreach (var gamerEntry in GamersInGameBoard.Where(entry => entry.Value.Equals(matchCode)))
+            {
+                string gamerFound = gamerEntry.Key;
+
+                if (GamersInGameBoardCallback.ContainsKey(gamerFound))
+                {
+                    GamersInGameBoardCallback[gamerFound].ReceiveWinner(winnerGamertag, winnerIcon);
+                }
             }
         }
 
@@ -611,7 +607,7 @@ namespace GameService.Services
                 {
                     gamer.gamesWon++;
                     dataBaseContext.SaveChanges();
-                    result = Constants.SUCCESS_IN_OPERATION; ;
+                    result = Constants.SUCCESS_IN_OPERATION;
                 }
                 else
                 {
@@ -659,6 +655,51 @@ namespace GameService.Services
 
         public void ShowCommonAccusation(string[] accusation, string matchCode, string accuser)
         {
+            foreach (var gamerEntry in GamersInGameBoard.Where(entry => entry.Value.Equals(matchCode)))
+            {
+                string gamertag = gamerEntry.Key;
+
+                if (GamersInGameBoardCallback.ContainsKey(gamertag))
+                {
+                    GamersInGameBoardCallback[gamertag].ReceiveCommonAccusationByOtherGamer(accusation);
+                }
+            }
+
+            string leftGamer = GetLeftGamer(matchCode, accuser);
+            IsLeftOwnerOfCards(accusation, accuser, leftGamer, matchCode);
+        }
+
+
+        private void IsLeftOwnerOfCards(string[] accusation, string accuser, string leftGamer, string matchCode)
+        {
+            if (accuser != leftGamer)
+            {
+                List<Card> leftGamerDeck = GetDeck(leftGamer);
+                List<Card> cardsInCommon = FindCardsInCommon(accusation, leftGamerDeck);
+
+                if (cardsInCommon.Any())
+                {
+                    GamersInGameBoardCallback[leftGamer].RequestShowCard(cardsInCommon, accuser);
+                }
+                else
+                {
+                    string leftOfLeftGamer = GetLeftGamer(matchCode, leftGamer);
+                    IsLeftOwnerOfCards(accusation, accuser, leftOfLeftGamer, matchCode);
+                }
+            }
+            else
+            {
+                ShowNobodyAnswers(matchCode);
+            }
+        }
+
+        private List<Card> FindCardsInCommon(string[] accusation, List<Card> deck)
+        {
+            return deck.Where(card => accusation.Contains(card.ID)).ToList();
+        }
+
+        private void ShowNobodyAnswers(string matchCode)
+        {
             foreach (var gamer in GamersInGameBoard.ToList())
             {
                 if (gamer.Value.Equals(matchCode))
@@ -667,57 +708,12 @@ namespace GameService.Services
 
                     if (GamersInGameBoardCallback.ContainsKey(gamertag))
                     {
-                        GamersInGameBoardCallback[gamertag].ReceiveCommonAccusationByOtherGamer(accusation);
-                    }
-                }
-            }
-            string leftGamer = GetLeftGamer(matchCode, accuser);
-            IsLeftOwnerOfCards(accusation, accuser, leftGamer, matchCode);
-        }
-
-        private void IsLeftOwnerOfCards(string[] accusation, string accuser, string leftGamer,string matchCode)
-        {
-            if(accuser != leftGamer)
-            {
-                List<Card> leftGamerDeck = GetDeck(leftGamer);
-                List<Card> cardsInCommon = new List<Card>();
-
-                if (leftGamerDeck.Any())
-                {
-                    foreach (var card in leftGamerDeck)
-                    {
-                        if (accusation.Contains(card.ID))
-                        {
-                            cardsInCommon.Add(card);
-                        }
-                    }
-                }
-                if (cardsInCommon.Any())
-                {
-                    GamersInGameBoardCallback[leftGamer].RequestShowCard(cardsInCommon, accuser);
-
-                } else
-                {
-                    string leftOfLeftGamer = GetLeftGamer(matchCode, leftGamer);
-                    IsLeftOwnerOfCards(accusation, accuser, leftOfLeftGamer, matchCode);
-                }
-            }
-            else
-            {
-                foreach (var gamer in GamersInGameBoard.ToList())
-                {
-                    if (gamer.Value.Equals(matchCode))
-                    {
-                        string gamertag = gamer.Key;
-
-                        if (GamersInGameBoardCallback.ContainsKey(gamertag))
-                        {
-                            GamersInGameBoardCallback[gamertag].ShowNobodyAnswers();
-                        }
+                        GamersInGameBoardCallback[gamertag].ShowNobodyAnswers();
                     }
                 }
             }
         }
+
 
         private string GetLeftGamer(string matchCode, string gamertag)
         {
@@ -759,21 +755,12 @@ namespace GameService.Services
             List<Card> gamerDeck = new List<Card>();
             if (decks.ContainsKey(gamertag))
             {
-                Console.WriteLine("Sí está el jugador en el diccionario");
                 gamerDeck = decks[gamertag];
             }
-            else
-            {
-                Console.WriteLine("No se encontró al jugador: " + gamertag);
-                Console.WriteLine("Los mazos guardados son los siguientes");
-                Show();
-            }
-
-            Console.WriteLine("Sí pasé por el getDeck");
             return gamerDeck;
         }
 
-        public List<GridNode> AllowedCorners = new List<GridNode>()
+        private readonly List<GridNode> AllowedCorners = new List<GridNode>()
         {
             new GridNode { Xposition = 5, Yposition = 5,},
             new GridNode { Xposition = 5, Yposition = 9,},

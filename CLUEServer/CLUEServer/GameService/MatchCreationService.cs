@@ -69,7 +69,7 @@ namespace GameService.Services
                 Random random = new Random();
                 matchCode = new string(Enumerable.Repeat(allowedCharacters, 6)
                     .Select(selection => selection[random.Next(selection.Length)]).ToArray());
-            } while (IsCodeValid(matchCode) == false);
+            } while (!IsCodeValid(matchCode));
             return matchCode;
         }
 

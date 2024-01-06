@@ -73,7 +73,6 @@
   <ItemGroup>
     <Compile Include="CardsService.cs" />
     <Compile Include="ChatService.cs" />
-    <Compile Include="Contracts\ICardManager.cs" />
     <Compile Include="Contracts\IChatManager.cs" />
     <Compile Include="Contracts\IFriendRequestManager.cs" />
     <Compile Include="Contracts\IFriendshipManager.cs" />
