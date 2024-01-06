@@ -95,6 +95,7 @@
     <Compile Include="MatchService.cs" />
     <Compile Include="SessionService.cs" />
     <Compile Include="Utilities\Constants.cs" />
+    <Compile Include="Utilities\HostBehaviorManager.cs" />
     <Compile Include="Utilities\LoggerManager.cs" />
     <Compile Include="VerificationService.cs" />
     <Compile Include="UserService.cs" />
