@@ -28,6 +28,7 @@ namespace GameService.Services
 
         public void ConnectGamerToGameBoard(string gamertag, string matchCode)
         {
+            HostBehaviorManager.ChangeToReentrant();
             var callback = OperationContext.Current.GetCallbackChannel<IGameManagerCallback>();
             if (!GamersInGameBoardCallback.ContainsKey(gamertag))
             {
@@ -101,6 +102,7 @@ namespace GameService.Services
 
         public void EndGame(string matchCode)
         {
+            HostBehaviorManager.ChangeToReentrant();
             List<string> gamerByBoard = GetGamersByGameBoard(matchCode);
             foreach(string gamer in gamerByBoard)
             {
@@ -136,6 +138,7 @@ namespace GameService.Services
 
         public void MovePawn(int column, int row, string gamertag, string matchCode)
         {
+            HostBehaviorManager.ChangeToReentrant();
             Pawn pawn = new Pawn();
             if (IsAValidMove(column, row, gamertag, matchCode))
             {
@@ -555,6 +558,7 @@ namespace GameService.Services
 
         public void MakeFinalAccusation(List<string> cards, string matchCode, string gamertag)
         {
+            HostBehaviorManager.ChangeToReentrant();
             int cardsCount = CountMatchingCards(cards, matchCode);
 
             if (cardsCount == 3)
@@ -597,6 +601,7 @@ namespace GameService.Services
 
         private int UpdateGamesWonByGamer(string gamertag)
         {
+            HostBehaviorManager.ChangeToSingle();
             int result = 0;
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
@@ -612,6 +617,7 @@ namespace GameService.Services
                     result = Constants.ERROR_IN_OPERATION;
                 }
             }
+            HostBehaviorManager.ChangeToReentrant();
             return result;
         }
 
@@ -646,11 +652,13 @@ namespace GameService.Services
 
         public void ShowCard(Card card, string matchCode, string accuser)
         {
+            HostBehaviorManager.ChangeToReentrant();
             GamersInGameBoardCallback[accuser].ReceiveCardAccused(card);
         }
 
         public void ShowCommonAccusation(string[] accusation, string matchCode, string accuser)
         {
+            HostBehaviorManager.ChangeToReentrant();
             foreach (var gamerEntry in GamersInGameBoard.Where(entry => entry.Value.Equals(matchCode)))
             {
                 string gamertag = gamerEntry.Key;

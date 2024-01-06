@@ -1,6 +1,6 @@
 ﻿using DataBaseManager;
 using GameService.Contracts;
-using System;
+using GameService.Utilities;
 using System.ServiceModel;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +13,7 @@ namespace GameService.Services
         private static readonly Dictionary<string, ILobbyManagerCallback> gamersLobbyCallback = new Dictionary<string, ILobbyManagerCallback>();
         public void BeginMatch(string matchCode)
         {
+            HostBehaviorManager.ChangeToReentrant();
             foreach (var gamer in gamersInMatch
                 .Where(entry => entry.Value.Equals(matchCode))
                 .Where(entry => gamersLobbyCallback.ContainsKey(entry.Key)))
@@ -26,6 +27,7 @@ namespace GameService.Services
 
         public void ConnectToLobby(string gamertag)
         {
+            HostBehaviorManager.ChangeToReentrant();
             if (!gamersLobbyCallback.ContainsKey(gamertag))
             {
                 gamersLobbyCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<ILobbyManagerCallback>());
@@ -36,14 +38,16 @@ namespace GameService.Services
         {
             using (var context = new SpiderClueDbEntities()) 
             {
+                HostBehaviorManager.ChangeToSingle();
                 bool isOwner = context.matches.Any(match => match.codeMatch == matchCode && match.createdBy == gamertag);
-
+                HostBehaviorManager.ChangeToReentrant();
                 return isOwner;
             }
         }
 
         public void KickPlayer(string gamertag)
         {
+            HostBehaviorManager.ChangeToReentrant();
             if (gamersLobbyCallback.ContainsKey(gamertag))
             {
                 gamersLobbyCallback[gamertag].KickPlayerFromMatch(gamertag);

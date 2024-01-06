@@ -20,7 +20,8 @@ namespace GameService.Services
     {
 
         public int AddUserTransaction(Gamer gamer)
-        { 
+        {
+            HostBehaviorManager.ChangeToSingle();
             int result = Constants.ERROR_IN_OPERATION;
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
@@ -66,6 +67,7 @@ namespace GameService.Services
         {
             using (var context = new SpiderClueDbEntities())
             {
+                HostBehaviorManager.ChangeToSingle();
                 var existingAccount = context.accessAccounts.FirstOrDefault(accessAccount => accessAccount.gamertag == gamertag);
                 return existingAccount != null && existingAccount.password == password;
             }
@@ -83,12 +85,12 @@ namespace GameService.Services
 
             CreateGuestGamer(guestGamertag);
 
-            //aquí si el create es menor a cero puedo lanzar un OperationFailedException (creada por nosotros)
             return guestGamertag;
         }
 
         public int CreateGuestGamer(String gamertag)
         {
+            HostBehaviorManager.ChangeToSingle();
             LoggerManager loggerManager = new LoggerManager(this.GetType());
             int result = Constants.ERROR_IN_OPERATION;
 
@@ -133,6 +135,7 @@ namespace GameService.Services
 
         public bool IsEmailExisting(string email)
         {
+            HostBehaviorManager.ChangeToSingle();
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
                 var existingAccount = dataBaseContext.accessAccounts.FirstOrDefault(accessAccount => accessAccount.email == email);
@@ -142,6 +145,7 @@ namespace GameService.Services
 
         public bool IsGamertagExisting(string gamertag)
         {
+            HostBehaviorManager.ChangeToSingle();
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
                 return dataBaseContext.accessAccounts.Any(accessAccount => accessAccount.gamertag == gamertag);
@@ -151,6 +155,7 @@ namespace GameService.Services
 
         public Gamer GetGamerByGamertag(string gamertag)
         {
+            HostBehaviorManager.ChangeToSingle();
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
                 var gamerInformation = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == gamertag);
@@ -176,6 +181,7 @@ namespace GameService.Services
 
         public Gamer GetGamerByEmail(string email)
         {
+            HostBehaviorManager.ChangeToSingle();
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
                 var accessAcountInformation = dataBaseContext.accessAccounts.FirstOrDefault(accessAccount => accessAccount.email == email);
@@ -200,6 +206,7 @@ namespace GameService.Services
 
         public int ModifyAccount(string gamertag, string firstName, string lastName)
         {
+            HostBehaviorManager.ChangeToSingle();
             int result = 0;
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
@@ -221,6 +228,7 @@ namespace GameService.Services
 
         public int UpdatePassword(String gamertag, String password)
         {
+            HostBehaviorManager.ChangeToSingle();
             LoggerManager loggerManager = new LoggerManager(this.GetType());
             int result = Constants.ERROR_IN_OPERATION;
 
@@ -251,6 +259,7 @@ namespace GameService.Services
 
         public int ChangeIcon(string gamertag, string titleIcon)
         {
+            HostBehaviorManager.ChangeToSingle();
             int result = 0;
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
@@ -271,6 +280,7 @@ namespace GameService.Services
 
         public string GetIcon(string gamertag)
         {
+            HostBehaviorManager.ChangeToSingle();
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
                 var imagecode = dataBaseContext.gamers
@@ -283,6 +293,7 @@ namespace GameService.Services
 
         public int DeleteGuestPlayer(string gamertag)
         {
+            HostBehaviorManager.ChangeToSingle();
             LoggerManager loggerManager = new LoggerManager(this.GetType());
             int result = Constants.ERROR_IN_OPERATION;
 

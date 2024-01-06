@@ -1,5 +1,6 @@
 ﻿using DataBaseManager;
 using GameService.Contracts;
+using GameService.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,20 +12,23 @@ namespace GameService.Services
 {
     public partial class GameService : IFriendRequestManager
     {
-        public string[] GetFriendsRequets(string gamertag)
+        public string[] GetFriendsRequest(string gamertag)
         {
-            using(var databaseConext = new SpiderClueDbEntities())
+            using (var databaseConext = new SpiderClueDbEntities())
             {
+                HostBehaviorManager.ChangeToSingle();
                 var friendsRequest = databaseConext.friendRequests
                     .Where(friendrequest => friendrequest.receiverGamertag == gamertag && friendrequest.friendRequestStatus == "Pending")
                     .Select(friendRequest => friendRequest.senderGamertag )
                     .ToArray();
+                HostBehaviorManager.ChangeToReentrant();
                 return friendsRequest;
             }
         }   
 
         public void CreateFriendRequest(string gamertag, string friendGamertag)
         {
+            HostBehaviorManager.ChangeToSingle();
             using (var databaseContext = new SpiderClueDbEntities())
             {
                 var friendRequest = new DataBaseManager.friendRequest
@@ -36,10 +40,12 @@ namespace GameService.Services
                 databaseContext.friendRequests.Add(friendRequest);
                 databaseContext.SaveChanges();
             }
+            HostBehaviorManager.ChangeToReentrant();
         }
 
         public void ResponseFriendRequest(string gamertag, string friendGamertag, string response)
         {
+            HostBehaviorManager.ChangeToSingle();
             using (var databaseContext = new SpiderClueDbEntities())
             {
                 var friendRequest = databaseContext.friendRequests.FirstOrDefault(friendRequestPending => friendRequestPending.senderGamertag == friendGamertag && friendRequestPending.receiverGamertag == gamertag);
@@ -49,10 +55,12 @@ namespace GameService.Services
                     databaseContext.SaveChanges();
                 }
             }
+            HostBehaviorManager.ChangeToReentrant();
         }
 
         public void DeleteFriendRequest(string gamertag, string friendGamertag)
         {
+            HostBehaviorManager.ChangeToSingle();
             using (var databaseContext = new SpiderClueDbEntities())
             {
                 var friendRequest = databaseContext.friendRequests
@@ -76,6 +84,7 @@ namespace GameService.Services
                     }
                 }
             }
+            HostBehaviorManager.ChangeToReentrant();
         }
     }
 }

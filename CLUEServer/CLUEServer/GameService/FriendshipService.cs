@@ -1,5 +1,6 @@
 ﻿using DataBaseManager;
 using GameService.Contracts;
+using GameService.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace GameService.Services
 
         public void DeleteFriend(string gamertag, string friendGamertag)
         {
+            HostBehaviorManager.ChangeToSingle();
             using (var databaseContext = new SpiderClueDbEntities())
             {
                 var friendEliminated = databaseContext.friendLists
@@ -33,10 +35,12 @@ namespace GameService.Services
                     DeleteFriend(friendGamertag, gamertag);
                 }
             }
+            HostBehaviorManager.ChangeToReentrant();
         }
 
         public void AddFriend(string gamertag, string friendGamertag)
         {
+            HostBehaviorManager.ChangeToSingle();
             using (var databaseContext = new SpiderClueDbEntities())
             {
                 var existingFriendship = databaseContext.friendLists
@@ -54,19 +58,22 @@ namespace GameService.Services
                     
                 }    
             }
+            HostBehaviorManager.ChangeToReentrant();
         }
 
         public bool AreNotFriends(string gamertag, string friendGamertag)
         {
             using (var databaseContext = new SpiderClueDbEntities())
             {
-                Boolean areNotFriends = true;
+                HostBehaviorManager.ChangeToSingle();
+                bool areNotFriends = true;
                 var existingFriendship = databaseContext.friendLists
                     .FirstOrDefault(friends => friends.gamertag == gamertag && friends.friend== friendGamertag);
                 if (existingFriendship != null)
                 {
                     areNotFriends = false;
                 }
+                HostBehaviorManager.ChangeToReentrant();
                 return areNotFriends;
             }
         }
@@ -75,13 +82,15 @@ namespace GameService.Services
         {
             using (var databaseContext = new SpiderClueDbEntities())
             {
-                Boolean ThereIsNotFriendRequest = true;
+                HostBehaviorManager.ChangeToSingle();
+                bool ThereIsNotFriendRequest = true;
                 var existingFriendRequest = databaseContext.friendRequests
                     .FirstOrDefault(friendRequest => friendRequest.senderGamertag == gamertag && friendRequest.receiverGamertag == friendGamertag);
                 if(existingFriendRequest != null)
                 {
                     ThereIsNotFriendRequest = false;
                 }
+                HostBehaviorManager.ChangeToReentrant();
                 return ThereIsNotFriendRequest;
             }
         }

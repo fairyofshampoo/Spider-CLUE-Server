@@ -9,18 +9,18 @@ namespace GameService.Utilities
 {
     public static class HostBehaviorManager
     {
-        private static void ChangeToSingle()
+        public static void ChangeToSingle()
         {
             var hostService = (ServiceHost)OperationContext.Current.Host;
             var behavior = hostService.Description.Behaviors.Find<ServiceBehaviorAttribute>();
             behavior.ConcurrencyMode = ConcurrencyMode.Single;
         }
 
-        private static void ChangeToMultiple()
+        public static void ChangeToReentrant()
         {
             var hostService = (ServiceHost)OperationContext.Current.Host;
             var behavior = hostService.Description.Behaviors.Find<ServiceBehaviorAttribute>();
-            behavior.ConcurrencyMode = ConcurrencyMode.Multiple;
+            behavior.ConcurrencyMode = ConcurrencyMode.Reentrant;
         }
     }
 }
