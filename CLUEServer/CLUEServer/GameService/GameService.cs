@@ -302,7 +302,7 @@ namespace GameService.Services
         {
             bool isAValidMove = false;
             int rollDice = GetGameBoardRollDice(matchCode);
-            if (IsADoor(column, row)) //Si es una puerta
+            if (IsADoor(column, row)) 
             {
                 GridNode start = GetPawnPosition(gamertag);
                 GridNode finish = new GridNode
@@ -318,7 +318,7 @@ namespace GameService.Services
                     SendAccusationOption(gamertag, door);
                 } 
             }
-            else if (IsAnInvalidZone(column, row)) //Sí es una zona prohibida
+            else if (IsAnInvalidZone(column, row)) 
             {
                 if (IsAValidCorner(column, row))
                 {
@@ -370,7 +370,6 @@ namespace GameService.Services
         private bool AreTheStepsValid(GridNode start, GridNode finish, int rollDice)
         {
             bool isValidStep = false;
-            Console.WriteLine("AreTheStepsValid: start: " + start.Xposition + "," + start.Yposition + " fin: " + finish.Xposition + "," + finish.Yposition + " dados: " + rollDice);
             if(rollDice != 0)
             {
                 isValidStep = SearchMoves(start, start, finish, rollDice, new List<GridNode>(), new Queue<GridNode>());
@@ -380,15 +379,12 @@ namespace GameService.Services
 
         private bool SearchMoves(GridNode start, GridNode current, GridNode end, int steps, List<GridNode> visitedNodes, Queue<GridNode> nextNodes)
         {
-            Console.WriteLine("actual: " + current.Xposition + "," + current.Yposition);
             if (current.Xposition == end.Xposition && current.Yposition == end.Yposition && GetNumberOfSteps(start, current) >= 0)
             {
-                Console.WriteLine("se encontró un camino");
                 return true;
             }
             if (GetNumberOfSteps(start, current) > steps)
             {
-                Console.WriteLine("numero de pasos invalido");
                 return false;
             }      
             visitedNodes.Add(current);
@@ -419,7 +415,6 @@ namespace GameService.Services
                 if (IsNeighborValid(node, visitedNodes))
                 {
                     nextNodes.Enqueue(node);
-                    Console.WriteLine("se agregó el siguiente nodo a vecinos: " + node.Xposition + "," + node.Yposition);
                 }
             }
             return nextNodes;
@@ -482,51 +477,74 @@ namespace GameService.Services
             bool isAnInvalidZone = false;
             if (column < 6)
             {
-                if (row < 3) //Salón F103
-                {
-                    isAnInvalidZone = true;
-                }
-                else if (row > 4 && row < 10) //Salón cristal
-                {
-                    isAnInvalidZone = true;
-                }
-                else if (row > 10 && row < 16 && column < 5) //Laboratorio
-                {
-                    isAnInvalidZone = true;
-                }
-                else if (column < 5 && row > 17) //Cubículo
-                {
-                    isAnInvalidZone = true;
-                }
+                isAnInvalidZone = IsAnInvalidZoneOfTheFirstSection(column, row);
             }
             else if (column >= 7 && column <= 14)
             {
-                if (row < 6 && column > 7 && column < 14)//Anfiteatro
-                {
-                    isAnInvalidZone = true;
-                }
-                else if (row > 15) //Centro de cómputo
-                {
-                    isAnInvalidZone = true;
-                }
+                isAnInvalidZone = IsAnInvalidZoneOfTheSecondSection(column, row);
             }
             else
             {
-                if (column > 15 && row < 5) //Cancha
-                {
-                    isAnInvalidZone = true;
-                }
-                else if (row > 7 && row < 15 && column >= 15) //Estacionamiento
-                {
-                    isAnInvalidZone = true;
-                }
-                else if (column > 16 && row > 16) //Salón de profesores
-                {
-                    isAnInvalidZone = true;
-                }
+                isAnInvalidZone = IsAnInvalidZoneOfTheThirdSection(column, row);
             }
             return isAnInvalidZone;
         }
+
+        private bool IsAnInvalidZoneOfTheFirstSection (int column, int row)
+        {
+            bool isAnInvalidZone = false;
+            if (row < 3) 
+            {
+                isAnInvalidZone = true;
+            }
+            else if (row > 4 && row < 10) 
+            {
+                isAnInvalidZone = true;
+            }
+            else if (row > 10 && row < 16 && column < 5) 
+            {
+                isAnInvalidZone = true;
+            }
+            else if (column < 5 && row > 17) 
+            {
+                isAnInvalidZone = true;
+            }
+            return isAnInvalidZone;
+        }
+
+        private bool IsAnInvalidZoneOfTheSecondSection(int column, int row)
+        {
+            bool isAnInvalidZone = false;
+            if (row < 6 && column > 7 && column < 14)
+            {
+                isAnInvalidZone = true;
+            }
+            else if (row > 15) 
+            {
+                isAnInvalidZone = true;
+            }
+            return isAnInvalidZone;
+        }
+
+        private bool IsAnInvalidZoneOfTheThirdSection(int column, int row)
+        {
+            bool isAnInvalidZone = false;
+            if (column > 15 && row < 5) 
+            {
+                isAnInvalidZone = true;
+            }
+            else if (row > 7 && row < 15 && column >= 15) 
+            {
+                isAnInvalidZone = true;
+            }
+            else if (column > 16 && row > 16) 
+            {
+                isAnInvalidZone = true;
+            }
+            return isAnInvalidZone;
+        }
+
+
 
         public bool IsADoor(int column, int row)
         {
@@ -645,8 +663,6 @@ namespace GameService.Services
                 DirectionInGameBoard[matchCode][index].Left = leftGamer;
             }
         }
-
-
 
         public void ShowCard(Card card, string matchCode, string accuser)
         {
