@@ -48,40 +48,32 @@ namespace GameService.Contracts
     [DataContract]
     public class Gamer : AccessAccount
     {
-        private string firstName;
-        private string lastName;
-        private int gamesWon;
-        private string imageCode;
-
 
         [DataMember]
-        public string FirstName { get { return firstName; } set { firstName = value; } }
+        public string FirstName { get; set; }
 
         [DataMember]
-        public string LastName { get { return lastName; } set { lastName = value; } }
+        public string LastName { get; set; }
 
         [DataMember]
-        public int GamesWon { get { return gamesWon; } set { gamesWon = value; } }
+        public int GamesWon { get; set; }
 
         [DataMember]
-        public string ImageCode { get { return imageCode; } set { imageCode = value; } }
+        public string ImageCode { get; set; }
 
     }
 
     [DataContract]
     public class AccessAccount
     {
-        private string email;
-        private string gamertag;
-        private string password;
 
         [DataMember]
-        public string Email { get { return email; } set { email = value; } }
+        public string Email { get; set; }
 
         [DataMember]
-        public string Gamertag { get { return gamertag; } set { gamertag = value; } }
+        public string Gamertag { get; set; }
 
         [DataMember]
-        public string Password { get { return password; } set { password = value; } }
+        public string Password { get; set; }
     }
 }
