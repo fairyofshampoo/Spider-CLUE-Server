@@ -12,13 +12,9 @@ namespace GameService.Services
 {
     public class GamerLeftAndRight
     {
-        private string gamertag;
-        private string left;
-        private string right;
-
-        public string Gamertag { get { return gamertag; } set { gamertag = value; } }
-        public string Left { get { return left; } set { left = value; } }
-        public string Right { get { return right; } set { right = value; } }
+        public string Gamertag { get; set; }
+        public string Left { get; set; }
+        public string Right { get; set; }
     }
 
     public partial class GameService : IGameManager
@@ -67,16 +63,9 @@ namespace GameService.Services
         }
         private bool AreAllPlayersConnected(string matchCode)
         {
-            int playersCount = 0;
             bool areAllPlayersConnected = false;
             List<string> gamersInLobby = GetGamersByMatch(matchCode);
-            foreach (string gamer in gamersInLobby)
-            {
-                if (GamersInGameBoard.ContainsKey(gamer))
-                {
-                    playersCount++;
-                }
-            }
+            int playersCount = gamersInLobby.Count(gamer => GamersInGameBoard.ContainsKey(gamer));
 
             if (playersCount == 3)
             {
@@ -91,11 +80,6 @@ namespace GameService.Services
             string gamertag = turnsList[0].Gamertag;
             TurnsInGameboard.Add(matchCode, gamertag );
             GamersInGameBoardCallback[gamertag].ReceiveTurn(true);
-        }
-
-        public int GetNumberOfGamers(string matchCode)
-        {
-            return GetGamersByGameBoard(matchCode).Count();
         }
 
         private List<string> GetGamersByGameBoard(string matchCode)
@@ -218,19 +202,19 @@ namespace GameService.Services
 
         public void ShowMovePawn(Pawn pawn, string matchCode)
         {
-            foreach (var gamer in GamersInGameBoard.ToList())
+            foreach (var gamer in GamersInGameBoard 
+                .Where(entry => entry.Value.Equals(matchCode))
+                .Select(entry => entry.Key)
+                .Where(gamertag => GamersInGameBoardCallback.ContainsKey(gamertag)))
             {
-                if (gamer.Value.Equals(matchCode))
+                if (GamersInGameBoardCallback.ContainsKey(gamer))
                 {
-                    string gamertag = gamer.Key;
-
-                    if (GamersInGameBoardCallback.ContainsKey(gamertag))
-                    {
-                        GamersInGameBoardCallback[gamertag].ReceivePawnsMove(pawn);
-                    }
+                    GamersInGameBoardCallback[gamer].ReceivePawnsMove(pawn);
                 }
             }
+
             ResetDice(matchCode);
+
         }
 
         private void ResetDice(string matchCode)
@@ -243,12 +227,9 @@ namespace GameService.Services
 
         public void ShowMoveIsInvalid(string gamertag)
         {
-            if (GamersInGameBoard.ContainsKey(gamertag))
+            if (GamersInGameBoard.ContainsKey(gamertag) && GamersInGameBoardCallback.ContainsKey(gamertag))
             {
-                if (GamersInGameBoardCallback.ContainsKey(gamertag))
-                {
-                    GamersInGameBoardCallback[gamertag].ReceiveInvalidMove();
-                }
+                GamersInGameBoardCallback[gamertag].ReceiveInvalidMove();
             }
         }
 
@@ -410,13 +391,11 @@ namespace GameService.Services
                 new GridNode() { Xposition = current.Xposition + 1, Yposition = current.Yposition },
             };
 
-            foreach(GridNode node in neighbors) 
+            foreach (GridNode neighborNode in neighbors.Where(node => IsNeighborValid(node, visitedNodes)).ToList())
             {
-                if (IsNeighborValid(node, visitedNodes))
-                {
-                    nextNodes.Enqueue(node);
-                }
+                nextNodes.Enqueue(neighborNode);
             }
+
             return nextNodes;
         }
 
@@ -474,7 +453,8 @@ namespace GameService.Services
 
         public bool IsAnInvalidZone(int column, int row)
         {
-            bool isAnInvalidZone = false;
+            bool isAnInvalidZone;
+
             if (column < 6)
             {
                 isAnInvalidZone = IsAnInvalidZoneOfTheFirstSection(column, row);
