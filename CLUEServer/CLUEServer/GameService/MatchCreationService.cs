@@ -90,10 +90,12 @@ namespace GameService.Services
             catch (CommunicationException communicationException)
             {
                 loggerManager.LogError(communicationException);
+                validation = false;
             }
             catch (TimeoutException timeoutException)
             {
                 loggerManager.LogError(timeoutException);
+                validation = false;
             }
 
             return validation;

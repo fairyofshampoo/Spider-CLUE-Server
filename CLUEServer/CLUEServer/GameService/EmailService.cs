@@ -25,10 +25,12 @@ namespace GameService
             catch (FileNotFoundException fileNotFoundException)
             {
                 logger.LogError(fileNotFoundException);
+                result = false;
             }
             catch (IOException ioException)
             {
                 logger.LogError(ioException);
+                result = false;
             }
             return result;
         }
@@ -48,10 +50,12 @@ namespace GameService
             catch (FileNotFoundException fileNotFoundException)
             {
                 logger.LogError(fileNotFoundException);
+                result = false;
             }
             catch (IOException ioException)
             {
                 logger.LogError(ioException);
+                result = false;
             }
             return result;
         }
@@ -94,14 +98,17 @@ namespace GameService
             catch (SmtpFailedRecipientException failedRecipientException)
             {
                 logger.LogError(failedRecipientException);
+                emailProcessResult = false;
             }
             catch (SmtpException smtpException)
             {
                 logger.LogError(smtpException);
+                emailProcessResult = false;
             }
             catch (InvalidOperationException invalidOperationException)
             {
                 logger.LogError(invalidOperationException);
+                emailProcessResult = false;
             }
 
             return emailProcessResult;

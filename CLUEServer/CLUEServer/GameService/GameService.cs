@@ -432,13 +432,16 @@ namespace GameService.Services
                     catch (CommunicationException communicationException)
                     {
                         loggerManager.LogError(communicationException);
+                        isAValidMove = false;
                     }
                     catch (TimeoutException timeoutException)
                     {
                         loggerManager.LogError(timeoutException);
+                        isAValidMove = false;
                     }
                 }
-            } else
+            } 
+            else
             {
                 GridNode start = GetPawnPosition(gamertag);
                 GridNode finish = new GridNode
@@ -477,6 +480,7 @@ namespace GameService.Services
             {
                 return true;
             }
+
             if (GetNumberOfSteps(start, current) > steps)
             {
                 return false;
@@ -745,10 +749,12 @@ namespace GameService.Services
             catch (SqlException sqlException)
             {
                 loggerManager.LogError(sqlException);
+                result = Constants.ERROR_IN_OPERATION;
             }
             catch (EntityException entityException)
             {
                 loggerManager.LogError(entityException);
+                result = Constants.ERROR_IN_OPERATION;
             }
             
             HostBehaviorManager.ChangeToReentrant();

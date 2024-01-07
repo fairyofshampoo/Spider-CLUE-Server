@@ -65,10 +65,12 @@ namespace GameService.Services
             catch (SqlException sqlException)
             {
                 loggerManager.LogError(sqlException);
+                isOwner = false;
             }
             catch (EntityException entityException)
             {
                 loggerManager.LogError(entityException);
+                isOwner = false;
             }
 
             return isOwner;

@@ -92,10 +92,12 @@ namespace GameService.Services
             catch (EntityException entityException)
             {
                 logger.LogError(entityException);
+                result = false;
             }
             catch (SqlException sqlException)
             {
                 logger.LogError(sqlException);
+                result = false;
             }
             return result;
         }
@@ -196,10 +198,12 @@ namespace GameService.Services
             catch (EntityException entityException)
             {
                 logger.LogError(entityException);
+                result = false;
             }
             catch (SqlException sqlException)
             {
                 logger.LogError(sqlException);
+                result = false;
             }
             return result;
         }
@@ -219,10 +223,12 @@ namespace GameService.Services
             catch (EntityException entityException)
             {
                 logger.LogError(entityException);
+                result = false;
             }
             catch (SqlException sqlException)
             {
                 logger.LogError(sqlException);
+                result = false;
             }
             return result;
         }
@@ -333,10 +339,12 @@ namespace GameService.Services
             catch (EntityException entityException)
             {
                 logger.LogError(entityException);
+                result = Constants.ERROR_IN_OPERATION;
             }
             catch (SqlException sqlException)
             {
                 logger.LogError(sqlException);
+                result = Constants.ERROR_IN_OPERATION;
             }
             
             return result;
@@ -397,10 +405,12 @@ namespace GameService.Services
             catch (EntityException entityException)
             {
                 logger.LogError(entityException);
+                result = Constants.ERROR_IN_OPERATION;
             }
             catch (SqlException sqlException)
             {
                 logger.LogError(sqlException);
+                result = Constants.ERROR_IN_OPERATION;
             }
             
             return result;
@@ -424,10 +434,12 @@ namespace GameService.Services
             catch (EntityException entityException)
             {
                 logger.LogError(entityException);
+                imageCode = Constants.DEFAULT_ICON;
             }
             catch (SqlException sqlException)
             {
                 logger.LogError(sqlException);
+                imageCode = Constants.DEFAULT_ICON;
             }
             return imageCode;
         }
@@ -461,12 +473,15 @@ namespace GameService.Services
                     }
                     catch (SqlException sqlException)
                     {
+                        dataBaseContextTransaction.Rollback();
                         loggerManager.LogError(sqlException);
+                        result = Constants.ERROR_IN_OPERATION;
                     }
                     catch (DataException dataException)
                     {
                         dataBaseContextTransaction.Rollback();
                         loggerManager.LogFatal(dataException);
+                        result = Constants.ERROR_IN_OPERATION;
                     }
                 }
             }
