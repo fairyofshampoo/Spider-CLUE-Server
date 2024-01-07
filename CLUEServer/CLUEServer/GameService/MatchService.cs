@@ -5,6 +5,9 @@ using System.ServiceModel;
 using System.Collections.Generic;
 using System.Linq;
 using GameService.Utilities;
+using log4net.Repository.Hierarchy;
+using System.Data.Entity.Core;
+using System.Data.SqlClient;
 
 namespace GameService.Services
 {
@@ -17,23 +20,15 @@ namespace GameService.Services
         public void ConnectToMatch(string gamertag, string matchCode)
         {
             HostBehaviorManager.ChangeToReentrant();
-            LoggerManager logger = new LoggerManager(this.GetType());
-            try
-            {
-                gamersInMatch.Add(gamertag, matchCode);
-                gamersMatchCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>());
-                SetCharacterColor(gamertag, matchCode);
-                ShowPlayerProfilesInMatch(matchCode);
-            }
-            catch (Exception ex)
-            {
-                logger.LogFatal(ex);
-            }
-
+            gamersInMatch.Add(gamertag, matchCode);
+            gamersMatchCallback.Add(gamertag, OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>());
+            SetCharacterColor(gamertag, matchCode);
+            ShowPlayerProfilesInMatch(matchCode);
         }
 
         private void ShowPlayerProfilesInMatch(string matchCode)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToReentrant();
             lock (gamersMatchCallback)
             {
@@ -45,12 +40,22 @@ namespace GameService.Services
                 {
                     if (gamersMatchCallback.ContainsKey(gamerEntry))
                     {
-                        gamersMatchCallback[gamerEntry].ReceiveGamersInMatch(GetCharactersInMatch(matchCode));
+                        try
+                        {
+                            gamersMatchCallback[gamerEntry].ReceiveGamersInMatch(GetCharactersInMatch(matchCode));
+                        }
+                        catch (CommunicationException communicationException)
+                        {
+                            loggerManager.LogError(communicationException);
+                        }
+                        catch (TimeoutException timeoutException)
+                        {
+                            loggerManager.LogError(timeoutException);
+                        }
                     }
                 }
             }
         }
-
 
         private List<string> GetGamersByMatch(string matchCode)
         {
@@ -59,28 +64,53 @@ namespace GameService.Services
 
         public void GetGamersInMatch(string gamertag, string code)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToReentrant();
-            OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>().ReceiveGamersInMatch(GetCharactersInMatch(code));
+            try
+            {
+                OperationContext.Current.GetCallbackChannel<IMatchManagerCallback>().ReceiveGamersInMatch(GetCharactersInMatch(code));
+            }
+            catch (CommunicationException communicationException)
+            {
+                loggerManager.LogError(communicationException);
+            }
+            catch (TimeoutException timeoutException)
+            {
+                loggerManager.LogError(timeoutException);
+            }
         }
 
         public Match GetMatchInformation(string code)
         {
+            Match result = new Match();
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToReentrant();
-            using (var databaseContext = new SpiderClueDbEntities())
+            try
             {
-                Match result = new Match();
-                var matchExist = databaseContext.matches.FirstOrDefault(match => match.codeMatch == code);
-                if (matchExist == null)
+                using (var databaseContext = new SpiderClueDbEntities())
                 {
-                    result = null;
+                    var matchExist = databaseContext.matches.FirstOrDefault(match => match.codeMatch == code);
+                    if (matchExist == null)
+                    {
+                        result = null;
+                    }
+                    else
+                    {
+                        result.Code = matchExist.codeMatch;
+                        result.CreatedBy = matchExist.createdBy;
+                    }
                 }
-                else
-                {
-                    result.Code = matchExist.codeMatch;
-                    result.CreatedBy = matchExist.createdBy;
-                }
-                return result;
             }
+            catch (EntityException entityException)
+            {
+                loggerManager.LogError(entityException);
+            }
+            catch (SqlException sqlException)
+            {
+                loggerManager.LogError(sqlException);
+            }
+
+            return result;
         }
 
         public void LeaveMatch(string gamertag, string matchCode)
@@ -102,6 +132,7 @@ namespace GameService.Services
 
         private void RestoreCharacterInMatch(string gamertag, string matchCode)
         {
+
             if (charactersPerGamer.ContainsKey(gamertag))
             {
                 Pawn assignedCharacter = charactersPerGamer[gamertag];

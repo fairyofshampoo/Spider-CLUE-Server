@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Cryptography;
 using GameService.Contracts;
+using GameService.Utilities;
 
 namespace GameService.Services
 {
@@ -40,21 +42,31 @@ namespace GameService.Services
 
         private string GenerateRandomCode()
         {
+            LoggerManager logger = new LoggerManager(this.GetType());
+            string code = string.Empty;
             int lowerBound = 100000;
             int upperBound = 1000000;
 
-            using (var rng = new System.Security.Cryptography.RNGCryptoServiceProvider())
+            try
             {
-                byte[] randomNumber = new byte[4];
-                rng.GetBytes(randomNumber);
+                using (var rng = new System.Security.Cryptography.RNGCryptoServiceProvider())
+                {
+                    byte[] randomNumber = new byte[4];
+                    rng.GetBytes(randomNumber);
 
-                int codeNumber = BitConverter.ToInt32(randomNumber, 0) & Int32.MaxValue;
-                int range = upperBound - lowerBound;
-                int scaledNumber = lowerBound + (codeNumber % range);
+                    int codeNumber = BitConverter.ToInt32(randomNumber, 0) & Int32.MaxValue;
+                    int range = upperBound - lowerBound;
+                    int scaledNumber = lowerBound + (codeNumber % range);
 
-                string code = scaledNumber.ToString();
-                return code;
+                    code = scaledNumber.ToString();
+                }
             }
+            catch (CryptographicException cryptographicException)
+            {
+                logger.LogError(cryptographicException);
+            }
+
+            return code;
         }
 
     }

@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Linq;
 using System.ServiceModel;
+using System.Data.Entity.Core;
+using System.Data.SqlClient;
 
 namespace GameService.Services
 {
@@ -58,10 +60,12 @@ namespace GameService.Services
 
             turnTimers[matchCode] = turnTimer;
         }
+
         private void OnTurnTimerElapsed(string matchCode)
         {
             ChangeTurn(matchCode, TurnsInGameboard[matchCode]);
         }
+
         private bool AreAllPlayersConnected(string matchCode)
         {
             bool areAllPlayersConnected = false;
@@ -75,18 +79,34 @@ namespace GameService.Services
 
             return areAllPlayersConnected;
         }
+
         private void SendFirstTurn(string matchCode)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             List<GamerLeftAndRight> turnsList = DirectionInGameBoard[matchCode];
             string gamertag = turnsList[0].Gamertag;
             TurnsInGameboard.Add(matchCode, gamertag );
-            GamersInGameBoardCallback[gamertag].ReceiveTurn(true);
+
+            try
+            {
+                GamersInGameBoardCallback[gamertag].ReceiveTurn(true);
+            }
+            catch (CommunicationException communicationException)
+            {
+                loggerManager.LogError(communicationException);
+            }
+            catch (TimeoutException timeoutException)
+            {
+                loggerManager.LogError(timeoutException);
+            }
+            
         }
 
         private List<string> GetGamersByGameBoard(string matchCode)
         {
             return GamersInGameBoard.Where(gamer => gamer.Value == matchCode).Select(gamer => gamer.Key).ToList();
         }
+
         private void RemoveFromGameboard(string gamertag)
         {
             decks.Remove(gamertag);
@@ -102,12 +122,24 @@ namespace GameService.Services
 
         public void EndGame(string matchCode)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToReentrant();
             List<string> gamerByBoard = GetGamersByGameBoard(matchCode);
             foreach(string gamer in gamerByBoard)
             {
-                GamersInGameBoardCallback[gamer].LeaveGameBoard();
-                DisconnectFromBoard(gamer);
+                try
+                {
+                    GamersInGameBoardCallback[gamer].LeaveGameBoard();
+                    DisconnectFromBoard(gamer);
+                }
+                catch (CommunicationException communicationException)
+                {
+                    loggerManager.LogError(communicationException);
+                }
+                catch (TimeoutException timeoutException)
+                {
+                    loggerManager.LogError(timeoutException);
+                }
             }
 
             RemoveGameboard(matchCode);
@@ -138,6 +170,7 @@ namespace GameService.Services
 
         public void MovePawn(int column, int row, string gamertag, string matchCode)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToReentrant();
             Pawn pawn = new Pawn();
             if (IsAValidMove(column, row, gamertag, matchCode))
@@ -156,7 +189,19 @@ namespace GameService.Services
             else
             {
                 ShowMoveIsInvalid(gamertag);
-                GamersInGameBoardCallback[gamertag].ReceiveTurn(true);
+
+                try
+                {
+                    GamersInGameBoardCallback[gamertag].ReceiveTurn(true);
+                }
+                catch (CommunicationException communicationException)
+                {
+                    loggerManager.LogError(communicationException);
+                }
+                catch (TimeoutException timeoutException)
+                {
+                    loggerManager.LogError(timeoutException);
+                }
             }
         }
 
@@ -175,6 +220,8 @@ namespace GameService.Services
 
         public void ChangeTurn(string matchCode, string gamertag)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+
             if (turnTimers.ContainsKey(matchCode))
             {
                 turnTimers[matchCode].Stop();
@@ -189,10 +236,24 @@ namespace GameService.Services
                     {
                         if (gamer.Gamertag == gamertag)
                         {
-                            GamersInGameBoardCallback[gamertag].ReceiveTurn(false);
-                            TurnsInGameboard[matchCode] = gamer.Left;
-                            GamersInGameBoardCallback[gamer.Left].ReceiveTurn(true);
-                            StartTurnTimer(matchCode);
+                            if (GamersInGameBoardCallback.ContainsKey(gamer.Left) && GamersInGameBoardCallback.ContainsKey(gamertag))
+                            {
+                                try
+                                {
+                                    GamersInGameBoardCallback[gamertag].ReceiveTurn(false);
+                                    TurnsInGameboard[matchCode] = gamer.Left;
+                                    GamersInGameBoardCallback[gamer.Left].ReceiveTurn(true);
+                                    StartTurnTimer(matchCode);
+                                }
+                                catch (CommunicationException communicationException)
+                                {
+                                    loggerManager.LogError(communicationException);
+                                }
+                                catch (TimeoutException timeoutException)
+                                {
+                                    loggerManager.LogError(timeoutException);
+                                }
+                            }
 
                             break;
                         }
@@ -202,9 +263,9 @@ namespace GameService.Services
             }
         }
 
-
         public void ShowMovePawn(Pawn pawn, string matchCode)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             foreach (var gamer in GamersInGameBoard 
                 .Where(entry => entry.Value.Equals(matchCode))
                 .Select(entry => entry.Key)
@@ -212,7 +273,18 @@ namespace GameService.Services
             {
                 if (GamersInGameBoardCallback.ContainsKey(gamer))
                 {
-                    GamersInGameBoardCallback[gamer].ReceivePawnsMove(pawn);
+                    try
+                    {
+                        GamersInGameBoardCallback[gamer].ReceivePawnsMove(pawn);
+                    }
+                    catch (CommunicationException communicationException)
+                    {
+                        loggerManager.LogError(communicationException);
+                    }
+                    catch (TimeoutException timeoutException)
+                    {
+                        loggerManager.LogError(timeoutException);
+                    }
                 }
             }
 
@@ -230,9 +302,22 @@ namespace GameService.Services
 
         public void ShowMoveIsInvalid(string gamertag)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+
             if (GamersInGameBoard.ContainsKey(gamertag) && GamersInGameBoardCallback.ContainsKey(gamertag))
             {
-                GamersInGameBoardCallback[gamertag].ReceiveInvalidMove();
+                try
+                {
+                    GamersInGameBoardCallback[gamertag].ReceiveInvalidMove();
+                }
+                catch (CommunicationException communicationException)
+                {
+                    loggerManager.LogError(communicationException);
+                }
+                catch (TimeoutException timeoutException)
+                {
+                    loggerManager.LogError(timeoutException);
+                }
             }
         }
 
@@ -260,9 +345,22 @@ namespace GameService.Services
 
         private void SendAccusationOption(string gamertag, Door door)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+
             if (GamersInGameBoardCallback.ContainsKey(gamertag))
             {
-                GamersInGameBoardCallback[gamertag].ReceiveCommonAccusationOption(true, door);
+                try
+                {
+                    GamersInGameBoardCallback[gamertag].ReceiveCommonAccusationOption(true, door);
+                }
+                catch (CommunicationException communicationException)
+                {
+                    loggerManager.LogError(communicationException);
+                }
+                catch (TimeoutException timeoutException)
+                {
+                    loggerManager.LogError(timeoutException);
+                }
             }
         }
 
@@ -284,6 +382,7 @@ namespace GameService.Services
 
         public bool IsAValidMove(int column, int row, string gamertag, string matchCode)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             bool isAValidMove = false;
             int rollDice = GetGameBoardRollDice(matchCode);
             if (IsADoor(column, row)) 
@@ -326,7 +425,18 @@ namespace GameService.Services
                 isAValidMove = AreTheStepsValid(start, finish, rollDice);
                 if(isAValidMove)
                 {
-                    GamersInGameBoardCallback[gamertag].ReceiveFinalAccusationOption(true);
+                    try
+                    {
+                        GamersInGameBoardCallback[gamertag].ReceiveFinalAccusationOption(true);
+                    }
+                    catch (CommunicationException communicationException)
+                    {
+                        loggerManager.LogError(communicationException);
+                    }
+                    catch (TimeoutException timeoutException)
+                    {
+                        loggerManager.LogError(timeoutException);
+                    }
                 }
             } else
             {
@@ -527,8 +637,6 @@ namespace GameService.Services
             return isAnInvalidZone;
         }
 
-
-
         public bool IsADoor(int column, int row)
         {
             bool isADoor = false;
@@ -586,6 +694,7 @@ namespace GameService.Services
 
         private void NotifyWinner(string winnerGamertag, string matchCode)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             string winnerIcon = GetIcon(winnerGamertag);
 
             foreach (var gamerEntry in GamersInGameBoard.Where(entry => entry.Value.Equals(matchCode)))
@@ -594,7 +703,18 @@ namespace GameService.Services
 
                 if (GamersInGameBoardCallback.ContainsKey(gamerFound))
                 {
-                    GamersInGameBoardCallback[gamerFound].ReceiveWinner(winnerGamertag, winnerIcon);
+                    try
+                    {
+                        GamersInGameBoardCallback[gamerFound].ReceiveWinner(winnerGamertag, winnerIcon);
+                    }
+                    catch (CommunicationException communicationException)
+                    {
+                        loggerManager.LogError(communicationException);
+                    }
+                    catch (TimeoutException timeoutException)
+                    {
+                        loggerManager.LogError(timeoutException);
+                    }
                 }
             }
         }
@@ -602,21 +722,35 @@ namespace GameService.Services
         private int UpdateGamesWonByGamer(string gamertag)
         {
             HostBehaviorManager.ChangeToSingle();
-            int result = 0;
-            using (var dataBaseContext = new SpiderClueDbEntities())
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            int result = Constants.ERROR_IN_OPERATION;
+
+            try
             {
-                var gamer = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == gamertag);
-                if (gamer != null)
+                using (var dataBaseContext = new SpiderClueDbEntities())
                 {
-                    gamer.gamesWon++;
-                    dataBaseContext.SaveChanges();
-                    result = Constants.SUCCESS_IN_OPERATION;
-                }
-                else
-                {
-                    result = Constants.ERROR_IN_OPERATION;
+                    var gamer = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == gamertag);
+                    if (gamer != null)
+                    {
+                        gamer.gamesWon++;
+                        dataBaseContext.SaveChanges();
+                        result = Constants.SUCCESS_IN_OPERATION;
+                    }
+                    else
+                    {
+                        result = Constants.ERROR_IN_OPERATION;
+                    }
                 }
             }
+            catch (SqlException sqlException)
+            {
+                loggerManager.LogError(sqlException);
+            }
+            catch (EntityException entityException)
+            {
+                loggerManager.LogError(entityException);
+            }
+            
             HostBehaviorManager.ChangeToReentrant();
             return result;
         }
@@ -652,12 +786,25 @@ namespace GameService.Services
 
         public void ShowCard(Card card, string matchCode, string accuser)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToReentrant();
-            GamersInGameBoardCallback[accuser].ReceiveCardAccused(card);
+            try
+            {
+                GamersInGameBoardCallback[accuser].ReceiveCardAccused(card);
+            }
+            catch (SqlException sqlException)
+            {
+                loggerManager.LogError(sqlException);
+            }
+            catch (EntityException entityException)
+            {
+                loggerManager.LogError(entityException);
+            }
         }
 
         public void ShowCommonAccusation(string[] accusation, string matchCode, string accuser)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToReentrant();
             foreach (var gamerEntry in GamersInGameBoard.Where(entry => entry.Value.Equals(matchCode)))
             {
@@ -665,7 +812,18 @@ namespace GameService.Services
 
                 if (GamersInGameBoardCallback.ContainsKey(gamertag))
                 {
-                    GamersInGameBoardCallback[gamertag].ReceiveCommonAccusationByOtherGamer(accusation);
+                    try
+                    {
+                        GamersInGameBoardCallback[gamertag].ReceiveCommonAccusationByOtherGamer(accusation);
+                    }
+                    catch (SqlException sqlException)
+                    {
+                        loggerManager.LogError(sqlException);
+                    }
+                    catch (EntityException entityException)
+                    {
+                        loggerManager.LogError(entityException);
+                    }
                 }
             }
 
@@ -673,9 +831,10 @@ namespace GameService.Services
             IsLeftOwnerOfCards(accusation, accuser, leftGamer, matchCode);
         }
 
-
         private void IsLeftOwnerOfCards(string[] accusation, string accuser, string leftGamer, string matchCode)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+
             if (accuser != leftGamer)
             {
                 List<Card> leftGamerDeck = GetDeck(leftGamer);
@@ -683,7 +842,18 @@ namespace GameService.Services
 
                 if (cardsInCommon.Any())
                 {
-                    GamersInGameBoardCallback[leftGamer].RequestShowCard(cardsInCommon, accuser);
+                    try
+                    {
+                        GamersInGameBoardCallback[leftGamer].RequestShowCard(cardsInCommon, accuser);
+                    }
+                    catch (CommunicationException communicationException)
+                    {
+                        loggerManager.LogError(communicationException);
+                    }
+                    catch (TimeoutException timeoutException)
+                    {
+                        loggerManager.LogError(timeoutException);
+                    }
                 }
                 else
                 {
@@ -704,20 +874,30 @@ namespace GameService.Services
 
         private void ShowNobodyAnswers(string matchCode)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             foreach (var gamer in GamersInGameBoard.ToList())
             {
                 if (gamer.Value.Equals(matchCode))
                 {
                     string gamertag = gamer.Key;
-
-                    if (GamersInGameBoardCallback.ContainsKey(gamertag))
+                    try
                     {
-                        GamersInGameBoardCallback[gamertag].ShowNobodyAnswers();
+                        if (GamersInGameBoardCallback.ContainsKey(gamertag))
+                        {
+                            GamersInGameBoardCallback[gamertag].ShowNobodyAnswers();
+                        }
+                    }
+                    catch (CommunicationException communicationException)
+                    {
+                        loggerManager.LogError(communicationException);
+                    }
+                    catch (TimeoutException timeoutException)
+                    {
+                        loggerManager.LogError(timeoutException);
                     }
                 }
             }
         }
-
 
         private string GetLeftGamer(string matchCode, string gamertag)
         {
@@ -777,6 +957,7 @@ namespace GameService.Services
             new GridNode { Xposition = 16, Yposition = 14,},
             new GridNode { Xposition = 15, Yposition = 14,}
         };
+
         public List<GridNode> InvalidZones { get; set; } = new List<GridNode>()
         {
             new GridNode { Xposition = 0, Yposition = 2, },
@@ -926,6 +1107,7 @@ namespace GameService.Services
             new GridNode { Xposition = 6, Yposition = 23, },
             new GridNode { Xposition = 5, Yposition = 21, },
         };
+
         public List<Door> Doors { get; set; } = new List<Door>
         {
             new Door { Xposition = 5, Yposition = 2, ZoneName = "place6.png" },

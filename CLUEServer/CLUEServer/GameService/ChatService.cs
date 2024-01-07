@@ -23,11 +23,23 @@ namespace GameService.Services
 
         private void DisplayMessages(String matchCode)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             foreach (var gamertag in gamersInMatch.Select(gamer => gamer.Key))
             {
                 if (chatCallbacks.ContainsKey(gamertag))
                 {
-                    chatCallbacks[gamertag].ReceiveMessages(RetrieveMessagesForMatch(matchCode));
+                    try
+                    {
+                        chatCallbacks[gamertag].ReceiveMessages(RetrieveMessagesForMatch(matchCode));
+                    }
+                    catch (CommunicationException communicationException)
+                    {
+                        loggerManager.LogError(communicationException);
+                    }
+                    catch(TimeoutException timeoutException)
+                    {
+                        loggerManager.LogError(timeoutException);
+                    }
                 }
             }
         }

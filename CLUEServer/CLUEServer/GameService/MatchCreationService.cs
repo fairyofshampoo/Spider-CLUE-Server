@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data.Entity.Core;
 using System.Data.SqlClient;
 using System.Linq;
+using System.ServiceModel;
 
 namespace GameService.Services
 {
@@ -42,10 +43,6 @@ namespace GameService.Services
             {
                 logger.LogError(sqlException);
             }
-            catch (Exception exception)
-            {
-                logger.LogFatal(exception);
-            }
             HostBehaviorManager.ChangeToReentrant();
             return matchcreationResult;
         }
@@ -61,6 +58,7 @@ namespace GameService.Services
                 pawnsAvailableInMatch[matchCode] = pawns;
             }
         }
+
         private string GenerateMatchCode()
         {
             string matchCode;
@@ -76,16 +74,29 @@ namespace GameService.Services
 
         private bool IsCodeValid(string matchCode)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             bool validation = false;
-            using (var databaseContext = new SpiderClueDbEntities())
+            try
             {
-                var isCodeExisting = databaseContext.matches.FirstOrDefault(match => match.codeMatch == matchCode);
-                if (isCodeExisting == null)
+                using (var databaseContext = new SpiderClueDbEntities())
                 {
-                    validation = true;
+                    var isCodeExisting = databaseContext.matches.FirstOrDefault(match => match.codeMatch == matchCode);
+                    if (isCodeExisting == null)
+                    {
+                        validation = true;
+                    }
                 }
-                return validation;
             }
+            catch (CommunicationException communicationException)
+            {
+                loggerManager.LogError(communicationException);
+            }
+            catch (TimeoutException timeoutException)
+            {
+                loggerManager.LogError(timeoutException);
+            }
+
+            return validation;
         }
     }
 }

@@ -4,6 +4,9 @@ using GameService.Utilities;
 using System.ServiceModel;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity.Core;
+using System.Data.SqlClient;
+using System;
 
 namespace GameService.Services
 {
@@ -13,6 +16,7 @@ namespace GameService.Services
         private static readonly Dictionary<string, ILobbyManagerCallback> gamersLobbyCallback = new Dictionary<string, ILobbyManagerCallback>();
         public void BeginMatch(string matchCode)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToReentrant();
             foreach (var gamer in gamersInMatch
                 .Where(entry => entry.Value.Equals(matchCode))
@@ -20,7 +24,18 @@ namespace GameService.Services
             {
                 if (gamersLobbyCallback.ContainsKey(gamer.Key))
                 {
-                    gamersLobbyCallback[gamer.Key].StartGame();
+                    try
+                    {
+                        gamersLobbyCallback[gamer.Key].StartGame();
+                    }
+                    catch (SqlException sqlException)
+                    {
+                        loggerManager.LogError(sqlException);
+                    }
+                    catch (EntityException entityException)
+                    {
+                        loggerManager.LogError(entityException);
+                    }
                 }
             }
         }
@@ -36,21 +51,47 @@ namespace GameService.Services
 
         public bool IsOwnerOfTheMatch(string gamertag, string matchCode)
         {
-            using (var context = new SpiderClueDbEntities()) 
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            bool isOwner = false;
+            try
             {
-                HostBehaviorManager.ChangeToSingle();
-                bool isOwner = context.matches.Any(match => match.codeMatch == matchCode && match.createdBy == gamertag);
-                HostBehaviorManager.ChangeToReentrant();
-                return isOwner;
+                using (var context = new SpiderClueDbEntities())
+                {
+                    HostBehaviorManager.ChangeToSingle();
+                    isOwner = context.matches.Any(match => match.codeMatch == matchCode && match.createdBy == gamertag);
+                    HostBehaviorManager.ChangeToReentrant();
+                }
             }
+            catch (SqlException sqlException)
+            {
+                loggerManager.LogError(sqlException);
+            }
+            catch (EntityException entityException)
+            {
+                loggerManager.LogError(entityException);
+            }
+
+            return isOwner;
         }
 
         public void KickPlayer(string gamertag)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToReentrant();
             if (gamersLobbyCallback.ContainsKey(gamertag))
             {
-                gamersLobbyCallback[gamertag].KickPlayerFromMatch(gamertag);
+                try
+                {
+                    gamersLobbyCallback[gamertag].KickPlayerFromMatch(gamertag);
+                }
+                catch (CommunicationException communicationException)
+                {
+                    loggerManager.LogError(communicationException);
+                }
+                catch (TimeoutException timeoutException)
+                {
+                    loggerManager.LogError(timeoutException);
+                }
             }
         }
     }
