@@ -1,12 +1,9 @@
 ﻿using DataBaseManager;
 using GameService.Contracts;
 using GameService.Utilities;
-using System;
-using System.Collections.Generic;
+using System.Data.Entity.Core;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameService.Services
 {
@@ -14,31 +11,57 @@ namespace GameService.Services
     {
         public string[] GetFriendsRequest(string gamertag)
         {
-            using (var databaseConext = new SpiderClueDbEntities())
+            HostBehaviorManager.ChangeToSingle();
+            Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
+            string[] friendsRequest = null;
+            try
             {
-                HostBehaviorManager.ChangeToSingle();
-                var friendsRequest = databaseConext.friendRequests
-                    .Where(friendrequest => friendrequest.receiverGamertag == gamertag && friendrequest.friendRequestStatus == "Pending")
-                    .Select(friendRequest => friendRequest.senderGamertag )
-                    .ToArray();
-                HostBehaviorManager.ChangeToReentrant();
-                return friendsRequest;
+                using (var databaseContext = new SpiderClueDbEntities())
+                {
+                    friendsRequest = databaseContext.friendRequests
+                            .Where(friendRequest => friendRequest.receiverGamertag == gamertag && friendRequest.friendRequestStatus == "Pending")
+                            .Select(friendRequest => friendRequest.senderGamertag)
+                            .ToArray();
+                }
             }
-        }   
+            catch (SqlException sqlException)
+            {
+                loggerManager.LogError(sqlException);
+            }
+            catch (EntityException entityException)
+            {
+                loggerManager.LogError(entityException);
+            }
+
+            HostBehaviorManager.ChangeToReentrant();
+            return friendsRequest;
+        }
 
         public void CreateFriendRequest(string gamertag, string friendGamertag)
         {
             HostBehaviorManager.ChangeToSingle();
-            using (var databaseContext = new SpiderClueDbEntities())
+            Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
+            try
             {
-                var friendRequest = new DataBaseManager.friendRequest
+                using (var databaseContext = new SpiderClueDbEntities())
                 {
-                    senderGamertag = gamertag,
-                    receiverGamertag = friendGamertag,
-                    friendRequestStatus = "Pending"
-                };
-                databaseContext.friendRequests.Add(friendRequest);
-                databaseContext.SaveChanges();
+                    var friendRequest = new DataBaseManager.friendRequest
+                    {
+                        senderGamertag = gamertag,
+                        receiverGamertag = friendGamertag,
+                        friendRequestStatus = "Pending"
+                    };
+                    databaseContext.friendRequests.Add(friendRequest);
+                    databaseContext.SaveChanges();
+                }
+            }
+            catch (SqlException sqlException)
+            {
+                loggerManager.LogError(sqlException);
+            }
+            catch (EntityException entityException)
+            {
+                loggerManager.LogError(entityException);
             }
             HostBehaviorManager.ChangeToReentrant();
         }
@@ -46,14 +69,27 @@ namespace GameService.Services
         public void ResponseFriendRequest(string gamertag, string friendGamertag, string response)
         {
             HostBehaviorManager.ChangeToSingle();
-            using (var databaseContext = new SpiderClueDbEntities())
+            Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
+
+            try
             {
-                var friendRequest = databaseContext.friendRequests.FirstOrDefault(friendRequestPending => friendRequestPending.senderGamertag == friendGamertag && friendRequestPending.receiverGamertag == gamertag);
-                if (friendRequest != null)
+                using (var databaseContext = new SpiderClueDbEntities())
                 {
-                    friendRequest.friendRequestStatus = response;
-                    databaseContext.SaveChanges();
+                    var friendRequest = databaseContext.friendRequests.FirstOrDefault(friendRequestPending => friendRequestPending.senderGamertag == friendGamertag && friendRequestPending.receiverGamertag == gamertag);
+                    if (friendRequest != null)
+                    {
+                        friendRequest.friendRequestStatus = response;
+                        databaseContext.SaveChanges();
+                    }
                 }
+            }
+            catch (SqlException sqlException)
+            {
+                loggerManager.LogError(sqlException);
+            }
+            catch (EntityException entityException)
+            {
+                loggerManager.LogError(entityException);
             }
             HostBehaviorManager.ChangeToReentrant();
         }
@@ -61,29 +97,42 @@ namespace GameService.Services
         public void DeleteFriendRequest(string gamertag, string friendGamertag)
         {
             HostBehaviorManager.ChangeToSingle();
-            using (var databaseContext = new SpiderClueDbEntities())
+            Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
+            try
             {
-                var friendRequest = databaseContext.friendRequests
-                .Where(friend => friend.senderGamertag == gamertag && friend.receiverGamertag == friendGamertag);
-
-                var secondfriendRequest = databaseContext.friendRequests
-                    .Where(second => second.senderGamertag == friendGamertag && second.receiverGamertag == gamertag);
-
-                if (friendRequest.Any() || secondfriendRequest.Any())
+                using (var databaseContext = new SpiderClueDbEntities())
                 {
-                    if (secondfriendRequest.Any())
-                    {
-                        databaseContext.friendRequests.RemoveRange(secondfriendRequest);
-                        databaseContext.SaveChanges();
-                    }
+                    var friendRequest = databaseContext.friendRequests
+                            .Where(friend => friend.senderGamertag == gamertag && friend.receiverGamertag == friendGamertag);
 
-                    if(friendRequest.Any())
+                    var secondfriendRequest = databaseContext.friendRequests
+                        .Where(second => second.senderGamertag == friendGamertag && second.receiverGamertag == gamertag);
+
+                    if (friendRequest.Any() || secondfriendRequest.Any())
                     {
-                        databaseContext.friendRequests.RemoveRange(friendRequest);
-                        databaseContext.SaveChanges();
+                        if (secondfriendRequest.Any())
+                        {
+                            databaseContext.friendRequests.RemoveRange(secondfriendRequest);
+                            databaseContext.SaveChanges();
+                        }
+
+                        if (friendRequest.Any())
+                        {
+                            databaseContext.friendRequests.RemoveRange(friendRequest);
+                            databaseContext.SaveChanges();
+                        }
                     }
                 }
             }
+            catch (SqlException sqlException)
+            {
+                loggerManager.LogError(sqlException);
+            }
+            catch (EntityException entityException)
+            {
+                loggerManager.LogError(entityException);
+            }
+            
             HostBehaviorManager.ChangeToReentrant();
         }
     }

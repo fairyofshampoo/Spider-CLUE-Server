@@ -3,11 +3,8 @@ using GameService.Contracts;
 using GameService.Utilities;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameService.Services
 {
@@ -19,10 +16,22 @@ namespace GameService.Services
 
         public void GetConnectedFriends(string gamertag)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToReentrant();
             List<string> connectedFriends = SetConnectedFriendsList(gamertag);
-            
-            OperationContext.Current.GetCallbackChannel<IFriendsManagerCallback>().ReceiveConnectedFriends(connectedFriends);
+
+            try
+            {
+                OperationContext.Current.GetCallbackChannel<IFriendsManagerCallback>().ReceiveConnectedFriends(connectedFriends);
+            }
+            catch (CommunicationException communicationException)
+            {
+                loggerManager.LogError(communicationException);
+            }
+            catch (TimeoutException timeoutException)
+            {
+                loggerManager.LogError(timeoutException);
+            }
         }
 
         public void JoinFriendsConnected(string gamertag)

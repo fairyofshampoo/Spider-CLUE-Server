@@ -11,7 +11,7 @@ namespace GameService.Contracts
     public interface ISessionManager
     {
         [OperationContract]
-        void Connect(string gamertag);
+        int Connect(string gamertag);
 
         [OperationContract]
         void Disconnect(string gamertag);
