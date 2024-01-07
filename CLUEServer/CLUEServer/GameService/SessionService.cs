@@ -19,9 +19,6 @@ namespace GameService.Services
                 UsersConnected.Add(gamertag);
                 UpdateConnectedFriends(gamertag);
                 result = Constants.SUCCESS_IN_OPERATION;
-            } else
-            {
-                result = Constants.ERROR_IN_OPERATION;
             }
 
             return result;

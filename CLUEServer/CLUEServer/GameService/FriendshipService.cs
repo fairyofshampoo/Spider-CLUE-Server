@@ -128,10 +128,12 @@ namespace GameService.Services
             catch (SqlException sqlException)
             {
                 loggerManager.LogError(sqlException);
+                areNotFriends = true;
             }
             catch (EntityException entityException)
             {
                 loggerManager.LogError(entityException);
+                areNotFriends = true;
             }
             HostBehaviorManager.ChangeToReentrant();
             return areNotFriends;
@@ -141,7 +143,7 @@ namespace GameService.Services
         {
             Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToSingle();
-            bool ThereIsNotFriendRequest = true;
+            bool thereIsNotFriendRequest = true;
 
             try
             {
@@ -151,20 +153,22 @@ namespace GameService.Services
                             .FirstOrDefault(friendRequest => friendRequest.senderGamertag == gamertag && friendRequest.receiverGamertag == friendGamertag);
                     if (existingFriendRequest != null)
                     {
-                        ThereIsNotFriendRequest = false;
+                        thereIsNotFriendRequest = false;
                     }
                 }
             }
             catch (SqlException sqlException)
             {
                 loggerManager.LogError(sqlException);
+                thereIsNotFriendRequest = true;
             }
             catch (EntityException entityException)
             {
                 loggerManager.LogError(entityException);
+                thereIsNotFriendRequest = true;
             }
             HostBehaviorManager.ChangeToReentrant();
-            return ThereIsNotFriendRequest;
+            return thereIsNotFriendRequest;
         }
     }
 }
