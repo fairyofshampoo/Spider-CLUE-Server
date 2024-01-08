@@ -553,22 +553,22 @@ namespace TestsServer.SpiderClueService {
         System.Threading.Tasks.Task<string[]> GetFriendsRequestAsync(string gamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendRequestManager/CreateFriendRequest", ReplyAction="http://tempuri.org/IFriendRequestManager/CreateFriendRequestResponse")]
-        void CreateFriendRequest(string gamertag, string friendGamertag);
+        int CreateFriendRequest(string gamertag, string friendGamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendRequestManager/CreateFriendRequest", ReplyAction="http://tempuri.org/IFriendRequestManager/CreateFriendRequestResponse")]
-        System.Threading.Tasks.Task CreateFriendRequestAsync(string gamertag, string friendGamertag);
+        System.Threading.Tasks.Task<int> CreateFriendRequestAsync(string gamertag, string friendGamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendRequestManager/ResponseFriendRequest", ReplyAction="http://tempuri.org/IFriendRequestManager/ResponseFriendRequestResponse")]
-        void ResponseFriendRequest(string gamertag, string friendGamertag, string response);
+        int ResponseFriendRequest(string gamertag, string friendGamertag, string response);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendRequestManager/ResponseFriendRequest", ReplyAction="http://tempuri.org/IFriendRequestManager/ResponseFriendRequestResponse")]
-        System.Threading.Tasks.Task ResponseFriendRequestAsync(string gamertag, string friendGamertag, string response);
+        System.Threading.Tasks.Task<int> ResponseFriendRequestAsync(string gamertag, string friendGamertag, string response);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendRequestManager/DeleteFriendRequest", ReplyAction="http://tempuri.org/IFriendRequestManager/DeleteFriendRequestResponse")]
-        void DeleteFriendRequest(string gamertag, string friend);
+        int DeleteFriendRequest(string gamertag, string friend);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendRequestManager/DeleteFriendRequest", ReplyAction="http://tempuri.org/IFriendRequestManager/DeleteFriendRequestResponse")]
-        System.Threading.Tasks.Task DeleteFriendRequestAsync(string gamertag, string friend);
+        System.Threading.Tasks.Task<int> DeleteFriendRequestAsync(string gamertag, string friend);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -606,27 +606,27 @@ namespace TestsServer.SpiderClueService {
             return base.Channel.GetFriendsRequestAsync(gamertag);
         }
         
-        public void CreateFriendRequest(string gamertag, string friendGamertag) {
-            base.Channel.CreateFriendRequest(gamertag, friendGamertag);
+        public int CreateFriendRequest(string gamertag, string friendGamertag) {
+            return base.Channel.CreateFriendRequest(gamertag, friendGamertag);
         }
         
-        public System.Threading.Tasks.Task CreateFriendRequestAsync(string gamertag, string friendGamertag) {
+        public System.Threading.Tasks.Task<int> CreateFriendRequestAsync(string gamertag, string friendGamertag) {
             return base.Channel.CreateFriendRequestAsync(gamertag, friendGamertag);
         }
         
-        public void ResponseFriendRequest(string gamertag, string friendGamertag, string response) {
-            base.Channel.ResponseFriendRequest(gamertag, friendGamertag, response);
+        public int ResponseFriendRequest(string gamertag, string friendGamertag, string response) {
+            return base.Channel.ResponseFriendRequest(gamertag, friendGamertag, response);
         }
         
-        public System.Threading.Tasks.Task ResponseFriendRequestAsync(string gamertag, string friendGamertag, string response) {
+        public System.Threading.Tasks.Task<int> ResponseFriendRequestAsync(string gamertag, string friendGamertag, string response) {
             return base.Channel.ResponseFriendRequestAsync(gamertag, friendGamertag, response);
         }
         
-        public void DeleteFriendRequest(string gamertag, string friend) {
-            base.Channel.DeleteFriendRequest(gamertag, friend);
+        public int DeleteFriendRequest(string gamertag, string friend) {
+            return base.Channel.DeleteFriendRequest(gamertag, friend);
         }
         
-        public System.Threading.Tasks.Task DeleteFriendRequestAsync(string gamertag, string friend) {
+        public System.Threading.Tasks.Task<int> DeleteFriendRequestAsync(string gamertag, string friend) {
             return base.Channel.DeleteFriendRequestAsync(gamertag, friend);
         }
     }

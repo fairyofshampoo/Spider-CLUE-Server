@@ -381,7 +381,9 @@
   </xs:element>
   <xs:element name="CreateFriendRequestResponse">
     <xs:complexType>
-      <xs:sequence />
+      <xs:sequence>
+        <xs:element minOccurs="0" name="CreateFriendRequestResult" type="xs:int" />
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="ResponseFriendRequest">
@@ -395,7 +397,9 @@
   </xs:element>
   <xs:element name="ResponseFriendRequestResponse">
     <xs:complexType>
-      <xs:sequence />
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ResponseFriendRequestResult" type="xs:int" />
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="DeleteFriendRequest">
@@ -408,7 +412,9 @@
   </xs:element>
   <xs:element name="DeleteFriendRequestResponse">
     <xs:complexType>
-      <xs:sequence />
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DeleteFriendRequestResult" type="xs:int" />
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="ConnectToLobby">
