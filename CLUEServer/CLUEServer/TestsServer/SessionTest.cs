@@ -1,5 +1,4 @@
-﻿using GameService.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
@@ -18,7 +17,7 @@ namespace TestsServer
             string gamertag = "MacMiller";
             SpiderClueService.ISessionManager sessionManager = new SpiderClueService.SessionManagerClient();
             int result = sessionManager.Connect(gamertag);
-            int resultExpceted = Constants.SUCCESS_IN_OPERATION;
+            int resultExpceted = 1;
             Assert.Equal(result, resultExpceted);   
         }
 
@@ -36,7 +35,7 @@ namespace TestsServer
             string gamertag = "MacMiller";
             SpiderClueService.ISessionManager sessionManager = new SpiderClueService.SessionManagerClient();
             int result = sessionManager.Connect(gamertag);
-            int resultExpceted = Constants.ERROR_IN_OPERATION;
+            int resultExpceted = -1;
             Assert.Equal(result, resultExpceted);
         }
 
