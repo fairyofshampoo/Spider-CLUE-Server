@@ -90,6 +90,66 @@ namespace TestsServer
             {
                 Console.WriteLine(entityException.Message);
             }
+
+            try
+            {
+                using (var databaseContext = new SpiderClueDbEntities())
+                {
+                    string gamertag = "Star3oy";
+                    string friendGamertag = "mich";
+                    var existingFriendship = databaseContext.friendLists
+                            .FirstOrDefault(f => f.gamertag == gamertag && f.friend == friendGamertag);
+
+                    if (existingFriendship == null)
+                    {
+                        var newFriends = new DataBaseManager.friendList
+                        {
+                            gamertag = gamertag,
+                            friend = friendGamertag
+                        };
+                        databaseContext.friendLists.Add(newFriends);
+                        databaseContext.SaveChanges();
+                    }
+                }
+            }
+            catch (SqlException sqlException)
+            {
+                Console.WriteLine($"{sqlException.Message}");
+            }
+            catch (EntityException entityException)
+            {
+                Console.WriteLine(entityException.Message);
+            }
+
+            try
+            {
+                using (var databaseContext = new SpiderClueDbEntities())
+                {
+                    string gamertag = "mich";
+                    string friendGamertag = "Star3oy";
+                    var existingFriendship = databaseContext.friendLists
+                            .FirstOrDefault(f => f.gamertag == gamertag && f.friend == friendGamertag);
+
+                    if (existingFriendship == null)
+                    {
+                        var newFriends = new DataBaseManager.friendList
+                        {
+                            gamertag = gamertag,
+                            friend = friendGamertag
+                        };
+                        databaseContext.friendLists.Add(newFriends);
+                        databaseContext.SaveChanges();
+                    }
+                }
+            }
+            catch (SqlException sqlException)
+            {
+                Console.WriteLine($"{sqlException.Message}");
+            }
+            catch (EntityException entityException)
+            {
+                Console.WriteLine(entityException.Message);
+            }
         }
 
         public void Dispose()
@@ -99,7 +159,7 @@ namespace TestsServer
                 using (var context = new SpiderClueDbEntities())
                 {
                     var gamerInDB = context.gamers
-                        .FirstOrDefault(player => player.gamertag == "Lalonch3ra");
+                        .FirstOrDefault(player => player.gamertag == "soobin");
                     if (gamerInDB != null)
                     {
                         context.gamers.Remove(gamerInDB);
@@ -108,7 +168,7 @@ namespace TestsServer
                     }
 
                     var secondGamerInDB = context.gamers
-                        .FirstOrDefault(player => player.gamertag == "Karlatv");
+                        .FirstOrDefault(player => player.gamertag == "michito");
                     if (gamerInDB != null)
                     {
                         context.gamers.Remove(secondGamerInDB);
@@ -129,5 +189,184 @@ namespace TestsServer
     }
     public class FriendsTest : IClassFixture<FriendTestConfiguration>
     {
+        FriendTestConfiguration Configuration;
+
+        public FriendsTest(FriendTestConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        [Fact]
+        public void AreNotFriendsTestSuccess()
+        {
+            bool result = false;
+
+            SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
+            result = friendshipManager.AreNotFriends("soobin", "Star3oy");
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void AreNotFriendsTestFalse()
+        {
+            bool result = false;
+
+            SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
+            result = friendshipManager.AreNotFriends("soobin", "michito");
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void AddFriendTestSuccess()
+        {
+            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+
+            SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
+            int result = friendshipManager.AddFriend("soobin", "michito");
+            Assert.Equal(resultExpected, result);
+        }
+
+        [Fact]
+        public void GetFriendListSuccess()
+        {
+            string[] resultExpected = new string[]
+            {
+                "michito"
+            };
+
+            SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
+            string[] result = friendshipManager.GetFriendList("soobin");
+            Assert.Equal(resultExpected, result);
+        }
+
+        [Fact]
+        public void GetFriendListFail()
+        {
+            string[] resultExpected = new string[]
+            {
+                "michito", "Star3oy"
+            };
+
+            SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
+            string[] result = friendshipManager.GetFriendList("soobin");
+            Assert.False(resultExpected.Equals(result));
+        }
+
+        [Fact]
+        public void DeleteFriendFail()
+        {
+            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+
+            SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
+            int result = friendshipManager.DeleteFriend("Star3oy", "michito");
+            Assert.False(resultExpected.Equals(result));
+        }
+
+        [Fact]
+        public void DeleteFriendSuccess()
+        {
+            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+
+            SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
+            int result = friendshipManager.DeleteFriend("soobin", "michito");
+            Assert.True(resultExpected.Equals(result));
+        }
+
+        [Fact]
+        public void CreateFriendRequestSuccess()
+        {
+            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+
+            SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
+            int result = friendRequestManager.CreateFriendRequest("Star3oy", "michi");
+            Assert.True(resultExpected.Equals(result));
+        }
+
+        [Fact]
+        public void GetFriendsRequestSuccess()
+        {
+            string[] resultExpected = new string[]
+            {
+                "Star3oy"
+            };
+
+            SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
+            string[] result = friendRequestManager.GetFriendsRequest("michi");
+            Assert.Equal(resultExpected, result);
+        }
+
+        [Fact]
+        public void GetFriendsRequestFail()
+        {
+            string[] resultExpected = new string[]
+            {
+                "Star3oy"
+            };
+
+            SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
+            string[] result = friendRequestManager.GetFriendsRequest("soobin");
+            Assert.False(resultExpected.Equals(result));
+        }
+
+        [Fact]
+        public void ResponseFriendRequestSuccess()
+        {
+            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+
+            SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
+            int result = friendRequestManager.ResponseFriendRequest("michi", "Star3oy", "Accepted");
+            Assert.Equal(resultExpected, result);
+        }
+
+        [Fact]
+        public void ResponseFriendRequestFail()
+        {
+            int resultExpected = Constants.ERROR_IN_OPERATION;
+
+            SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
+            int result = friendRequestManager.ResponseFriendRequest("michi", "michi", "Accepted");
+            Assert.Equal(resultExpected, result);
+        }
+
+        [Fact]
+        public void DeleteFriendRequestSuccess()
+        {
+            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+
+            SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
+            int result = friendRequestManager.DeleteFriendRequest("michi", "Star3oy");
+            Assert.Equal(resultExpected, result);
+        }
+
+        [Fact]
+        public void DeleteFriendRequestFail()
+        {
+            int resultExpected = Constants.ERROR_IN_OPERATION;
+
+            SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
+            int result = friendRequestManager.DeleteFriendRequest("michi", "michi");
+            Assert.Equal(resultExpected, result);
+        }
+
+        [Fact]
+        public void ThereIsNoFriendRequestFail()
+        {
+            bool result = false;
+
+            SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
+            result = friendshipManager.ThereIsNoFriendRequest("michi", "Star3oy");
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void ThereIsNoFriendRequestSuccess()
+        {
+            bool result = false;
+
+            SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
+            result = friendshipManager.ThereIsNoFriendRequest("Star3oy", "michi");
+            Assert.False(result);
+        }
+
     }
 }

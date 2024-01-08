@@ -305,6 +305,125 @@ namespace TestsServer
             Gamer secondGamer = userManager.GetGamerByGamertag(gamertag);
 
             Assert.Equal(gamer, secondGamer);
+<<<<<<< HEAD
+        }
+
+        [Fact]
+        public void GetGamerByGamertagFailTest()
+        {
+            string gamertag = "Star3oy";
+
+            Gamer gamer = new Gamer
+            {
+                FirstName = "Mac",
+                LastName = "Miller",
+                Gamertag = "mac",
+                GamesWon = 0,
+                ImageCode = "Icon2.jpg",
+                Password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9",
+                Email = "MacMiller@hotmail.com"
+            };
+
+            SpiderClueService.IUserManager userManager = new UserManagerClient();
+            Gamer secondGamer = userManager.GetGamerByGamertag(gamertag);
+            Assert.False(gamer.Equals(secondGamer));
+        }
+
+        [Fact]
+        public void GetGamerByEmailTest()
+        {
+            string gamertag = "eduarcaco@hotmail.com";
+
+            Gamer gamer = new Gamer
+            {
+                FirstName = "Eduardo",
+                LastName = "Carrera",
+                Gamertag = "Star3oy",
+                GamesWon = 0,
+                ImageCode = "Icon0.jpg",
+                Password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9",
+                Email = "eduarcaco@hotmail.com"
+            };
+
+            SpiderClueService.IUserManager userManager = new UserManagerClient();
+            Gamer secondGamer = userManager.GetGamerByEmail(gamertag);
+
+            Assert.Equal(gamer, secondGamer);
+        }
+
+        [Fact]
+        public void GetGamerByEmailFailTest()
+        {
+            string gamertag = "eduarcaco@hotmail.com";
+
+            Gamer gamer = new Gamer
+            {
+                FirstName = "Aldo",
+                LastName = "Carrera",
+                Gamertag = "AldoJr",
+                GamesWon = 0,
+                ImageCode = "Icon2.jpg",
+                Password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9",
+                Email = "eduarcaco@hotmail.com"
+            };
+
+            SpiderClueService.IUserManager userManager = new UserManagerClient();
+            Gamer secondGamer = userManager.GetGamerByEmail(gamertag);
+            Assert.False(gamer.Equals(secondGamer));
+        }
+
+        [Fact]
+        public void ChangeIconTest()
+        {
+            string gamertag = "Star3oy";
+            string icon = "Icon1";
+            SpiderClueService.IUserManager userManager = new UserManagerClient();
+            int result = userManager.ChangeIcon(gamertag, icon);
+            int resultExcepted = Constants.SUCCESS_IN_OPERATION;
+            Assert.Equal(result, resultExcepted);
+        }
+
+        [Fact]
+        public void ChangeIconFailTest()
+        {
+            string gamertag = "Aldojr";
+            string icon = "Icon1";
+            SpiderClueService.IUserManager userManager = new UserManagerClient();
+            int result = userManager.ChangeIcon(gamertag, icon);
+            int resultExcepted = Constants.ERROR_IN_OPERATION;
+            Assert.Equal(result, resultExcepted);
+        }
+
+        [Fact]
+        public void GetIconTest()
+        {
+            string gamertag = "Star3oy";
+            SpiderClueService.IUserManager userManager = new UserManagerClient();
+            string result = userManager.GetIcon(gamertag);
+            string resultExcepted = "Icon1";
+            Assert.Equal(result, resultExcepted);
+        }
+
+        [Fact]
+        public void GetIconFailTest()
+        {
+            string gamertag = "Star3oy";
+            SpiderClueService.IUserManager userManager = new UserManagerClient();
+            string result = userManager.GetIcon(gamertag);
+            string resultExcepted = "Icon3";
+            Assert.False(result.Equals(resultExcepted));
+        }
+
+        [Fact]
+        public void DeleteGuestPlayerTest()
+        {
+            string gamertag = "Star3oy";
+            SpiderClueService.IUserManager userManager = new UserManagerClient();
+            string result = userManager.GetIcon(gamertag);
+            string resultExcepted = "Icon3";
+            Assert.False(result.Equals(resultExcepted));
+=======
+>>>>>>> 4d602f506a0afca1c6df9ddb214d7d00ae0c7445
         }
 
         [Fact]
