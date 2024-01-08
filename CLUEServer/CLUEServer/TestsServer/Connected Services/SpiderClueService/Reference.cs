@@ -9,582 +9,17 @@
 //------------------------------------------------------------------------------
 
 namespace TestsServer.SpiderClueService {
-    using System.Runtime.Serialization;
-    using System;
     
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="AccessAccount", Namespace="http://schemas.datacontract.org/2004/07/GameService.Contracts")]
-    [System.SerializableAttribute()]
-    [System.Runtime.Serialization.KnownTypeAttribute(typeof(TestsServer.SpiderClueService.Gamer))]
-    public partial class AccessAccount : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string EmailField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string GamertagField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string PasswordField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Email {
-            get {
-                return this.EmailField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.EmailField, value) != true)) {
-                    this.EmailField = value;
-                    this.RaisePropertyChanged("Email");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Gamertag {
-            get {
-                return this.GamertagField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.GamertagField, value) != true)) {
-                    this.GamertagField = value;
-                    this.RaisePropertyChanged("Gamertag");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Password {
-            get {
-                return this.PasswordField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.PasswordField, value) != true)) {
-                    this.PasswordField = value;
-                    this.RaisePropertyChanged("Password");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="Gamer", Namespace="http://schemas.datacontract.org/2004/07/GameService.Contracts")]
-    [System.SerializableAttribute()]
-    public partial class Gamer : TestsServer.SpiderClueService.AccessAccount {
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string FirstNameField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int GamesWonField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string ImageCodeField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string LastNameField;
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string FirstName {
-            get {
-                return this.FirstNameField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.FirstNameField, value) != true)) {
-                    this.FirstNameField = value;
-                    this.RaisePropertyChanged("FirstName");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int GamesWon {
-            get {
-                return this.GamesWonField;
-            }
-            set {
-                if ((this.GamesWonField.Equals(value) != true)) {
-                    this.GamesWonField = value;
-                    this.RaisePropertyChanged("GamesWon");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string ImageCode {
-            get {
-                return this.ImageCodeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.ImageCodeField, value) != true)) {
-                    this.ImageCodeField = value;
-                    this.RaisePropertyChanged("ImageCode");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string LastName {
-            get {
-                return this.LastNameField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.LastNameField, value) != true)) {
-                    this.LastNameField = value;
-                    this.RaisePropertyChanged("LastName");
-                }
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="Match", Namespace="http://schemas.datacontract.org/2004/07/GameService.Contracts")]
-    [System.SerializableAttribute()]
-    public partial class Match : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string CodeField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string CreatedByField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Code {
-            get {
-                return this.CodeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.CodeField, value) != true)) {
-                    this.CodeField = value;
-                    this.RaisePropertyChanged("Code");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string CreatedBy {
-            get {
-                return this.CreatedByField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.CreatedByField, value) != true)) {
-                    this.CreatedByField = value;
-                    this.RaisePropertyChanged("CreatedBy");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="Pawn", Namespace="http://schemas.datacontract.org/2004/07/GameService.Contracts")]
-    [System.SerializableAttribute()]
-    public partial class Pawn : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string ColorField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int XPositionField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int YPositionField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Color {
-            get {
-                return this.ColorField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.ColorField, value) != true)) {
-                    this.ColorField = value;
-                    this.RaisePropertyChanged("Color");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int XPosition {
-            get {
-                return this.XPositionField;
-            }
-            set {
-                if ((this.XPositionField.Equals(value) != true)) {
-                    this.XPositionField = value;
-                    this.RaisePropertyChanged("XPosition");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int YPosition {
-            get {
-                return this.YPositionField;
-            }
-            set {
-                if ((this.YPositionField.Equals(value) != true)) {
-                    this.YPositionField = value;
-                    this.RaisePropertyChanged("YPosition");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="Card", Namespace="http://schemas.datacontract.org/2004/07/GameService.Contracts")]
-    [System.SerializableAttribute()]
-    public partial class Card : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string IDField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string TypeField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string ID {
-            get {
-                return this.IDField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.IDField, value) != true)) {
-                    this.IDField = value;
-                    this.RaisePropertyChanged("ID");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Type {
-            get {
-                return this.TypeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.TypeField, value) != true)) {
-                    this.TypeField = value;
-                    this.RaisePropertyChanged("Type");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="Door", Namespace="http://schemas.datacontract.org/2004/07/GameService.Contracts")]
-    [System.SerializableAttribute()]
-    public partial class Door : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int XpositionField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int YpositionField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string ZoneNameField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int Xposition {
-            get {
-                return this.XpositionField;
-            }
-            set {
-                if ((this.XpositionField.Equals(value) != true)) {
-                    this.XpositionField = value;
-                    this.RaisePropertyChanged("Xposition");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int Yposition {
-            get {
-                return this.YpositionField;
-            }
-            set {
-                if ((this.YpositionField.Equals(value) != true)) {
-                    this.YpositionField = value;
-                    this.RaisePropertyChanged("Yposition");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string ZoneName {
-            get {
-                return this.ZoneNameField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.ZoneNameField, value) != true)) {
-                    this.ZoneNameField = value;
-                    this.RaisePropertyChanged("ZoneName");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="Message", Namespace="http://schemas.datacontract.org/2004/07/GameService.Contracts")]
-    [System.SerializableAttribute()]
-    public partial class Message : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string GamerTagField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string TextField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string GamerTag {
-            get {
-                return this.GamerTagField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.GamerTagField, value) != true)) {
-                    this.GamerTagField = value;
-                    this.RaisePropertyChanged("GamerTag");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Text {
-            get {
-                return this.TextField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.TextField, value) != true)) {
-                    this.TextField = value;
-                    this.RaisePropertyChanged("Text");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="Winner", Namespace="http://schemas.datacontract.org/2004/07/GameService.Contracts")]
-    [System.SerializableAttribute()]
-    public partial class Winner : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string GamertagField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int GamesWonField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string IconField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Gamertag {
-            get {
-                return this.GamertagField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.GamertagField, value) != true)) {
-                    this.GamertagField = value;
-                    this.RaisePropertyChanged("Gamertag");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int GamesWon {
-            get {
-                return this.GamesWonField;
-            }
-            set {
-                if ((this.GamesWonField.Equals(value) != true)) {
-                    this.GamesWonField = value;
-                    this.RaisePropertyChanged("GamesWon");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Icon {
-            get {
-                return this.IconField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.IconField, value) != true)) {
-                    this.IconField = value;
-                    this.RaisePropertyChanged("Icon");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ServiceModel.ServiceContractAttribute(ConfigurationName="SpiderClueService.IUserManager")]
     public interface IUserManager {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/AddUserTransaction", ReplyAction="http://tempuri.org/IUserManager/AddUserTransactionResponse")]
-        int AddUserTransaction(TestsServer.SpiderClueService.Gamer gamer);
+        int AddUserTransaction(GameService.Contracts.Gamer gamer);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/AddUserTransaction", ReplyAction="http://tempuri.org/IUserManager/AddUserTransactionResponse")]
-        System.Threading.Tasks.Task<int> AddUserTransactionAsync(TestsServer.SpiderClueService.Gamer gamer);
+        System.Threading.Tasks.Task<int> AddUserTransactionAsync(GameService.Contracts.Gamer gamer);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/AuthenticateAccount", ReplyAction="http://tempuri.org/IUserManager/AuthenticateAccountResponse")]
         bool AuthenticateAccount(string gamertag, string password);
@@ -617,16 +52,16 @@ namespace TestsServer.SpiderClueService {
         System.Threading.Tasks.Task<bool> IsGamertagExistingAsync(string gamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/GetGamerByGamertag", ReplyAction="http://tempuri.org/IUserManager/GetGamerByGamertagResponse")]
-        TestsServer.SpiderClueService.Gamer GetGamerByGamertag(string gamertag);
+        GameService.Contracts.Gamer GetGamerByGamertag(string gamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/GetGamerByGamertag", ReplyAction="http://tempuri.org/IUserManager/GetGamerByGamertagResponse")]
-        System.Threading.Tasks.Task<TestsServer.SpiderClueService.Gamer> GetGamerByGamertagAsync(string gamertag);
+        System.Threading.Tasks.Task<GameService.Contracts.Gamer> GetGamerByGamertagAsync(string gamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/GetGamerByEmail", ReplyAction="http://tempuri.org/IUserManager/GetGamerByEmailResponse")]
-        TestsServer.SpiderClueService.Gamer GetGamerByEmail(string email);
+        GameService.Contracts.Gamer GetGamerByEmail(string email);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/GetGamerByEmail", ReplyAction="http://tempuri.org/IUserManager/GetGamerByEmailResponse")]
-        System.Threading.Tasks.Task<TestsServer.SpiderClueService.Gamer> GetGamerByEmailAsync(string email);
+        System.Threading.Tasks.Task<GameService.Contracts.Gamer> GetGamerByEmailAsync(string email);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/ModifyAccount", ReplyAction="http://tempuri.org/IUserManager/ModifyAccountResponse")]
         int ModifyAccount(string gamertag, string firstName, string lastName);
@@ -680,11 +115,11 @@ namespace TestsServer.SpiderClueService {
                 base(binding, remoteAddress) {
         }
         
-        public int AddUserTransaction(TestsServer.SpiderClueService.Gamer gamer) {
+        public int AddUserTransaction(GameService.Contracts.Gamer gamer) {
             return base.Channel.AddUserTransaction(gamer);
         }
         
-        public System.Threading.Tasks.Task<int> AddUserTransactionAsync(TestsServer.SpiderClueService.Gamer gamer) {
+        public System.Threading.Tasks.Task<int> AddUserTransactionAsync(GameService.Contracts.Gamer gamer) {
             return base.Channel.AddUserTransactionAsync(gamer);
         }
         
@@ -728,19 +163,19 @@ namespace TestsServer.SpiderClueService {
             return base.Channel.IsGamertagExistingAsync(gamertag);
         }
         
-        public TestsServer.SpiderClueService.Gamer GetGamerByGamertag(string gamertag) {
+        public GameService.Contracts.Gamer GetGamerByGamertag(string gamertag) {
             return base.Channel.GetGamerByGamertag(gamertag);
         }
         
-        public System.Threading.Tasks.Task<TestsServer.SpiderClueService.Gamer> GetGamerByGamertagAsync(string gamertag) {
+        public System.Threading.Tasks.Task<GameService.Contracts.Gamer> GetGamerByGamertagAsync(string gamertag) {
             return base.Channel.GetGamerByGamertagAsync(gamertag);
         }
         
-        public TestsServer.SpiderClueService.Gamer GetGamerByEmail(string email) {
+        public GameService.Contracts.Gamer GetGamerByEmail(string email) {
             return base.Channel.GetGamerByEmail(email);
         }
         
-        public System.Threading.Tasks.Task<TestsServer.SpiderClueService.Gamer> GetGamerByEmailAsync(string email) {
+        public System.Threading.Tasks.Task<GameService.Contracts.Gamer> GetGamerByEmailAsync(string email) {
             return base.Channel.GetGamerByEmailAsync(email);
         }
         
@@ -918,16 +353,16 @@ namespace TestsServer.SpiderClueService {
         System.Threading.Tasks.Task<string[]> GetFriendListAsync(string gamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendshipManager/DeleteFriend", ReplyAction="http://tempuri.org/IFriendshipManager/DeleteFriendResponse")]
-        void DeleteFriend(string gamertag, string friendGamertag);
+        int DeleteFriend(string gamertag, string friendGamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendshipManager/DeleteFriend", ReplyAction="http://tempuri.org/IFriendshipManager/DeleteFriendResponse")]
-        System.Threading.Tasks.Task DeleteFriendAsync(string gamertag, string friendGamertag);
+        System.Threading.Tasks.Task<int> DeleteFriendAsync(string gamertag, string friendGamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendshipManager/AddFriend", ReplyAction="http://tempuri.org/IFriendshipManager/AddFriendResponse")]
-        void AddFriend(string gamertag, string friendGamertag);
+        int AddFriend(string gamertag, string friendGamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendshipManager/AddFriend", ReplyAction="http://tempuri.org/IFriendshipManager/AddFriendResponse")]
-        System.Threading.Tasks.Task AddFriendAsync(string gamertag, string friendGamertag);
+        System.Threading.Tasks.Task<int> AddFriendAsync(string gamertag, string friendGamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendshipManager/AreNotFriends", ReplyAction="http://tempuri.org/IFriendshipManager/AreNotFriendsResponse")]
         bool AreNotFriends(string gamertag, string friendGamertag);
@@ -977,19 +412,19 @@ namespace TestsServer.SpiderClueService {
             return base.Channel.GetFriendListAsync(gamertag);
         }
         
-        public void DeleteFriend(string gamertag, string friendGamertag) {
-            base.Channel.DeleteFriend(gamertag, friendGamertag);
+        public int DeleteFriend(string gamertag, string friendGamertag) {
+            return base.Channel.DeleteFriend(gamertag, friendGamertag);
         }
         
-        public System.Threading.Tasks.Task DeleteFriendAsync(string gamertag, string friendGamertag) {
+        public System.Threading.Tasks.Task<int> DeleteFriendAsync(string gamertag, string friendGamertag) {
             return base.Channel.DeleteFriendAsync(gamertag, friendGamertag);
         }
         
-        public void AddFriend(string gamertag, string friendGamertag) {
-            base.Channel.AddFriend(gamertag, friendGamertag);
+        public int AddFriend(string gamertag, string friendGamertag) {
+            return base.Channel.AddFriend(gamertag, friendGamertag);
         }
         
-        public System.Threading.Tasks.Task AddFriendAsync(string gamertag, string friendGamertag) {
+        public System.Threading.Tasks.Task<int> AddFriendAsync(string gamertag, string friendGamertag) {
             return base.Channel.AddFriendAsync(gamertag, friendGamertag);
         }
         
@@ -1015,10 +450,10 @@ namespace TestsServer.SpiderClueService {
     public interface IMatchManager {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IMatchManager/GetMatchInformation", ReplyAction="http://tempuri.org/IMatchManager/GetMatchInformationResponse")]
-        TestsServer.SpiderClueService.Match GetMatchInformation(string code);
+        GameService.Contracts.Match GetMatchInformation(string code);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IMatchManager/GetMatchInformation", ReplyAction="http://tempuri.org/IMatchManager/GetMatchInformationResponse")]
-        System.Threading.Tasks.Task<TestsServer.SpiderClueService.Match> GetMatchInformationAsync(string code);
+        System.Threading.Tasks.Task<GameService.Contracts.Match> GetMatchInformationAsync(string code);
         
         [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IMatchManager/ConnectToMatch")]
         void ConnectToMatch(string gamertag, string matchCode);
@@ -1043,7 +478,7 @@ namespace TestsServer.SpiderClueService {
     public interface IMatchManagerCallback {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IMatchManager/ReceiveGamersInMatch", ReplyAction="http://tempuri.org/IMatchManager/ReceiveGamersInMatchResponse")]
-        void ReceiveGamersInMatch(System.Collections.Generic.Dictionary<string, TestsServer.SpiderClueService.Pawn> characters);
+        void ReceiveGamersInMatch(System.Collections.Generic.Dictionary<string, GameService.Contracts.Pawn> characters);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -1074,11 +509,11 @@ namespace TestsServer.SpiderClueService {
                 base(callbackInstance, binding, remoteAddress) {
         }
         
-        public TestsServer.SpiderClueService.Match GetMatchInformation(string code) {
+        public GameService.Contracts.Match GetMatchInformation(string code) {
             return base.Channel.GetMatchInformation(code);
         }
         
-        public System.Threading.Tasks.Task<TestsServer.SpiderClueService.Match> GetMatchInformationAsync(string code) {
+        public System.Threading.Tasks.Task<GameService.Contracts.Match> GetMatchInformationAsync(string code) {
             return base.Channel.GetMatchInformationAsync(code);
         }
         
@@ -1118,22 +553,22 @@ namespace TestsServer.SpiderClueService {
         System.Threading.Tasks.Task<string[]> GetFriendsRequestAsync(string gamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendRequestManager/CreateFriendRequest", ReplyAction="http://tempuri.org/IFriendRequestManager/CreateFriendRequestResponse")]
-        void CreateFriendRequest(string gamertag, string friendGamertag);
+        int CreateFriendRequest(string gamertag, string friendGamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendRequestManager/CreateFriendRequest", ReplyAction="http://tempuri.org/IFriendRequestManager/CreateFriendRequestResponse")]
-        System.Threading.Tasks.Task CreateFriendRequestAsync(string gamertag, string friendGamertag);
+        System.Threading.Tasks.Task<int> CreateFriendRequestAsync(string gamertag, string friendGamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendRequestManager/ResponseFriendRequest", ReplyAction="http://tempuri.org/IFriendRequestManager/ResponseFriendRequestResponse")]
-        void ResponseFriendRequest(string gamertag, string friendGamertag, string response);
+        int ResponseFriendRequest(string gamertag, string friendGamertag, string response);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendRequestManager/ResponseFriendRequest", ReplyAction="http://tempuri.org/IFriendRequestManager/ResponseFriendRequestResponse")]
-        System.Threading.Tasks.Task ResponseFriendRequestAsync(string gamertag, string friendGamertag, string response);
+        System.Threading.Tasks.Task<int> ResponseFriendRequestAsync(string gamertag, string friendGamertag, string response);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendRequestManager/DeleteFriendRequest", ReplyAction="http://tempuri.org/IFriendRequestManager/DeleteFriendRequestResponse")]
-        void DeleteFriendRequest(string gamertag, string friend);
+        int DeleteFriendRequest(string gamertag, string friend);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFriendRequestManager/DeleteFriendRequest", ReplyAction="http://tempuri.org/IFriendRequestManager/DeleteFriendRequestResponse")]
-        System.Threading.Tasks.Task DeleteFriendRequestAsync(string gamertag, string friend);
+        System.Threading.Tasks.Task<int> DeleteFriendRequestAsync(string gamertag, string friend);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -1171,27 +606,27 @@ namespace TestsServer.SpiderClueService {
             return base.Channel.GetFriendsRequestAsync(gamertag);
         }
         
-        public void CreateFriendRequest(string gamertag, string friendGamertag) {
-            base.Channel.CreateFriendRequest(gamertag, friendGamertag);
+        public int CreateFriendRequest(string gamertag, string friendGamertag) {
+            return base.Channel.CreateFriendRequest(gamertag, friendGamertag);
         }
         
-        public System.Threading.Tasks.Task CreateFriendRequestAsync(string gamertag, string friendGamertag) {
+        public System.Threading.Tasks.Task<int> CreateFriendRequestAsync(string gamertag, string friendGamertag) {
             return base.Channel.CreateFriendRequestAsync(gamertag, friendGamertag);
         }
         
-        public void ResponseFriendRequest(string gamertag, string friendGamertag, string response) {
-            base.Channel.ResponseFriendRequest(gamertag, friendGamertag, response);
+        public int ResponseFriendRequest(string gamertag, string friendGamertag, string response) {
+            return base.Channel.ResponseFriendRequest(gamertag, friendGamertag, response);
         }
         
-        public System.Threading.Tasks.Task ResponseFriendRequestAsync(string gamertag, string friendGamertag, string response) {
+        public System.Threading.Tasks.Task<int> ResponseFriendRequestAsync(string gamertag, string friendGamertag, string response) {
             return base.Channel.ResponseFriendRequestAsync(gamertag, friendGamertag, response);
         }
         
-        public void DeleteFriendRequest(string gamertag, string friend) {
-            base.Channel.DeleteFriendRequest(gamertag, friend);
+        public int DeleteFriendRequest(string gamertag, string friend) {
+            return base.Channel.DeleteFriendRequest(gamertag, friend);
         }
         
-        public System.Threading.Tasks.Task DeleteFriendRequestAsync(string gamertag, string friend) {
+        public System.Threading.Tasks.Task<int> DeleteFriendRequestAsync(string gamertag, string friend) {
             return base.Channel.DeleteFriendRequestAsync(gamertag, friend);
         }
     }
@@ -1425,16 +860,16 @@ namespace TestsServer.SpiderClueService {
         System.Threading.Tasks.Task ShowCommonAccusationAsync(string[] accusation, string matchCode, string accuser);
         
         [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IGameManager/ShowCard")]
-        void ShowCard(TestsServer.SpiderClueService.Card card, string matchCode, string accuser);
+        void ShowCard(GameService.Contracts.Card card, string matchCode, string accuser);
         
         [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IGameManager/ShowCard")]
-        System.Threading.Tasks.Task ShowCardAsync(TestsServer.SpiderClueService.Card card, string matchCode, string accuser);
+        System.Threading.Tasks.Task ShowCardAsync(GameService.Contracts.Card card, string matchCode, string accuser);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IGameManager/GetDeck", ReplyAction="http://tempuri.org/IGameManager/GetDeckResponse")]
-        TestsServer.SpiderClueService.Card[] GetDeck(string gamertag);
+        GameService.Contracts.Card[] GetDeck(string gamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IGameManager/GetDeck", ReplyAction="http://tempuri.org/IGameManager/GetDeckResponse")]
-        System.Threading.Tasks.Task<TestsServer.SpiderClueService.Card[]> GetDeckAsync(string gamertag);
+        System.Threading.Tasks.Task<GameService.Contracts.Card[]> GetDeckAsync(string gamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IGameManager/EndGame", ReplyAction="http://tempuri.org/IGameManager/EndGameResponse")]
         void EndGame(string matchCode);
@@ -1450,16 +885,16 @@ namespace TestsServer.SpiderClueService {
         void ReceiveFinalAccusationOption(bool isEnabled);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IGameManager/ReceiveCommonAccusationOption", ReplyAction="http://tempuri.org/IGameManager/ReceiveCommonAccusationOptionResponse")]
-        void ReceiveCommonAccusationOption(bool isEnabled, TestsServer.SpiderClueService.Door door);
+        void ReceiveCommonAccusationOption(bool isEnabled, GameService.Contracts.Door door);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IGameManager/ReceiveCommonAccusationByOtherGamer", ReplyAction="http://tempuri.org/IGameManager/ReceiveCommonAccusationByOtherGamerResponse")]
         void ReceiveCommonAccusationByOtherGamer(string[] accusation);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IGameManager/RequestShowCard", ReplyAction="http://tempuri.org/IGameManager/RequestShowCardResponse")]
-        void RequestShowCard(TestsServer.SpiderClueService.Card[] cards, string accuser);
+        void RequestShowCard(GameService.Contracts.Card[] cards, string accuser);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IGameManager/ReceivePawnsMove", ReplyAction="http://tempuri.org/IGameManager/ReceivePawnsMoveResponse")]
-        void ReceivePawnsMove(TestsServer.SpiderClueService.Pawn pawn);
+        void ReceivePawnsMove(GameService.Contracts.Pawn pawn);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IGameManager/ReceiveTurn", ReplyAction="http://tempuri.org/IGameManager/ReceiveTurnResponse")]
         void ReceiveTurn(bool isYourTurn);
@@ -1474,7 +909,7 @@ namespace TestsServer.SpiderClueService {
         void ShowNobodyAnswers();
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IGameManager/ReceiveCardAccused", ReplyAction="http://tempuri.org/IGameManager/ReceiveCardAccusedResponse")]
-        void ReceiveCardAccused(TestsServer.SpiderClueService.Card card);
+        void ReceiveCardAccused(GameService.Contracts.Card card);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IGameManager/ReceiveWinner", ReplyAction="http://tempuri.org/IGameManager/ReceiveWinnerResponse")]
         void ReceiveWinner(string winnerGamertag, string gamerIcon);
@@ -1548,19 +983,19 @@ namespace TestsServer.SpiderClueService {
             return base.Channel.ShowCommonAccusationAsync(accusation, matchCode, accuser);
         }
         
-        public void ShowCard(TestsServer.SpiderClueService.Card card, string matchCode, string accuser) {
+        public void ShowCard(GameService.Contracts.Card card, string matchCode, string accuser) {
             base.Channel.ShowCard(card, matchCode, accuser);
         }
         
-        public System.Threading.Tasks.Task ShowCardAsync(TestsServer.SpiderClueService.Card card, string matchCode, string accuser) {
+        public System.Threading.Tasks.Task ShowCardAsync(GameService.Contracts.Card card, string matchCode, string accuser) {
             return base.Channel.ShowCardAsync(card, matchCode, accuser);
         }
         
-        public TestsServer.SpiderClueService.Card[] GetDeck(string gamertag) {
+        public GameService.Contracts.Card[] GetDeck(string gamertag) {
             return base.Channel.GetDeck(gamertag);
         }
         
-        public System.Threading.Tasks.Task<TestsServer.SpiderClueService.Card[]> GetDeckAsync(string gamertag) {
+        public System.Threading.Tasks.Task<GameService.Contracts.Card[]> GetDeckAsync(string gamertag) {
             return base.Channel.GetDeckAsync(gamertag);
         }
         
@@ -1665,17 +1100,17 @@ namespace TestsServer.SpiderClueService {
         System.Threading.Tasks.Task DisconnectFromChatAsync(string gamertag);
         
         [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IChatManager/BroadcastMessage")]
-        void BroadcastMessage(string matchCode, TestsServer.SpiderClueService.Message message);
+        void BroadcastMessage(string matchCode, GameService.Contracts.Message message);
         
         [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IChatManager/BroadcastMessage")]
-        System.Threading.Tasks.Task BroadcastMessageAsync(string matchCode, TestsServer.SpiderClueService.Message message);
+        System.Threading.Tasks.Task BroadcastMessageAsync(string matchCode, GameService.Contracts.Message message);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     public interface IChatManagerCallback {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IChatManager/ReceiveMessages", ReplyAction="http://tempuri.org/IChatManager/ReceiveMessagesResponse")]
-        void ReceiveMessages(TestsServer.SpiderClueService.Message[] messages);
+        void ReceiveMessages(GameService.Contracts.Message[] messages);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -1722,11 +1157,11 @@ namespace TestsServer.SpiderClueService {
             return base.Channel.DisconnectFromChatAsync(gamertag);
         }
         
-        public void BroadcastMessage(string matchCode, TestsServer.SpiderClueService.Message message) {
+        public void BroadcastMessage(string matchCode, GameService.Contracts.Message message) {
             base.Channel.BroadcastMessage(matchCode, message);
         }
         
-        public System.Threading.Tasks.Task BroadcastMessageAsync(string matchCode, TestsServer.SpiderClueService.Message message) {
+        public System.Threading.Tasks.Task BroadcastMessageAsync(string matchCode, GameService.Contracts.Message message) {
             return base.Channel.BroadcastMessageAsync(matchCode, message);
         }
     }
@@ -1736,10 +1171,10 @@ namespace TestsServer.SpiderClueService {
     public interface IWinnersManager {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IWinnersManager/GetTopGlobalWinners", ReplyAction="http://tempuri.org/IWinnersManager/GetTopGlobalWinnersResponse")]
-        TestsServer.SpiderClueService.Winner[] GetTopGlobalWinners();
+        GameService.Contracts.Winner[] GetTopGlobalWinners();
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IWinnersManager/GetTopGlobalWinners", ReplyAction="http://tempuri.org/IWinnersManager/GetTopGlobalWinnersResponse")]
-        System.Threading.Tasks.Task<TestsServer.SpiderClueService.Winner[]> GetTopGlobalWinnersAsync();
+        System.Threading.Tasks.Task<GameService.Contracts.Winner[]> GetTopGlobalWinnersAsync();
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -1769,11 +1204,11 @@ namespace TestsServer.SpiderClueService {
                 base(binding, remoteAddress) {
         }
         
-        public TestsServer.SpiderClueService.Winner[] GetTopGlobalWinners() {
+        public GameService.Contracts.Winner[] GetTopGlobalWinners() {
             return base.Channel.GetTopGlobalWinners();
         }
         
-        public System.Threading.Tasks.Task<TestsServer.SpiderClueService.Winner[]> GetTopGlobalWinnersAsync() {
+        public System.Threading.Tasks.Task<GameService.Contracts.Winner[]> GetTopGlobalWinnersAsync() {
             return base.Channel.GetTopGlobalWinnersAsync();
         }
     }
