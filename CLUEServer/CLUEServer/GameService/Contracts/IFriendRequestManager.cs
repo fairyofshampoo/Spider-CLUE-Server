@@ -15,13 +15,13 @@ namespace GameService.Contracts
         string [] GetFriendsRequest(string gamertag);
 
         [OperationContract]
-        void CreateFriendRequest(string gamertag, string friendGamertag);
+        int CreateFriendRequest(string gamertag, string friendGamertag);
 
         [OperationContract]
-        void ResponseFriendRequest(string gamertag, string friendGamertag, string response);
+        int ResponseFriendRequest(string gamertag, string friendGamertag, string response);
 
         [OperationContract]
-        void DeleteFriendRequest(string gamertag, string friend);
+        int DeleteFriendRequest(string gamertag, string friend);
     }
 
     [DataContract]

@@ -95,6 +95,12 @@ namespace GameService
                 emailProcessResult = true;
             }
 
+            catch (FormatException formatException)
+            {
+                logger.LogError(formatException);
+                emailProcessResult = false;
+            }
+
             catch (SmtpFailedRecipientException failedRecipientException)
             {
                 logger.LogError(failedRecipientException);

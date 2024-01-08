@@ -12,8 +12,8 @@ namespace TestsServer
 {
     public class ChatTest : IDisposable
     {
-        public static ChatManagerClient chatProxy;
-        public static ChatManagerCallbackImplementation chatCallbackImplementation;
+        private static ChatManagerClient chatProxy;
+        private static ChatManagerCallbackImplementation chatCallbackImplementation;
         
         public ChatTest() 
         {

@@ -37,8 +37,9 @@ namespace GameService.Services
             return friendsRequest;
         }
 
-        public void CreateFriendRequest(string gamertag, string friendGamertag)
+        public int CreateFriendRequest(string gamertag, string friendGamertag)
         {
+            int result = Constants.ERROR_IN_OPERATION;
             HostBehaviorManager.ChangeToSingle();
             Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
             try
@@ -52,7 +53,7 @@ namespace GameService.Services
                         friendRequestStatus = "Pending"
                     };
                     databaseContext.friendRequests.Add(friendRequest);
-                    databaseContext.SaveChanges();
+                    result = databaseContext.SaveChanges();
                 }
             }
             catch (SqlException sqlException)
@@ -64,13 +65,15 @@ namespace GameService.Services
                 loggerManager.LogError(entityException);
             }
             HostBehaviorManager.ChangeToReentrant();
+
+            return result;
         }
 
-        public void ResponseFriendRequest(string gamertag, string friendGamertag, string response)
+        public int ResponseFriendRequest(string gamertag, string friendGamertag, string response)
         {
             HostBehaviorManager.ChangeToSingle();
             Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
-
+            int result = Constants.ERROR_IN_OPERATION;
             try
             {
                 using (var databaseContext = new SpiderClueDbEntities())
@@ -79,7 +82,7 @@ namespace GameService.Services
                     if (friendRequest != null)
                     {
                         friendRequest.friendRequestStatus = response;
-                        databaseContext.SaveChanges();
+                        result = databaseContext.SaveChanges();
                     }
                 }
             }
@@ -92,12 +95,15 @@ namespace GameService.Services
                 loggerManager.LogError(entityException);
             }
             HostBehaviorManager.ChangeToReentrant();
+
+            return result;
         }
 
-        public void DeleteFriendRequest(string gamertag, string friendGamertag)
+        public int DeleteFriendRequest(string gamertag, string friendGamertag)
         {
             HostBehaviorManager.ChangeToSingle();
             Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
+            int result = Constants.ERROR_IN_OPERATION;
             try
             {
                 using (var databaseContext = new SpiderClueDbEntities())
@@ -113,13 +119,13 @@ namespace GameService.Services
                         if (secondfriendRequest.Any())
                         {
                             databaseContext.friendRequests.RemoveRange(secondfriendRequest);
-                            databaseContext.SaveChanges();
+                            result = databaseContext.SaveChanges();
                         }
 
                         if (friendRequest.Any())
                         {
                             databaseContext.friendRequests.RemoveRange(friendRequest);
-                            databaseContext.SaveChanges();
+                            result = result + databaseContext.SaveChanges();
                         }
                     }
                 }
@@ -134,6 +140,8 @@ namespace GameService.Services
             }
             
             HostBehaviorManager.ChangeToReentrant();
+
+            return result;
         }
     }
 }
