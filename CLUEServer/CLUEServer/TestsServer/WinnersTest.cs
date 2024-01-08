@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ServiceModel;
 using TestsServer.SpiderClueService;
 using Xunit;
 
@@ -48,5 +49,23 @@ namespace TestsServer
 
             Assert.NotEqual(topGlobal, actualWinners);
         }
+
+
+        [Fact]
+        public void GetTopGlobalWinnersTestErrprConnection()
+        {
+            SpiderClueService.IWinnersManager winnersManager = new WinnersManagerClient();
+
+            Assert.Throws<EndpointNotFoundException>(() => winnersManager.GetTopGlobalWinners());
+            List<String> topGlobal = new List<String>();
+
+            List<String> actualWinners = new List<String>()
+            {
+                "soobin",
+                "mich"
+            };
+        }
+
+
     }
 }
