@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -32,6 +33,14 @@ namespace TestsServer
         }
 
         [Fact]
+        public void CreateMatchErrorConnectionTest()
+        {
+            string gamertag = "Star3oy";
+            SpiderClueService.IMatchCreationManager matchCreation = new SpiderClueService.MatchCreationManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => matchCreation.CreateMatch(gamertag));
+        }
+
+        [Fact]
         public void CreateMatchNotEqualsTest()
         {
             string gamertag = "Star3oy";
@@ -40,14 +49,6 @@ namespace TestsServer
             string result = matchCreation.CreateMatch(gamertag);
             string secondResult = matchCreation.CreateMatch(secondGamertag);
             Assert.NotEqual(result, secondResult);
-        }
-
-        [Fact]
-        public void GetMatchInformationTest()
-        {
-            string code = "RMV5BB";
-            SpiderClueService.IMatchManager matchManager = new SpiderClueService.MatchCreationManagerClient();
-       
         }
 
     }

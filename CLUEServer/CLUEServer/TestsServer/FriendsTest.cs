@@ -1,10 +1,10 @@
 ﻿using DataBaseManager;
-using GameService.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core;
 using System.Data.SqlClient;
 using System.Linq;
+using System.ServiceModel;
 using TestsServer.SpiderClueService;
 using Xunit;
 
@@ -207,6 +207,14 @@ namespace TestsServer
         }
 
         [Fact]
+        public void AreNotFriendsTestErrorConnection()
+        {
+
+            SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => friendshipManager.AreNotFriends("soobin", "Star3oy"));
+        }
+
+        [Fact]
         public void AreNotFriendsTestFalse()
         {
             bool result = false;
@@ -219,11 +227,18 @@ namespace TestsServer
         [Fact]
         public void AddFriendTestSuccess()
         {
-            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+            int resultExpected = 1;
 
             SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
             int result = friendshipManager.AddFriend("soobin", "michito");
             Assert.Equal(resultExpected, result);
+        }
+
+        [Fact]
+        public void AddFriendTestErrorConnection()
+        {
+            SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => friendshipManager.AddFriend("soobin", "michito"));
         }
 
         [Fact]
@@ -233,10 +248,20 @@ namespace TestsServer
             {
                 "michito"
             };
-
             SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
             string[] result = friendshipManager.GetFriendList("soobin");
             Assert.Equal(resultExpected, result);
+        }
+
+        [Fact]
+        public void GetFriendListTestConnectionError()
+        {
+            string[] resultExpected = new string[]
+            {
+                "michito"
+            };
+            SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => friendshipManager.GetFriendList("soobin"));
         }
 
         [Fact]
@@ -255,7 +280,7 @@ namespace TestsServer
         [Fact]
         public void DeleteFriendFail()
         {
-            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+            int resultExpected = 1;
 
             SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
             int result = friendshipManager.DeleteFriend("Star3oy", "michito");
@@ -263,9 +288,16 @@ namespace TestsServer
         }
 
         [Fact]
+        public void DeleteFriendErrorConnection()
+        {
+            SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => friendshipManager.DeleteFriend("Star3oy", "michito"));
+        }
+
+        [Fact]
         public void DeleteFriendSuccess()
         {
-            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+            int resultExpected = 1;
 
             SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
             int result = friendshipManager.DeleteFriend("soobin", "michito");
@@ -275,11 +307,18 @@ namespace TestsServer
         [Fact]
         public void CreateFriendRequestSuccess()
         {
-            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+            int resultExpected = 1;
 
             SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
             int result = friendRequestManager.CreateFriendRequest("Star3oy", "michi");
             Assert.True(resultExpected.Equals(result));
+        }
+
+        [Fact]
+        public void CreateFriendRequestErrorConnection()
+        {
+            SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => friendRequestManager.CreateFriendRequest("Star3oy", "michi"));
         }
 
         [Fact]
@@ -293,6 +332,17 @@ namespace TestsServer
             SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
             string[] result = friendRequestManager.GetFriendsRequest("michi");
             Assert.Equal(resultExpected, result);
+        }
+
+        [Fact]
+        public void GetFriendsRequestErrorConnection()
+        {
+            string[] resultExpected = new string[]
+            {
+                "Star3oy"
+            };
+            SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => friendRequestManager.GetFriendsRequest("michi"));
         }
 
         [Fact]
@@ -311,7 +361,7 @@ namespace TestsServer
         [Fact]
         public void ResponseFriendRequestSuccess()
         {
-            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+            int resultExpected = 1;
 
             SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
             int result = friendRequestManager.ResponseFriendRequest("michi", "Star3oy", "Accepted");
@@ -319,9 +369,16 @@ namespace TestsServer
         }
 
         [Fact]
+        public void ResponseFriendRequestErrorConnection()
+        {
+            SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => friendRequestManager.ResponseFriendRequest("michi", "Star3oy", "Accepted"));
+        }
+
+        [Fact]
         public void ResponseFriendRequestFail()
         {
-            int resultExpected = Constants.ERROR_IN_OPERATION;
+            int resultExpected = -1;
 
             SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
             int result = friendRequestManager.ResponseFriendRequest("michi", "michi", "Accepted");
@@ -331,7 +388,7 @@ namespace TestsServer
         [Fact]
         public void DeleteFriendRequestSuccess()
         {
-            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+            int resultExpected = 1;
 
             SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
             int result = friendRequestManager.DeleteFriendRequest("michi", "Star3oy");
@@ -339,9 +396,16 @@ namespace TestsServer
         }
 
         [Fact]
+        public void DeleteFriendRequestErrorConnection()
+        {
+            SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => friendRequestManager.DeleteFriendRequest("michi", "Star3oy"));
+        }
+
+        [Fact]
         public void DeleteFriendRequestFail()
         {
-            int resultExpected = Constants.ERROR_IN_OPERATION;
+            int resultExpected = -1;
 
             SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
             int result = friendRequestManager.DeleteFriendRequest("michi", "michi");
@@ -356,6 +420,13 @@ namespace TestsServer
             SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
             result = friendshipManager.ThereIsNoFriendRequest("michi", "Star3oy");
             Assert.True(result);
+        }
+
+        [Fact]
+        public void ThereIsNoFriendRequestErrorConnection()
+        {
+            SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => friendshipManager.ThereIsNoFriendRequest("michi", "Star3oy"));
         }
 
         [Fact]

@@ -1,11 +1,11 @@
 ﻿using DataBaseManager;
-using GameService.Contracts;
-using GameService.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
+using System.ServiceModel;
 using TestsServer.SpiderClueService;
 using Xunit;
 
@@ -144,7 +144,7 @@ namespace TestsServer
         [Fact]
         public void InsertGamerTest()
         {
-            int resultExcepted = Constants.SUCCESS_IN_OPERATION;
+            int resultExcepted = 1;
 
             Gamer gamer = new Gamer()
             {
@@ -163,10 +163,28 @@ namespace TestsServer
         }
 
         [Fact]
+        public void InsertGamerConectionErrorTest()
+        {
+            Gamer gamer = new Gamer()
+            {
+                FirstName = "Karla",
+                LastName = "Vazquez",
+                Gamertag = "Karlatv",
+                GamesWon = 0,
+                ImageCode = "Icon0.jpg",
+                Password = "Qfb#2307",
+                Email = "Karla@gmail.com"
+            };
+
+            SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => userManager.AddUserTransaction(gamer));
+        }
+
+        [Fact]
         public void InsertGamerFailTest()
         {
 
-            int resultExcepted = Constants.ERROR_IN_OPERATION;
+            int resultExcepted = -1;
             Gamer gamer = new Gamer()
             {
                 FirstName = "Eduardo",
@@ -187,7 +205,7 @@ namespace TestsServer
         [Fact]
         public void ModifyGamerDataTest()
         {
-            int resultExcepted = Constants.SUCCESS_IN_OPERATION;
+            int resultExcepted = -1;
             string gamertag = "Star3oy";
             string firstName = "Eduardo";
             string lastName = "Carrera";
@@ -197,9 +215,19 @@ namespace TestsServer
         }
 
         [Fact]
+        public void ModifyGamerDataConnectionErrorTest()
+        {
+            string gamertag = "Star3oy";
+            string firstName = "Eduardo";
+            string lastName = "Carrera";
+            SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => userManager.ModifyAccount(gamertag, firstName, lastName));
+        }
+
+        [Fact]
         public void ModifyGamerDataFailTest()
         {
-            int resultExcepted = Constants.ERROR_IN_OPERATION;
+            int resultExcepted = -1;
             string gamertag = "Swift";
             string firstName = "Taylor";
             string lastName = "Swift";
@@ -216,6 +244,16 @@ namespace TestsServer
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             bool result = userManager.AuthenticateAccount(gamertag, password);
             Assert.True(result);
+        }
+
+        [Fact]
+        public void AuthenticateAccountErrorConnectionTest()
+        {
+            string gamertag = "Star3oy";
+            string password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9";
+            SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
+
+            Assert.Throws<EndpointNotFoundException>(() => userManager.AuthenticateAccount(gamertag, password));
         }
 
         [Fact]
@@ -238,6 +276,14 @@ namespace TestsServer
         }
 
         [Fact]
+        public void IsEmailExistingErrorConnectionTest()
+        {
+            string email = "eduarcaco@hotmail.com";
+            SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => userManager.IsEmailExisting(email));
+        }
+
+        [Fact]
         public void IsEmailExistingFailTest()
         {
             string email = "correoinexistente@gmail.com";
@@ -253,8 +299,17 @@ namespace TestsServer
             string newPassword = "KRRERA135625x";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             int result = userManager.UpdatePassword(gamertag, newPassword);
-            int resultExpected = Constants.ERROR_IN_OPERATION;
+            int resultExpected = -1;
             Assert.Equal(resultExpected, result);
+        }
+
+        [Fact]
+        public void UpdatePasswordErrorConnectionTest()
+        {
+            string gamertag = "Lalonch3ra";
+            string newPassword = "KRRERA135625x";
+            SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => userManager.UpdatePassword(gamertag, newPassword));
         }
 
         [Fact]
@@ -264,7 +319,7 @@ namespace TestsServer
             string newPassword = "RTX4090ti";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             int result = userManager.UpdatePassword(gamertag, newPassword);
-            int resultExpected = Constants.ERROR_IN_OPERATION;
+            int resultExpected = -1;
             Assert.Equal(result, resultExpected);
         }
 
@@ -275,6 +330,14 @@ namespace TestsServer
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             bool result = userManager.IsGamertagExisting(gamertag);
             Assert.True(result);
+        }
+
+        [Fact]
+        public void IsGamertagExistingErrorConnectionTest()
+        {
+            string gamertag = "Star3oy";
+            SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => userManager.IsGamertagExisting(gamertag));
         }
 
         [Fact]
@@ -306,6 +369,24 @@ namespace TestsServer
             Gamer secondGamer = userManager.GetGamerByGamertag(gamertag);
 
             Assert.Equal(gamer, secondGamer);
+        }
+
+        [Fact]
+        public void GetGamerByGamertagErrorConnectionTest()
+        {
+            string gamertag = "Star3oy";
+            Gamer gamer = new Gamer
+            {
+                FirstName = "Eduardo",
+                LastName = "Carrera",
+                Gamertag = "Star3oy",
+                GamesWon = 0,
+                ImageCode = "Icon0.jpg",
+                Password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9",
+                Email = "eduarcaco@hotmail.com"
+            };
+            SpiderClueService.IUserManager userManager = new UserManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => userManager.GetGamerByGamertag(gamertag));
         }
 
         [Fact]
@@ -352,6 +433,26 @@ namespace TestsServer
         }
 
         [Fact]
+        public void GetGamerByEmailErrorConnectionTest()
+        {
+            string gamertag = "eduarcaco@hotmail.com";
+
+            Gamer gamer = new Gamer
+            {
+                FirstName = "Eduardo",
+                LastName = "Carrera",
+                Gamertag = "Star3oy",
+                GamesWon = 0,
+                ImageCode = "Icon0.jpg",
+                Password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9",
+                Email = "eduarcaco@hotmail.com"
+            };
+
+            SpiderClueService.IUserManager userManager = new UserManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => userManager.GetGamerByEmail(gamertag));
+        }
+
+        [Fact]
         public void GetGamerByEmailFailTest()
         {
             string gamertag = "eduarcaco@hotmail.com";
@@ -379,8 +480,17 @@ namespace TestsServer
             string icon = "Icon1";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             int result = userManager.ChangeIcon(gamertag, icon);
-            int resultExcepted = Constants.SUCCESS_IN_OPERATION;
+            int resultExcepted = 1;
             Assert.Equal(result, resultExcepted);
+        }
+
+        [Fact]
+        public void ChangeIconErrorConnectionTest()
+        {
+            string gamertag = "Star3oy";
+            string icon = "Icon1";
+            SpiderClueService.IUserManager userManager = new UserManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => userManager.ChangeIcon(gamertag, icon));
         }
 
         [Fact]
@@ -390,7 +500,7 @@ namespace TestsServer
             string icon = "Icon1";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             int result = userManager.ChangeIcon(gamertag, icon);
-            int resultExcepted = Constants.ERROR_IN_OPERATION;
+            int resultExcepted = -1;
             Assert.Equal(result, resultExcepted);
         }
 
@@ -402,6 +512,14 @@ namespace TestsServer
             string result = userManager.GetIcon(gamertag);
             string resultExcepted = "Icon1";
             Assert.Equal(result, resultExcepted);
+        }
+
+        [Fact]
+        public void GetIconErrorConnectionTest()
+        {
+            string gamertag = "Star3oy";
+            SpiderClueService.IUserManager userManager = new UserManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => userManager.GetIcon(gamertag));
         }
 
         [Fact]
@@ -420,8 +538,16 @@ namespace TestsServer
             string gamertag = "BWdS3tzN";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             int result = userManager.DeleteGuestPlayer(gamertag);
-            int resultExcepted = Constants.SUCCESS_IN_OPERATION;
+            int resultExcepted = 1;
             Assert.Equal(result, resultExcepted);
+        }
+
+        [Fact]
+        public void DeleteGuestPlayerErrorTestTest()
+        {
+            string gamertag = "BWdS3tzN";
+            SpiderClueService.IUserManager userManager = new UserManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => userManager.DeleteGuestPlayer(gamertag));
         }
 
         [Fact]
@@ -430,7 +556,7 @@ namespace TestsServer
             string gamertag = "GuessPlayer";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             int result = userManager.DeleteGuestPlayer(gamertag);
-            int resultExcepted = Constants.ERROR_IN_OPERATION;
+            int resultExcepted = -1;
             Assert.Equal(result, resultExcepted);
         }
 

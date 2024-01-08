@@ -59,7 +59,9 @@ namespace GameService.Contracts
 
         [DataMember]
         public string ImageCode { get; set; }
+
     }
+
 
     [DataContract]
     public class AccessAccount
