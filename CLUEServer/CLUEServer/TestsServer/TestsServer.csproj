@@ -88,7 +88,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EmailTest.cs" />
     <Compile Include="FriendsTest.cs" />
+    <Compile Include="MatchTets.cs" />
+    <Compile Include="SessionTest.cs" />
     <Compile Include="UserTest.cs" />
     <Compile Include="Connected Services\SpiderClueService\Reference.cs">
       <AutoGen>True</AutoGen>
@@ -115,19 +118,11 @@
     <None Include="Connected Services\SpiderClueService\item3.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Connected Services\SpiderClueService\TestsServer.SpiderClueService.Card.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Connected Services\SpiderClueService\TestsServer.SpiderClueService.Gamer.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Connected Services\SpiderClueService\TestsServer.SpiderClueService.Match.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Connected Services\SpiderClueService\TestsServer.SpiderClueService.Winner.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\GameService.Contracts.Card.datasource" />
+    <None Include="Properties\DataSources\GameService.Contracts.Gamer.datasource" />
+    <None Include="Properties\DataSources\GameService.Contracts.Match.datasource" />
+    <None Include="Properties\DataSources\GameService.Contracts.Winner.datasource" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadataStorage Include="Connected Services\SpiderClueService\" />
