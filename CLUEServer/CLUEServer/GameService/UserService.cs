@@ -365,11 +365,9 @@ namespace GameService.Services
                     if (existingAccessAccount != null)
                     {
                         existingAccessAccount.password = password;
+                        dataBaseContext.SaveChanges();
+                        result = Constants.SUCCESS_IN_OPERATION;
                     }
-
-                    dataBaseContext.SaveChanges();
-
-                    result = Constants.SUCCESS_IN_OPERATION;
                 }
                 catch (SqlException sQLException)
                 {
