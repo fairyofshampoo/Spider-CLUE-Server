@@ -88,7 +88,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EmailTest.cs" />
     <Compile Include="FriendsTest.cs" />
+    <Compile Include="MatchTets.cs" />
+    <Compile Include="SessionTest.cs" />
     <Compile Include="UserTest.cs" />
     <Compile Include="Connected Services\SpiderClueService\Reference.cs">
       <AutoGen>True</AutoGen>
