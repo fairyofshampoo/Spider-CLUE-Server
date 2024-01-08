@@ -305,7 +305,7 @@ namespace TestsServer
             Gamer secondGamer = userManager.GetGamerByGamertag(gamertag);
 
             Assert.Equal(gamer, secondGamer);
-<<<<<<< HEAD
+
         }
 
         [Fact]
