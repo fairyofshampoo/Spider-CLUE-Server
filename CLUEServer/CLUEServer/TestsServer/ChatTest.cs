@@ -23,7 +23,7 @@ namespace TestsServer
 
         public void Dispose()
         {
-            chatProxy.DisconnectFromChat("Star3oy");
+            
         }
 
 
@@ -32,7 +32,7 @@ namespace TestsServer
         {
             chatProxy.ConnectToChat("Star3oy", "123456");
 
-            await Task.Delay(10000);
+            await Task.Delay(4000);
 
             Assert.True(chatCallbackImplementation.isMessageBack);
         }
@@ -41,6 +41,7 @@ namespace TestsServer
         public async void BroadcastMessageTestSuccess()
         {
             string codeMatch = "123456";
+            chatProxy.ConnectToChat("Star3oy", codeMatch);
 
             var message = new SpiderClueService.Message
             {
@@ -48,10 +49,10 @@ namespace TestsServer
                 GamerTag = "Star3oy",
             };
 
-            chatProxy.ConnectToChat("Star3oy", "123456");
+            await Task.Delay(4000);
             chatProxy.BroadcastMessage(codeMatch, message);
 
-            await Task.Delay(10000);
+            await Task.Delay(4000);
 
             Assert.True(chatCallbackImplementation.isMessageBack);
         }
@@ -61,10 +62,6 @@ namespace TestsServer
     {
         public bool isMessageBack { get; set; }
 
-        public ChatManagerCallbackImplementation()
-        {
-            isMessageBack = false;
-        }
         public void ReceiveMessages(SpiderClueService.Message[] messages)
         {
             isMessageBack = true;

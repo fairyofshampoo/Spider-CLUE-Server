@@ -91,6 +91,8 @@
     <Compile Include="ChatTest.cs" />
     <Compile Include="EmailTest.cs" />
     <Compile Include="FriendsTest.cs" />
+    <Compile Include="GameTest.cs" />
+    <Compile Include="LobbyTest.cs" />
     <Compile Include="MatchTets.cs" />
     <Compile Include="SessionTest.cs" />
     <Compile Include="UserTest.cs" />
