@@ -15,6 +15,7 @@ using GameService.Utilities;
 using System.Data.Entity.Core;
 using System.Data;
 using log4net.Repository.Hierarchy;
+using System.Data.Entity.Infrastructure;
 
 namespace GameService.Services
 {
@@ -59,12 +60,19 @@ namespace GameService.Services
 
                             result = Constants.SUCCESS_IN_OPERATION;
                         }
+                        catch (DbUpdateException updateException)
+                        {
+                            logger.LogError(updateException);
+                            dataBaseContextTransaction.Rollback();
+                            result = Constants.ERROR_IN_OPERATION;
+                        }
                         catch (SqlException sQLException)
                         {
                             logger.LogError(sQLException);
                             dataBaseContextTransaction.Rollback();
                             result = Constants.ERROR_IN_OPERATION;
                         }
+                        
                     }
                 }
             }
@@ -365,11 +373,9 @@ namespace GameService.Services
                     if (existingAccessAccount != null)
                     {
                         existingAccessAccount.password = password;
+                        dataBaseContext.SaveChanges();
+                        result = Constants.SUCCESS_IN_OPERATION;
                     }
-
-                    dataBaseContext.SaveChanges();
-
-                    result = Constants.SUCCESS_IN_OPERATION;
                 }
                 catch (SqlException sQLException)
                 {
