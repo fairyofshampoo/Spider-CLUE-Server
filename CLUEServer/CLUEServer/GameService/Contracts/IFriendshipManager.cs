@@ -15,10 +15,10 @@ namespace GameService.Contracts
         List<string> GetFriendList(string gamertag);
 
         [OperationContract]
-        void DeleteFriend(string gamertag, string friendGamertag);
+        int DeleteFriend(string gamertag, string friendGamertag);
 
         [OperationContract]
-        void AddFriend(string gamertag, string friendGamertag);
+        int AddFriend(string gamertag, string friendGamertag);
 
         [OperationContract]
         bool AreNotFriends(string gamertag, string friendGamertag);

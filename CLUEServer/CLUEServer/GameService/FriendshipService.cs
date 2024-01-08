@@ -41,8 +41,10 @@ namespace GameService.Services
             return friendList;
         }
 
-        public void DeleteFriend(string gamertag, string friendGamertag)
+        public int DeleteFriend(string gamertag, string friendGamertag)
         {
+            int result = Constants.ERROR_IN_OPERATION;
+
             Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToSingle();
             try
@@ -55,8 +57,8 @@ namespace GameService.Services
                     if (friendEliminated.Any())
                     {
                         databaseContext.friendLists.RemoveRange(friendEliminated);
-                        databaseContext.SaveChanges();
-                        DeleteFriend(friendGamertag, gamertag);
+                        result = databaseContext.SaveChanges();
+                        result = result + DeleteFriend(friendGamertag, gamertag);
                     }
                 }
             }
@@ -69,10 +71,12 @@ namespace GameService.Services
                 loggerManager.LogError(entityException);
             }
             HostBehaviorManager.ChangeToReentrant();
+            return result;
         }
 
-        public void AddFriend(string gamertag, string friendGamertag)
+        public int AddFriend(string gamertag, string friendGamertag)
         {
+            int result = Constants.ERROR_IN_OPERATION;
             HostBehaviorManager.ChangeToSingle();
             Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
 
@@ -91,8 +95,8 @@ namespace GameService.Services
                             friend = friendGamertag
                         };
                         databaseContext.friendLists.Add(newFriends);
-                        databaseContext.SaveChanges();
-                        AddFriend(friendGamertag, gamertag);
+                        result = databaseContext.SaveChanges();
+                        result = result + AddFriend(friendGamertag, gamertag);
 
                     }
                 }
@@ -106,6 +110,7 @@ namespace GameService.Services
                 loggerManager.LogError(entityException);
             }
             HostBehaviorManager.ChangeToReentrant();
+            return result;
         }
 
         public bool AreNotFriends(string gamertag, string friendGamertag)
