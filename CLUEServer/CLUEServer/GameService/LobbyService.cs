@@ -28,13 +28,13 @@ namespace GameService.Services
                     {
                         gamersLobbyCallback[gamer.Key].StartGame();
                     }
-                    catch (SqlException sqlException)
+                    catch (CommunicationException communicationException)
                     {
-                        loggerManager.LogError(sqlException);
+                        loggerManager.LogError(communicationException);
                     }
-                    catch (EntityException entityException)
+                    catch (TimeoutException timeoutException)
                     {
-                        loggerManager.LogError(entityException);
+                        loggerManager.LogError(timeoutException);
                     }
                 }
             }
@@ -62,14 +62,14 @@ namespace GameService.Services
                     HostBehaviorManager.ChangeToReentrant();
                 }
             }
-            catch (SqlException sqlException)
+            catch (CommunicationException communicationException)
             {
-                loggerManager.LogError(sqlException);
+                loggerManager.LogError(communicationException);
                 isOwner = false;
             }
-            catch (EntityException entityException)
+            catch (TimeoutException timeoutException)
             {
-                loggerManager.LogError(entityException);
+                loggerManager.LogError(timeoutException);
                 isOwner = false;
             }
 
