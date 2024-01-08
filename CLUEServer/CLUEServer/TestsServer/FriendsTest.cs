@@ -1,5 +1,4 @@
 ﻿using DataBaseManager;
-using GameService.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core;
@@ -219,7 +218,7 @@ namespace TestsServer
         [Fact]
         public void AddFriendTestSuccess()
         {
-            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+            int resultExpected = 1;
 
             SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
             int result = friendshipManager.AddFriend("soobin", "michito");
@@ -255,7 +254,7 @@ namespace TestsServer
         [Fact]
         public void DeleteFriendFail()
         {
-            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+            int resultExpected = 1;
 
             SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
             int result = friendshipManager.DeleteFriend("Star3oy", "michito");
@@ -265,7 +264,7 @@ namespace TestsServer
         [Fact]
         public void DeleteFriendSuccess()
         {
-            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+            int resultExpected = 1;
 
             SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
             int result = friendshipManager.DeleteFriend("soobin", "michito");
@@ -275,7 +274,7 @@ namespace TestsServer
         [Fact]
         public void CreateFriendRequestSuccess()
         {
-            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+            int resultExpected = 1;
 
             SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
             int result = friendRequestManager.CreateFriendRequest("Star3oy", "michi");
@@ -311,7 +310,7 @@ namespace TestsServer
         [Fact]
         public void ResponseFriendRequestSuccess()
         {
-            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+            int resultExpected = 1;
 
             SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
             int result = friendRequestManager.ResponseFriendRequest("michi", "Star3oy", "Accepted");
@@ -321,7 +320,7 @@ namespace TestsServer
         [Fact]
         public void ResponseFriendRequestFail()
         {
-            int resultExpected = Constants.ERROR_IN_OPERATION;
+            int resultExpected = -1;
 
             SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
             int result = friendRequestManager.ResponseFriendRequest("michi", "michi", "Accepted");
@@ -331,7 +330,7 @@ namespace TestsServer
         [Fact]
         public void DeleteFriendRequestSuccess()
         {
-            int resultExpected = Constants.SUCCESS_IN_OPERATION;
+            int resultExpected = 1;
 
             SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
             int result = friendRequestManager.DeleteFriendRequest("michi", "Star3oy");
@@ -341,7 +340,7 @@ namespace TestsServer
         [Fact]
         public void DeleteFriendRequestFail()
         {
-            int resultExpected = Constants.ERROR_IN_OPERATION;
+            int resultExpected = -1;
 
             SpiderClueService.IFriendRequestManager friendRequestManager = new FriendRequestManagerClient();
             int result = friendRequestManager.DeleteFriendRequest("michi", "michi");

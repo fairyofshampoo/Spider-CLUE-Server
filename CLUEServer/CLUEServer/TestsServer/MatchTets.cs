@@ -42,13 +42,5 @@ namespace TestsServer
             Assert.NotEqual(result, secondResult);
         }
 
-        [Fact]
-        public void GetMatchInformationTest()
-        {
-            string code = "RMV5BB";
-            SpiderClueService.IMatchManager matchManager = new SpiderClueService.MatchCreationManagerClient();
-       
-        }
-
     }
 }

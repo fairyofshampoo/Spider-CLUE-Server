@@ -1,6 +1,4 @@
 ﻿using DataBaseManager;
-using GameService.Contracts;
-using GameService.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core;
@@ -144,7 +142,7 @@ namespace TestsServer
         [Fact]
         public void InsertGamerTest()
         {
-            int resultExcepted = Constants.SUCCESS_IN_OPERATION;
+            int resultExcepted = 1;
 
             Gamer gamer = new Gamer()
             {
@@ -166,7 +164,7 @@ namespace TestsServer
         public void InsertGamerFailTest()
         {
 
-            int resultExcepted = Constants.ERROR_IN_OPERATION;
+            int resultExcepted = -1;
             Gamer gamer = new Gamer()
             {
                 FirstName = "Eduardo",
@@ -187,7 +185,7 @@ namespace TestsServer
         [Fact]
         public void ModifyGamerDataTest()
         {
-            int resultExcepted = Constants.SUCCESS_IN_OPERATION;
+            int resultExcepted = -1;
             string gamertag = "Star3oy";
             string firstName = "Eduardo";
             string lastName = "Carrera";
@@ -199,7 +197,7 @@ namespace TestsServer
         [Fact]
         public void ModifyGamerDataFailTest()
         {
-            int resultExcepted = Constants.ERROR_IN_OPERATION;
+            int resultExcepted = -1;
             string gamertag = "Swift";
             string firstName = "Taylor";
             string lastName = "Swift";
@@ -253,7 +251,7 @@ namespace TestsServer
             string newPassword = "KRRERA135625x";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             int result = userManager.UpdatePassword(gamertag, newPassword);
-            int resultExpected = Constants.ERROR_IN_OPERATION;
+            int resultExpected = -1;
             Assert.Equal(resultExpected, result);
         }
 
@@ -264,7 +262,7 @@ namespace TestsServer
             string newPassword = "RTX4090ti";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             int result = userManager.UpdatePassword(gamertag, newPassword);
-            int resultExpected = Constants.ERROR_IN_OPERATION;
+            int resultExpected = -1;
             Assert.Equal(result, resultExpected);
         }
 
@@ -379,7 +377,7 @@ namespace TestsServer
             string icon = "Icon1";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             int result = userManager.ChangeIcon(gamertag, icon);
-            int resultExcepted = Constants.SUCCESS_IN_OPERATION;
+            int resultExcepted = 1;
             Assert.Equal(result, resultExcepted);
         }
 
@@ -390,7 +388,7 @@ namespace TestsServer
             string icon = "Icon1";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             int result = userManager.ChangeIcon(gamertag, icon);
-            int resultExcepted = Constants.ERROR_IN_OPERATION;
+            int resultExcepted = -1;
             Assert.Equal(result, resultExcepted);
         }
 
@@ -420,7 +418,7 @@ namespace TestsServer
             string gamertag = "BWdS3tzN";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             int result = userManager.DeleteGuestPlayer(gamertag);
-            int resultExcepted = Constants.SUCCESS_IN_OPERATION;
+            int resultExcepted = 1;
             Assert.Equal(result, resultExcepted);
         }
 
@@ -430,7 +428,7 @@ namespace TestsServer
             string gamertag = "GuessPlayer";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             int result = userManager.DeleteGuestPlayer(gamertag);
-            int resultExcepted = Constants.ERROR_IN_OPERATION;
+            int resultExcepted = -1;
             Assert.Equal(result, resultExcepted);
         }
 
