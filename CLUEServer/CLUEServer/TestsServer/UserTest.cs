@@ -283,7 +283,7 @@ namespace TestsServer
         }
 
         [Fact]
-        public void GetGamerByGamertag()
+        public void GetGamerByGamertagTest()
         {
             string gamertag = "Star3oy";
 
@@ -301,7 +301,29 @@ namespace TestsServer
             IUserManager userManager = new UserManagerClient();
             Gamer secondGamer = userManager.GetGamerByGamertag(gamertag);
 
-            Assert.True(gamer.Equals(secondGamer));
+            Assert.Equal(gamer, secondGamer);
+        }
+
+        [Fact]
+        public void GetGamerByGamertagFailTest()
+        {
+            string gamertag = "Star3oy";
+
+            Gamer gamer = new Gamer
+            {
+                FirstName = "Mac",
+                LastName = "Miller",
+                Gamertag = "mac",
+                GamesWon = 0,
+                ImageCode = "Icon2.jpg",
+                Password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9",
+                Email = "MacMiller@hotmail.com"
+            };
+
+            IUserManager userManager = new UserManagerClient();
+            Gamer secondGamer = userManager.GetGamerByGamertag(gamertag);
+
+            Assert.False(gamer.Equals(secondGamer));
         }
 
     }
