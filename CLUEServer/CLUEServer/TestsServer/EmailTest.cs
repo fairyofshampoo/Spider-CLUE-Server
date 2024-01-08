@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.Entity.Core;
 using System.Data.SqlClient;
 using System.Linq;
+using System.ServiceModel;
 using TestsServer.SpiderClueService;
 using Xunit;
 
@@ -82,5 +83,14 @@ namespace TestsServer
             result = emailVerificationManager.VerifyCode(emailValid, wrongCode);
             Assert.False(result);
         }
+        public void SendInvitationTestErrorConnection()
+        {
+            string emailValid = "lalocel09@gmail.com";
+            string code = "CODE12";
+            string gamertag = "michito";
+            SpiderClueService.IInvitationManager invitationManager = new InvitationManagerClient();
+            Assert.Throws<EndpointNotFoundException>(() => invitationManager.SendInvitation(emailValid, code, gamertag));
+        }
+
     }
 }
