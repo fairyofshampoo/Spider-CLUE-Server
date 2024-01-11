@@ -22,8 +22,9 @@ namespace TestsServer
 
             List<String> actualWinners = new List<String>()
             {
-                "Star3oy",
-                "mich",
+                "Logan",
+                "Charles",
+                "MutanX23"
             };
 
             Assert.Equal(topGlobal, actualWinners);
@@ -44,7 +45,8 @@ namespace TestsServer
             List<String> actualWinners = new List<String>()
             {
                 "soobin",
-                "mich"
+                "mich",
+                "Star3oy"
             };
 
             Assert.NotEqual(topGlobal, actualWinners);
@@ -61,8 +63,9 @@ namespace TestsServer
 
             List<String> actualWinners = new List<String>()
             {
-                "soobin",
-                "mich"
+                "Logan",
+                "Charles",
+                "MutanX23"
             };
         }
 
