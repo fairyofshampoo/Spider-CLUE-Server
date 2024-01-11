@@ -41,7 +41,7 @@ namespace TestsServer
         }
 
         [Fact]
-        public async void KickPlayerFailTest()
+        public async void KickPlayerFailTest() //Falta? 
         {
             string gamertag = "Star3oy";
             _lobbyProxy.ConnectToLobby(gamertag);
@@ -80,7 +80,7 @@ namespace TestsServer
         }
 
         [Fact]
-        public async void CreateMatchFailTest()
+        public async void CreateMatchFailTest() //Falta? 
         {
             string gamertag = "Jake";
             SpiderClueService.IMatchCreationManager matchClient = new SpiderClueService.MatchCreationManagerClient();
@@ -104,7 +104,7 @@ namespace TestsServer
         }
 
         [Fact]
-        public async void SearchMatchTestFail()
+        public async void SearchMatchTestFail() 
         {
             string gamertag = "Jake";
             SpiderClueService.IMatchCreationManager matchClient = new SpiderClueService.MatchCreationManagerClient();
