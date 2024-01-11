@@ -89,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChatTest.cs" />
+    <Compile Include="ConstantsTests.cs" />
     <Compile Include="EmailTest.cs" />
     <Compile Include="FriendsTest.cs" />
     <Compile Include="GameTest.cs" />

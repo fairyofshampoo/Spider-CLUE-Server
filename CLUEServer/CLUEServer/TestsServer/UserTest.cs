@@ -18,117 +18,12 @@ namespace TestsServer
     {
         public UsetTestConfiguration()
         {
-            try
-            {
-                using (var dataBaseContext = new SpiderClueDbEntities())
-                {
-                    using (var dataBaseContextTransaction = dataBaseContext.Database.BeginTransaction())
-                    {
-                        try
-                        {
-                            var newAccessAccount = new DataBaseManager.accessAccount
-                            {
-                                password = "xP@ssword0910x",
-                                gamertag = "Lalonch3ra",
-                                email = "correo@gmail.com",
-                            };
-
-                            var newGamer = new DataBaseManager.gamer
-                            {
-                                firstName = "Eduardo",
-                                lastName = "Carrera",
-                                gamertag = "Lalonch3ra",
-                                gamesWon = 0,
-                                imageCode = "Icon0.jpg"
-                            };
-
-                            dataBaseContext.accessAccounts.Add(newAccessAccount);
-                            dataBaseContext.gamers.Add(newGamer);
-                            dataBaseContext.SaveChanges();
-                            dataBaseContextTransaction.Commit();
-                        }
-                        catch (SqlException sQLException)
-                        {
-                            Console.WriteLine(sQLException.Message);
-                            dataBaseContextTransaction.Rollback();
-                        }
-                    }
-                }
-
-                using (var dataBaseContext = new SpiderClueDbEntities())
-                {
-                    using (var dataBaseContextTransaction = dataBaseContext.Database.BeginTransaction())
-                    {
-                        try
-                        {
-                            var newAccessAccount = new DataBaseManager.accessAccount
-                            {
-                                password = "xK@nye20",
-                                gamertag = "Aligtl",
-                                email = "Gorila@gmail.com",
-                            };
-
-                            var newGamer = new DataBaseManager.gamer
-                            {
-                                firstName = "Yael",
-                                lastName = "Dominguez",
-                                gamertag = "Aligtl",
-                                gamesWon = 0,
-                                imageCode = "Icon0.jpg"
-                            };
-
-                            dataBaseContext.accessAccounts.Add(newAccessAccount);
-                            dataBaseContext.gamers.Add(newGamer);
-                            dataBaseContext.SaveChanges();
-                            dataBaseContextTransaction.Commit();
-                        }
-                        catch (SqlException sQLException)
-                        {
-                            Console.WriteLine(sQLException.Message);
-                            dataBaseContextTransaction.Rollback();
-                        }
-                    }
-                }
-            }
-            catch (EntityException entityException)
-            {
-                Console.WriteLine(entityException.Message);
-            }
+            
         }
 
         public void Dispose()
         {
-            try
-            {
-                using (var context = new SpiderClueDbEntities())
-                {
-                    var gamerInDB = context.gamers
-                        .FirstOrDefault(player => player.gamertag == "Lalonch3ra");
-                    if (gamerInDB != null)
-                    {
-                        context.gamers.Remove(gamerInDB);
-                        context.SaveChanges();
-                        Console.WriteLine("Se ha eliminado");
-                    }
-
-                    var secondGamerInDB = context.gamers
-                        .FirstOrDefault(player => player.gamertag == "Karlatv");
-                    if (gamerInDB != null)
-                    {
-                        context.gamers.Remove(secondGamerInDB);
-                        context.SaveChanges();
-                        Console.WriteLine("Se ha eliminado");
-                    }
-                }
-            }
-            catch (SqlException ex)
-            {
-                Console.WriteLine(ex);
-            }
-            catch (EntityException ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+            
         }
     }
 
@@ -144,7 +39,7 @@ namespace TestsServer
         [Fact]
         public void InsertGamerTest()
         {
-            int resultExcepted = 1;
+            int resultExcepted = ConstantsTests.Success;
 
             Gamer gamer = new Gamer()
             {
@@ -184,15 +79,15 @@ namespace TestsServer
         public void InsertGamerFailTest()
         {
 
-            int resultExcepted = -1;
+            int resultExcepted = ConstantsTests.Failure;
             Gamer gamer = new Gamer()
             {
                 FirstName = "Eduardo",
                 LastName = "Carrera",
-                Gamertag = "Star3oy",
+                Gamertag = "Lalonch3ra",
                 GamesWon = 0,
-                ImageCode = "Icon0.jpg",
-                Password = "xP@ssword0910x",
+                ImageCode = "Icon1.jpg",
+                Password = "P@ssword0910",
                 Email = "eduardo@gmail.com"
             };
 
@@ -205,10 +100,10 @@ namespace TestsServer
         [Fact]
         public void ModifyGamerDataTest()
         {
-            int resultExcepted = -1;
-            string gamertag = "Star3oy";
-            string firstName = "Eduardo";
-            string lastName = "Carrera";
+            int resultExcepted = ConstantsTests.Failure;
+            string gamertag = "Lalonch3ra";
+            string firstName = "Mac";
+            string lastName = "Miller";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             int result = userManager.ModifyAccount(gamertag, firstName, lastName);
             Assert.Equal(resultExcepted, result);
@@ -217,9 +112,9 @@ namespace TestsServer
         [Fact]
         public void ModifyGamerDataConnectionErrorTest()
         {
-            string gamertag = "Star3oy";
-            string firstName = "Eduardo";
-            string lastName = "Carrera";
+            string gamertag = "Lalonch3ra";
+            string firstName = "Mac";
+            string lastName = "Miller";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             Assert.Throws<EndpointNotFoundException>(() => userManager.ModifyAccount(gamertag, firstName, lastName));
         }
@@ -227,7 +122,7 @@ namespace TestsServer
         [Fact]
         public void ModifyGamerDataFailTest()
         {
-            int resultExcepted = -1;
+            int resultExcepted = ConstantsTests.Failure;
             string gamertag = "Swift";
             string firstName = "Taylor";
             string lastName = "Swift";
@@ -239,7 +134,7 @@ namespace TestsServer
         [Fact]
         public void AuthenticateAccountTest()
         {
-            string gamertag = "Star3oy";
+            string gamertag = "Lalonch3ra";
             string password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             bool result = userManager.AuthenticateAccount(gamertag, password);
@@ -249,7 +144,7 @@ namespace TestsServer
         [Fact]
         public void AuthenticateAccountErrorConnectionTest()
         {
-            string gamertag = "Star3oy";
+            string gamertag = "Lalonch3ra";
             string password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
 
@@ -269,7 +164,7 @@ namespace TestsServer
         [Fact]
         public void IsEmailExistingTest()
         {
-            string email = "eduarcaco@hotmail.com";
+            string email = "eduardo@gmail.com";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             bool result = userManager.IsEmailExisting(email);
             Assert.True(result);
@@ -278,7 +173,7 @@ namespace TestsServer
         [Fact]
         public void IsEmailExistingErrorConnectionTest()
         {
-            string email = "eduarcaco@hotmail.com";
+            string email = "eduardo@gmail.com";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             Assert.Throws<EndpointNotFoundException>(() => userManager.IsEmailExisting(email));
         }
@@ -295,19 +190,19 @@ namespace TestsServer
         [Fact]
         public void UpdatePasswordTest()
         {
-            string gamertag = "Lalonch3ra";
-            string newPassword = "KRRERA135625x";
+            string gamertag = "aldoJr";
+            string newPassword = "855d96d4b2b7768cc3191eb4de158ab540090f0a";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             int result = userManager.UpdatePassword(gamertag, newPassword);
-            int resultExpected = -1;
+            int resultExpected = ConstantsTests.Success;
             Assert.Equal(resultExpected, result);
         }
 
         [Fact]
         public void UpdatePasswordErrorConnectionTest()
         {
-            string gamertag = "Lalonch3ra";
-            string newPassword = "KRRERA135625x";
+            string gamertag = "aldoJr";
+            string newPassword = "855d96d4b2b7768cc3191eb4de158ab540090f0a";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             Assert.Throws<EndpointNotFoundException>(() => userManager.UpdatePassword(gamertag, newPassword));
         }
@@ -319,14 +214,14 @@ namespace TestsServer
             string newPassword = "RTX4090ti";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             int result = userManager.UpdatePassword(gamertag, newPassword);
-            int resultExpected = -1;
+            int resultExpected = ConstantsTests.Failure;
             Assert.Equal(result, resultExpected);
         }
 
         [Fact]
         public void IsGamertagExistingTest()
         {
-            string gamertag = "Star3oy";
+            string gamertag = "Lalonch3ra";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             bool result = userManager.IsGamertagExisting(gamertag);
             Assert.True(result);
@@ -335,7 +230,7 @@ namespace TestsServer
         [Fact]
         public void IsGamertagExistingErrorConnectionTest()
         {
-            string gamertag = "Star3oy";
+            string gamertag = "Lalonch3ra";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             Assert.Throws<EndpointNotFoundException>(() => userManager.IsGamertagExisting(gamertag));
         }
@@ -343,7 +238,7 @@ namespace TestsServer
         [Fact]
         public void IsGamertagExistingFailTest()
         {
-            string gamertag = "noobMaster";
+            string gamertag = "dakara";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             bool result = userManager.IsGamertagExisting(gamertag);
             Assert.False(result);
@@ -352,17 +247,17 @@ namespace TestsServer
         [Fact]
         public void GetGamerByGamertagTest()
         {
-            string gamertag = "Star3oy";
+            string gamertag = "Lalonch3ra";
 
             Gamer gamer = new Gamer
             {
                 FirstName = "Eduardo",
                 LastName = "Carrera",
-                Gamertag = "Star3oy",
+                Gamertag = "Lalonch3ra",
                 GamesWon = 0,
-                ImageCode = "Icon0.jpg",
+                ImageCode = "Icon1.jpg",
                 Password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9",
-                Email = "eduarcaco@hotmail.com"
+                Email = "eduardo@gmail.com"
             };
 
             SpiderClueService.IUserManager userManager = new UserManagerClient();
@@ -374,16 +269,16 @@ namespace TestsServer
         [Fact]
         public void GetGamerByGamertagErrorConnectionTest()
         {
-            string gamertag = "Star3oy";
+            string gamertag = "Lalonch3ra";
             Gamer gamer = new Gamer
             {
                 FirstName = "Eduardo",
                 LastName = "Carrera",
-                Gamertag = "Star3oy",
+                Gamertag = "Lalonch3ra",
                 GamesWon = 0,
-                ImageCode = "Icon0.jpg",
+                ImageCode = "Icon1.jpg",
                 Password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9",
-                Email = "eduarcaco@hotmail.com"
+                Email = "eduardo@gmail.com"
             };
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             Assert.Throws<EndpointNotFoundException>(() => userManager.GetGamerByGamertag(gamertag));
@@ -392,7 +287,7 @@ namespace TestsServer
         [Fact]
         public void GetGamerByGamertagFailTest()
         {
-            string gamertag = "Star3oy";
+            string gamertag = "dakara";
 
             Gamer gamer = new Gamer
             {
@@ -413,41 +308,36 @@ namespace TestsServer
         [Fact]
         public void GetGamerByEmailTest()
         {
-            string gamertag = "eduarcaco@hotmail.com";
-
+            string gamertag = "eduardo@gmail.com";
             Gamer gamer = new Gamer
             {
                 FirstName = "Eduardo",
                 LastName = "Carrera",
-                Gamertag = "Star3oy",
+                Gamertag = "Lalonch3ra",
                 GamesWon = 0,
-                ImageCode = "Icon0.jpg",
+                ImageCode = "Icon1.jpg",
                 Password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9",
-                Email = "eduarcaco@hotmail.com"
+                Email = "eduardo@gmail.com"
             };
-
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             Gamer secondGamer = userManager.GetGamerByEmail(gamertag);
-
             Assert.Equal(gamer, secondGamer);
         }
 
         [Fact]
         public void GetGamerByEmailErrorConnectionTest()
         {
-            string gamertag = "eduarcaco@hotmail.com";
-
+            string gamertag = "eduardo@gmail.com";
             Gamer gamer = new Gamer
             {
                 FirstName = "Eduardo",
                 LastName = "Carrera",
-                Gamertag = "Star3oy",
+                Gamertag = "Lalonch3ra",
                 GamesWon = 0,
-                ImageCode = "Icon0.jpg",
+                ImageCode = "Icon1.jpg",
                 Password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9",
-                Email = "eduarcaco@hotmail.com"
+                Email = "eduardo@gmail.com"
             };
-
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             Assert.Throws<EndpointNotFoundException>(() => userManager.GetGamerByEmail(gamertag));
         }
@@ -455,19 +345,17 @@ namespace TestsServer
         [Fact]
         public void GetGamerByEmailFailTest()
         {
-            string gamertag = "eduarcaco@hotmail.com";
-
+            string gamertag = "aldoJr@gmail.com";
             Gamer gamer = new Gamer
             {
-                FirstName = "Aldo",
+                FirstName = "Eduardo",
                 LastName = "Carrera",
-                Gamertag = "AldoJr",
+                Gamertag = "Lalonch3ra",
                 GamesWon = 0,
-                ImageCode = "Icon2.jpg",
+                ImageCode = "Icon1.jpg",
                 Password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9",
-                Email = "eduarcaco@hotmail.com"
+                Email = "eduardo@gmail.com"
             };
-
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             Gamer secondGamer = userManager.GetGamerByEmail(gamertag);
             Assert.False(gamer.Equals(secondGamer));
@@ -476,19 +364,19 @@ namespace TestsServer
         [Fact]
         public void ChangeIconTest()
         {
-            string gamertag = "Star3oy";
-            string icon = "Icon1";
+            string gamertag = "aldoJr";
+            string icon = "Icon4.jpg";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             int result = userManager.ChangeIcon(gamertag, icon);
-            int resultExcepted = 1;
+            int resultExcepted = ConstantsTests.Success;
             Assert.Equal(result, resultExcepted);
         }
 
         [Fact]
         public void ChangeIconErrorConnectionTest()
         {
-            string gamertag = "Star3oy";
-            string icon = "Icon1";
+            string gamertag = "aldoJr";
+            string icon = "Icon4.jpg";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             Assert.Throws<EndpointNotFoundException>(() => userManager.ChangeIcon(gamertag, icon));
         }
@@ -496,28 +384,28 @@ namespace TestsServer
         [Fact]
         public void ChangeIconFailTest()
         {
-            string gamertag = "Aldojr";
-            string icon = "Icon1";
+            string gamertag = "kayloRen";
+            string icon = "Icon1.jpg";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             int result = userManager.ChangeIcon(gamertag, icon);
-            int resultExcepted = -1;
+            int resultExcepted = ConstantsTests.Failure;
             Assert.Equal(result, resultExcepted);
         }
 
         [Fact]
         public void GetIconTest()
         {
-            string gamertag = "Star3oy";
+            string gamertag = "Lalonch3ra";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             string result = userManager.GetIcon(gamertag);
-            string resultExcepted = "Icon1";
+            string resultExcepted = "Icon1.jpg";
             Assert.Equal(result, resultExcepted);
         }
 
         [Fact]
         public void GetIconErrorConnectionTest()
         {
-            string gamertag = "Star3oy";
+            string gamertag = "Lalonch3ra";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             Assert.Throws<EndpointNotFoundException>(() => userManager.GetIcon(gamertag));
         }
@@ -525,10 +413,10 @@ namespace TestsServer
         [Fact]
         public void GetIconFailTest()
         {
-            string gamertag = "Star3oy";
+            string gamertag = "YoungMiko";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             string result = userManager.GetIcon(gamertag);
-            string resultExcepted = "Icon3";
+            string resultExcepted = "Icon3.jpg";
             Assert.False(result.Equals(resultExcepted));
         }
 
@@ -538,7 +426,7 @@ namespace TestsServer
             string gamertag = "BWdS3tzN";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             int result = userManager.DeleteGuestPlayer(gamertag);
-            int resultExcepted = 1;
+            int resultExcepted = ConstantsTests.Success;
             Assert.Equal(result, resultExcepted);
         }
 
@@ -553,10 +441,10 @@ namespace TestsServer
         [Fact]
         public void DeleteGuestPlayerFailTest()
         {
-            string gamertag = "GuessPlayer";
+            string gamertag = "KLSD1z";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             int result = userManager.DeleteGuestPlayer(gamertag);
-            int resultExcepted = -1;
+            int resultExcepted = ConstantsTests.Failure;
             Assert.Equal(result, resultExcepted);
         }
 
