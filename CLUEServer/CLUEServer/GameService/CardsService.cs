@@ -18,18 +18,22 @@ namespace GameService.Services
             List<Card> clueDeck = new List<Card>();
 
             Random random = new Random();
-            int cardChoosed = random.Next(0, 6);
+            int lowerLimit = 0;
+            int numberOfCharacters = 6;
+            int numberOfPlaces = 9;
+            int numberOfMotives = 6;
+            int cardChoosed = random.Next(lowerLimit, numberOfCharacters);
 
             Card characterCard = firstDeck[cardChoosed];
             firstDeck.RemoveAt(cardChoosed);
             clueDeck.Add(characterCard);
 
-            cardChoosed = random.Next(0, 9);
+            cardChoosed = random.Next(lowerLimit, numberOfPlaces);
             Card placeCard = secondDeck[cardChoosed];
             secondDeck.RemoveAt(cardChoosed);
             clueDeck.Add(placeCard);
 
-            cardChoosed = random.Next(0, 6);
+            cardChoosed = random.Next(lowerLimit, numberOfMotives);
             Card motiveCard = thirdDeck[cardChoosed];
             thirdDeck.RemoveAt(cardChoosed);
             clueDeck.Add(motiveCard);
@@ -114,9 +118,14 @@ namespace GameService.Services
 
         private void DealCards(List<string> gamers, List<Card> cards)
         {
-            List<Card> firstDeck = cards.GetRange(0, 6);
-            List<Card> secondDeck = cards.GetRange(6, 6);
-            List<Card> thirdDeck = cards.GetRange(12, 6);
+            int firstLowerLimit = 0;
+            int secondLowerLimit = 6;
+            int thirdLowerLimit = 12;
+            int numberOfCards = 6;
+
+            List<Card> firstDeck = cards.GetRange(firstLowerLimit, numberOfCards);
+            List<Card> secondDeck = cards.GetRange(secondLowerLimit, numberOfCards);
+            List<Card> thirdDeck = cards.GetRange(thirdLowerLimit, numberOfCards);
             
 
             decks.Add(gamers[0], firstDeck);
@@ -127,12 +136,13 @@ namespace GameService.Services
         private List<Card> ShuffleCards(List<Card> cards)
         {
             Random random = new Random();
-            int index = cards.Count;    
+            int index = cards.Count;
+            int lowerLimit = 1;
 
-            while (index > 1) 
+            while (index > lowerLimit) 
             { 
                 index--;
-                int shuffle = random.Next(index + 1);
+                int shuffle = random.Next(index + lowerLimit);
                 Card selectCard = cards[shuffle];
                 cards[shuffle] = cards[index];
                 cards[index] = selectCard;
