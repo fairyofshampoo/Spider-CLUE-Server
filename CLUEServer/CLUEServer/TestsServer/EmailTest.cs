@@ -14,7 +14,7 @@ namespace TestsServer
     {
         [Fact]
         public void SendInvitationTestSuccess()
-        {¿
+        {
             string emailValid = "lalocel09@gmail.com";
             string code = "CODE12";
             string gamertag = "michito";
@@ -59,7 +59,7 @@ namespace TestsServer
             string code = "418034";
             SpiderClueService.IEmailVerificationManager emailVerificationManager = new EmailVerificationManagerClient();
             bool result = emailVerificationManager.VerifyCode(emailValid, code);
-            Assert.False(result);
+            Assert.True(result);
         }
 
         [Fact]

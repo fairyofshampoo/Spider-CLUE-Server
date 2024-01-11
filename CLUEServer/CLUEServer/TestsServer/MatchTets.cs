@@ -12,8 +12,6 @@ namespace TestsServer
     {
 
         public MatchTetsConfiguration() { }
-
-
         public void Dispose()
         {
             

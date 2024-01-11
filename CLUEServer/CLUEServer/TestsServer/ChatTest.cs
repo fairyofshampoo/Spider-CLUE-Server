@@ -30,10 +30,10 @@ namespace TestsServer
         [Fact]
         public async void ConnectToChatTestSuccess()
         {
-            chatProxy.ConnectToChat("Star3oy", "123456");
-
+            string gamertag = "Star3oy";
+            string codeMatch = "123456";
+            chatProxy.ConnectToChat(gamertag, codeMatch);
             await Task.Delay(4000);
-
             Assert.True(chatCallbackImplementation.isMessageBack);
         }
 
@@ -41,19 +41,17 @@ namespace TestsServer
         public async void BroadcastMessageTestSuccess()
         {
             string codeMatch = "123456";
-            chatProxy.ConnectToChat("Star3oy", codeMatch);
+            string gamertag = "Star3oy";
+            chatProxy.ConnectToChat(gamertag, codeMatch);
 
             var message = new SpiderClueService.Message
             {
                 Text = "hola",
                 GamerTag = "Star3oy",
             };
-
             await Task.Delay(4000);
             chatProxy.BroadcastMessage(codeMatch, message);
-
             await Task.Delay(4000);
-
             Assert.True(chatCallbackImplementation.isMessageBack);
         }
     }
@@ -61,7 +59,6 @@ namespace TestsServer
     public class ChatManagerCallbackImplementation : IChatManagerCallback
     {
         public bool isMessageBack { get; set; }
-
         public void ReceiveMessages(SpiderClueService.Message[] messages)
         {
             isMessageBack = true;

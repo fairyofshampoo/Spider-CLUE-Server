@@ -238,7 +238,7 @@ namespace TestsServer
         [Fact]
         public void IsGamertagExistingFailTest()
         {
-            string gamertag = "noobMaster";
+            string gamertag = "dakara";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             bool result = userManager.IsGamertagExisting(gamertag);
             Assert.False(result);
@@ -287,7 +287,7 @@ namespace TestsServer
         [Fact]
         public void GetGamerByGamertagFailTest()
         {
-            string gamertag = "Lalonch3ra";
+            string gamertag = "dakara";
 
             Gamer gamer = new Gamer
             {
@@ -365,7 +365,7 @@ namespace TestsServer
         public void ChangeIconTest()
         {
             string gamertag = "aldoJr";
-            string icon = "Icon4";
+            string icon = "Icon4.jpg";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             int result = userManager.ChangeIcon(gamertag, icon);
             int resultExcepted = ConstantsTests.Success;
@@ -376,7 +376,7 @@ namespace TestsServer
         public void ChangeIconErrorConnectionTest()
         {
             string gamertag = "aldoJr";
-            string icon = "Icon4";
+            string icon = "Icon4.jpg";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             Assert.Throws<EndpointNotFoundException>(() => userManager.ChangeIcon(gamertag, icon));
         }
@@ -385,7 +385,7 @@ namespace TestsServer
         public void ChangeIconFailTest()
         {
             string gamertag = "kayloRen";
-            string icon = "Icon1";
+            string icon = "Icon1.jpg";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             int result = userManager.ChangeIcon(gamertag, icon);
             int resultExcepted = ConstantsTests.Failure;
@@ -413,10 +413,10 @@ namespace TestsServer
         [Fact]
         public void GetIconFailTest()
         {
-            string gamertag = "Star3oy";
+            string gamertag = "YoungMiko";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             string result = userManager.GetIcon(gamertag);
-            string resultExcepted = "Icon3";
+            string resultExcepted = "Icon3.jpg";
             Assert.False(result.Equals(resultExcepted));
         }
 
