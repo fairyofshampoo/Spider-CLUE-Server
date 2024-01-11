@@ -25,7 +25,7 @@ namespace TestsServer
         [Fact]
         public void CreateMatchTest()
         {
-            string gamertag = "Star3oy";
+            string gamertag = "Lalonch3ra";
             SpiderClueService.IMatchCreationManager matchCreation = new SpiderClueService.MatchCreationManagerClient();
             string result = matchCreation.CreateMatch(gamertag);
             string resultExpected = string.Empty;
@@ -35,7 +35,7 @@ namespace TestsServer
         [Fact]
         public void CreateMatchErrorConnectionTest()
         {
-            string gamertag = "Star3oy";
+            string gamertag = "Lalonch3ra";
             SpiderClueService.IMatchCreationManager matchCreation = new SpiderClueService.MatchCreationManagerClient();
             Assert.Throws<EndpointNotFoundException>(() => matchCreation.CreateMatch(gamertag));
         }
@@ -43,7 +43,7 @@ namespace TestsServer
         [Fact]
         public void CreateMatchNotEqualsTest()
         {
-            string gamertag = "Star3oy";
+            string gamertag = "Lalonch3ra";
             string secondGamertag = "mich";
             SpiderClueService.IMatchCreationManager matchCreation = new SpiderClueService.MatchCreationManagerClient();
             string result = matchCreation.CreateMatch(gamertag);

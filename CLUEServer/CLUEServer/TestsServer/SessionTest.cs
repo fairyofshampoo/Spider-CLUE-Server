@@ -17,7 +17,7 @@ namespace TestsServer
             string gamertag = "MacMiller";
             SpiderClueService.ISessionManager sessionManager = new SpiderClueService.SessionManagerClient();
             int result = sessionManager.Connect(gamertag);
-            int resultExpceted = 1;
+            int resultExpceted = ConstantsTests.Success;
             Assert.Equal(result, resultExpceted);   
         }
 
@@ -35,7 +35,7 @@ namespace TestsServer
             string gamertag = "MacMiller";
             SpiderClueService.ISessionManager sessionManager = new SpiderClueService.SessionManagerClient();
             int result = sessionManager.Connect(gamertag);
-            int resultExpceted = -1;
+            int resultExpceted = ConstantsTests.Failure;
             Assert.Equal(result, resultExpceted);
         }
 
