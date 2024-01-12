@@ -27,7 +27,7 @@ namespace GameService.Services
         {
             LoggerManager logger = new LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToSingle();
-            int result = Constants.ERROR_IN_OPERATION;
+            int result = Constants.ErrorInOperation;
             try
             {
                 using (var dataBaseContext = new SpiderClueDbEntities())
@@ -58,19 +58,19 @@ namespace GameService.Services
                             dataBaseContext.SaveChanges();
                             dataBaseContextTransaction.Commit();
 
-                            result = Constants.SUCCESS_IN_OPERATION;
+                            result = Constants.SuccessInOperation;
                         }
                         catch (DbUpdateException updateException)
                         {
                             logger.LogError(updateException);
                             dataBaseContextTransaction.Rollback();
-                            result = Constants.ERROR_IN_OPERATION;
+                            result = Constants.ErrorInOperation;
                         }
                         catch (SqlException sQLException)
                         {
                             logger.LogError(sQLException);
                             dataBaseContextTransaction.Rollback();
-                            result = Constants.ERROR_IN_OPERATION;
+                            result = Constants.ErrorInOperation;
                         }
                         
                     }
@@ -140,11 +140,11 @@ namespace GameService.Services
                     {
                         var newGamer = new DataBaseManager.gamer
                         {
-                            firstName = Constants.DEFAULT_GUEST_NAME,
-                            lastName = Constants.DEFAULT_GUEST_LAST_NAME,
+                            firstName = Constants.DefaultGuestName,
+                            lastName = Constants.DefaultLastName,
                             gamertag = gamertag,
-                            gamesWon = Constants.DEFAULT_GAMES_WON,
-                            imageCode = Constants.DEFAULT_ICON
+                            gamesWon = Constants.DefaultGamesWon,
+                            imageCode = Constants.DefaultIcon
                         };
 
                         dbContext.gamers.Add(newGamer);
