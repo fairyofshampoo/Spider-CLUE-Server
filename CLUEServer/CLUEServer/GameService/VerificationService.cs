@@ -9,8 +9,7 @@ namespace GameService.Services
 {
     public partial class GameService : IEmailVerificationManager
     {
-        private readonly Dictionary<string, VerificationData> verificationDictionary = new Dictionary<string, VerificationData>();
-        private TimeSpan verificationCodeValidity = TimeSpan.FromMinutes(8);
+        private static readonly Dictionary<string, VerificationData> verificationDictionary = new Dictionary<string, VerificationData>();
 
         /// <summary>
         /// Generates a verification code, associates it with the provided email, sends an email with the code,
@@ -24,7 +23,6 @@ namespace GameService.Services
             string verificationCode = GenerateRandomCode();
             Stopwatch localStopwatch = Stopwatch.StartNew();
             verificationDictionary[email] = new VerificationData(verificationCode, localStopwatch);
-
             bool codeProcessResult = emailService.SendEmailWithCode(email, verificationCode);
 
             return codeProcessResult;
@@ -40,6 +38,8 @@ namespace GameService.Services
         public bool VerifyCode(string email, string code)
         {
             bool verificationStatus = false;
+            TimeSpan verificationCodeValidity = TimeSpan.FromMinutes(8);
+
             if (verificationDictionary.ContainsKey(email))
             {
                 VerificationData data = verificationDictionary[email];
@@ -48,7 +48,7 @@ namespace GameService.Services
                     verificationDictionary.Remove(email);
                     verificationStatus = true;
                 }
-            }
+            }0
 
             return verificationStatus;
         }
@@ -118,7 +118,8 @@ namespace GameService.Services
         /// <returns>True if the verification is valid; otherwise, false.</returns>
         public bool IsValid(string code, TimeSpan validityPeriod)
         {
-            return Code == code && LocalStopwatch.Elapsed <= validityPeriod;
+            bool result = Code == code && LocalStopwatch.Elapsed <= validityPeriod;
+            return result;
         }
     }
 

@@ -155,18 +155,21 @@ namespace GameService.Services
             List<string> gamerByBoard = GetGamersByGameBoard(matchCode);
             foreach(string gamer in gamerByBoard)
             {
-                try
+                if (GamersInGameBoardCallback.ContainsKey(gamer))
                 {
-                    GamersInGameBoardCallback[gamer].LeaveGameBoard();
-                    DisconnectFromBoard(gamer);
-                }
-                catch (CommunicationException communicationException)
-                {
-                    loggerManager.LogError(communicationException);
-                }
-                catch (TimeoutException timeoutException)
-                {
-                    loggerManager.LogError(timeoutException);
+                    try
+                    {
+                        GamersInGameBoardCallback[gamer].LeaveGameBoard();
+                        DisconnectFromBoard(gamer);
+                    }
+                    catch (CommunicationException communicationException)
+                    {
+                        loggerManager.LogError(communicationException);
+                    }
+                    catch (TimeoutException timeoutException)
+                    {
+                        loggerManager.LogError(timeoutException);
+                    }
                 }
             }
 

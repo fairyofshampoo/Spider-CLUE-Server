@@ -148,13 +148,13 @@ namespace GameService.Services
                         if (secondfriendRequest.Any())
                         {
                             databaseContext.friendRequests.RemoveRange(secondfriendRequest);
-                            result = databaseContext.SaveChanges();
+                            result = Constants.SuccessInOperation;
                         }
 
                         if (friendRequest.Any())
                         {
                             databaseContext.friendRequests.RemoveRange(friendRequest);
-                            result = result + databaseContext.SaveChanges();
+                            result = Constants.SuccessInOperation;
                         }
                     }
                 }
