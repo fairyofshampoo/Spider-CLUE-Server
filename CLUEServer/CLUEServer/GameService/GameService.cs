@@ -12,12 +12,27 @@ using System.Data.SqlClient;
 
 namespace GameService.Services
 {
+    /// <summary>
+    /// Represents a gamer and their left and right neighbors in a gaming context.
+    /// </summary>
     public class GamerLeftAndRight
     {
+        /// <summary>
+        /// Gets or sets the gamertag of the gamer.
+        /// </summary>
         public string Gamertag { get; set; }
+
+        /// <summary>
+        /// Gets or sets the gamertag of the gamer on the left.
+        /// </summary>
         public string Left { get; set; }
+
+        /// <summary>
+        /// Gets or sets the gamertag of the gamer on the right.
+        /// </summary>
         public string Right { get; set; }
     }
+
 
     public partial class GameService : IGameManager
     {
@@ -28,6 +43,11 @@ namespace GameService.Services
         private static readonly Dictionary<string, string> TurnsInGameboard = new Dictionary<string, string>(); 
         private static readonly Dictionary<string, int> GameBoardDiceRoll = new Dictionary<string, int>();
 
+        /// <summary>
+        /// Connects a gamer to the game board, establishing a callback channel for communication.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer to connect.</param>
+        /// <param name="matchCode">The match code associated with the game board.</param>
         public void ConnectGamerToGameBoard(string gamertag, string matchCode)
         {
             HostBehaviorManager.ChangeToReentrant();
@@ -114,12 +134,20 @@ namespace GameService.Services
             GamersInGameBoardCallback.Remove(gamertag);
         }
 
+        /// <summary>
+        /// Disconnects a gamer from the game board by removing them from the match and game board collections.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer to disconnect.</param>
         public void DisconnectFromBoard(string gamertag)
         {
             RemoveFromMatch(gamertag);
             RemoveFromGameboard(gamertag);
         }
 
+        /// <summary>
+        /// Ends the game associated with the specified match code, disconnecting all gamers and cleaning up resources.
+        /// </summary>
+        /// <param name="matchCode">The match code of the game to end.</param>
         public void EndGame(string matchCode)
         {
             LoggerManager loggerManager = new LoggerManager(this.GetType());
@@ -168,6 +196,13 @@ namespace GameService.Services
             DirectionInGameBoard.Add(matchCode, gamerLeftAndRights);
         }
 
+        /// <summary>
+        /// Moves the pawn of a gamer on the game board to the specified column and row, updating game state and notifying players.
+        /// </summary>
+        /// <param name="column">The column to move the pawn to.</param>
+        /// <param name="row">The row to move the pawn to.</param>
+        /// <param name="gamertag">The gamertag of the gamer making the move.</param>
+        /// <param name="matchCode">The match code associated with the game board.</param>
         public void MovePawn(int column, int row, string gamertag, string matchCode)
         {
             LoggerManager loggerManager = new LoggerManager(this.GetType());
@@ -218,6 +253,11 @@ namespace GameService.Services
             return matchCode;
         }
 
+        /// <summary>
+        /// Changes the turn in the game board for the specified match code and gamer, notifying players and updating turn timers.
+        /// </summary>
+        /// <param name="matchCode">The match code associated with the game board.</param>
+        /// <param name="gamertag">The gamertag of the gamer whose turn is changing.</param>
         public void ChangeTurn(string matchCode, string gamertag)
         {
             LoggerManager loggerManager = new LoggerManager(this.GetType());
@@ -263,6 +303,11 @@ namespace GameService.Services
             }
         }
 
+        /// <summary>
+        /// Notifies all gamers in the specified game board of a pawn movement and resets the dice for the associated match.
+        /// </summary>
+        /// <param name="pawn">The pawn representing the movement on the game board.</param>
+        /// <param name="matchCode">The match code associated with the game board.</param>
         public void ShowMovePawn(Pawn pawn, string matchCode)
         {
             LoggerManager loggerManager = new LoggerManager(this.GetType());
@@ -300,6 +345,10 @@ namespace GameService.Services
             }
         }
 
+        /// <summary>
+        /// Notifies a specific gamer in the game board that their attempted move is invalid.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer with the invalid move.</param>
         public void ShowMoveIsInvalid(string gamertag)
         {
             LoggerManager loggerManager = new LoggerManager(this.GetType());
@@ -321,6 +370,11 @@ namespace GameService.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves the current position of the pawn associated with the specified gamer.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer whose pawn position is requested.</param>
+        /// <returns>A GridNode representing the current position of the pawn on the game board.</returns>
         public GridNode GetPawnPosition(string gamertag)
         {
             GridNode node = new GridNode();
@@ -380,6 +434,16 @@ namespace GameService.Services
             return doorData;
         }
 
+        /// <summary>
+        /// Determines whether a move specified by column and row for a gamer in the given match code is valid on the game board.
+        /// </summary>
+        /// <param name="column">The column of the target position for the move.</param>
+        /// <param name="row">The row of the target position for the move.</param>
+        /// <param name="gamertag">The gamertag of the gamer making the move.</param>
+        /// <param name="matchCode">The match code associated with the game board.</param>
+        /// <returns>
+        /// True if the move is valid; otherwise, false. The method also handles door interactions, invalid zones, and the center.
+        /// </returns>
         public bool IsAValidMove(int column, int row, string gamertag, string matchCode)
         {
             LoggerManager loggerManager = new LoggerManager(this.GetType());
@@ -553,6 +617,11 @@ namespace GameService.Services
             return isNeighborInvalid;
         }
 
+        /// <summary>
+        /// Rolls a six-sided dice and updates the dice roll value for the specified match code on the game board.
+        /// </summary>
+        /// <param name="matchCode">The match code associated with the game board.</param>
+        /// <returns>The rolled dice value, an integer between 2 and 12 (inclusive).</returns>
         public int RollDice(string matchCode)
         {
             Random random = new Random();
@@ -568,6 +637,15 @@ namespace GameService.Services
             return rollDice;
         }
 
+        /// <summary>
+        /// Determines if the specified column and row position falls within an invalid zone on the game board.
+        /// </summary>
+        /// <param name="column">The column position on the game board.</param>
+        /// <param name="row">The row position on the game board.</param>
+        /// <returns>
+        /// True if the position is within an invalid zone; otherwise, false.
+        /// The method distinguishes between three sections of the game board for evaluation.
+        /// </returns>
         public bool IsAnInvalidZone(int column, int row)
         {
             bool isAnInvalidZone;
@@ -641,6 +719,12 @@ namespace GameService.Services
             return isAnInvalidZone;
         }
 
+        /// <summary>
+        /// Determines if the specified column and row position represents a door on the game board.
+        /// </summary>
+        /// <param name="column">The column position on the game board.</param>
+        /// <param name="row">The row position on the game board.</param>
+        /// <returns>True if the position corresponds to a door; otherwise, false.</returns>
         public bool IsADoor(int column, int row)
         {
             bool isADoor = false;
@@ -655,6 +739,12 @@ namespace GameService.Services
             return isADoor;
         }
 
+        /// <summary>
+        /// Determines if the specified column and row position is a valid corner on the game board.
+        /// </summary>
+        /// <param name="column">The column position on the game board.</param>
+        /// <param name="row">The row position on the game board.</param>
+        /// <returns>True if the position is a valid corner; otherwise, false.</returns>
         public bool IsAValidCorner(int column, int row)
         {
             bool isAValidCorner = false;
@@ -668,6 +758,14 @@ namespace GameService.Services
             return isAValidCorner;
         }
 
+        /// <summary>
+        /// Initiates a final accusation by a gamer in the specified match, validating the provided cards.
+        /// If the accusation is correct (all three cards match), the gamer is declared the winner,
+        /// and their games won count is updated. Otherwise, the gamer is removed from the turns in the match.
+        /// </summary>
+        /// <param name="cards">The list of cards representing the final accusation.</param>
+        /// <param name="matchCode">The code identifying the match on the game board.</param>
+        /// <param name="gamertag">The gamertag of the gamer making the accusation.</param>
         public void MakeFinalAccusation(List<string> cards, string matchCode, string gamertag)
         {
             HostBehaviorManager.ChangeToReentrant();
@@ -790,6 +888,13 @@ namespace GameService.Services
             }
         }
 
+        /// <summary>
+        /// Notifies the accuser in the specified match about the accused card,
+        /// providing information about the type of the accused card.
+        /// </summary>
+        /// <param name="card">The card being accused.</param>
+        /// <param name="matchCode">The code identifying the match on the game board.</param>
+        /// <param name="accuser">The gamertag of the gamer making the accusation.</param>
         public void ShowCard(Card card, string matchCode, string accuser)
         {
             LoggerManager loggerManager = new LoggerManager(this.GetType());
@@ -808,6 +913,12 @@ namespace GameService.Services
             }
         }
 
+        /// <summary>
+        /// Notifies all gamers in the specified match about a common accusation made by a gamer.
+        /// </summary>
+        /// <param name="accusation">The array of strings representing the common accusation.</param>
+        /// <param name="matchCode">The code identifying the match on the game board.</param>
+        /// <param name="accuser">The gamertag of the gamer making the common accusation.</param>
         public void ShowCommonAccusation(string[] accusation, string matchCode, string accuser)
         {
             LoggerManager loggerManager = new LoggerManager(this.GetType());
@@ -921,6 +1032,10 @@ namespace GameService.Services
             return leftGamer;
         }
 
+        /// <summary>
+        /// Creates and returns a list of pawn objects with specified colors and initial positions on the game board.
+        /// </summary>
+        /// <returns>A list containing pawn objects representing different players' pawns.</returns>
         public List<Pawn> CreatePawns()
         {
             Pawn bluePawn = new Pawn { Color = "BluePawn.png", XPosition = 0, YPosition = 17 };
@@ -940,6 +1055,11 @@ namespace GameService.Services
             return pawns;
         }
 
+        /// <summary>
+        /// Retrieves and returns the deck of cards associated with a specific gamer identified by gamertag.
+        /// </summary>
+        /// <param name="gamertag">The unique identifier of the gamer whose deck is to be retrieved.</param>
+        /// <returns>A list containing card objects representing the gamer's deck.</returns>
         public List<Card> GetDeck(string gamertag)
         {
             List<Card> gamerDeck = new List<Card>();
@@ -964,6 +1084,10 @@ namespace GameService.Services
             new GridNode { Xposition = 15, Yposition = 14,}
         };
 
+        /// <summary>
+        /// Represents a collection of grid nodes that define the invalid zones on the game board.
+        /// These zones are restricted areas where players cannot make valid moves.
+        /// </summary>
         public List<GridNode> InvalidZones { get; set; } = new List<GridNode>()
         {
             new GridNode { Xposition = 0, Yposition = 2, },
@@ -1114,6 +1238,10 @@ namespace GameService.Services
             new GridNode { Xposition = 5, Yposition = 21, },
         };
 
+        /// <summary>
+        /// Represents a collection of doors on the game board, each defined by its position and associated zone name.
+        /// Doors act as connections between different zones on the game board.
+        /// </summary>
         public List<Door> Doors { get; set; } = new List<Door>
         {
             new Door { Xposition = 5, Yposition = 2, ZoneName = "place6.png" },

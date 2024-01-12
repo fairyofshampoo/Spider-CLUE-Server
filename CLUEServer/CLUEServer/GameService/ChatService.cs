@@ -42,7 +42,7 @@ namespace GameService.Services
                     {
                         loggerManager.LogError(communicationException);
                     }
-                    catch(TimeoutException timeoutException)
+                    catch (TimeoutException timeoutException)
                     {
                         loggerManager.LogError(timeoutException);
                     }

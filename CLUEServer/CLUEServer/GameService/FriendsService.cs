@@ -14,6 +14,10 @@ namespace GameService.Services
 
         private static readonly List<string> UsersConnected = new List<string>();
 
+        /// <summary>
+        /// Retrieves the list of connected friends for the specified gamertag.
+        /// </summary>
+        /// <param name="gamertag">The gamertag for which connected friends are requested.</param>
         public void GetConnectedFriends(string gamertag)
         {
             LoggerManager loggerManager = new LoggerManager(this.GetType());
@@ -34,6 +38,10 @@ namespace GameService.Services
             }
         }
 
+        /// <summary>
+        /// Adds the callback channel for the specified gamertag to the list of connected friends.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the user joining the list of connected friends.</param>
         public void JoinFriendsConnected(string gamertag)
         {
             HostBehaviorManager.ChangeToReentrant();
