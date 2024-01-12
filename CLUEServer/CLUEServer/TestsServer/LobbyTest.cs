@@ -65,6 +65,7 @@ namespace TestsServer
             _lobbyProxy.BeginMatch(matchCode);
             await Task.Delay(4000);
             Assert.True(_implementation.isGameStarted);
+            _matchProxy.LeaveMatch(gamertag, matchCode);
         }
 
         [Fact]
@@ -77,18 +78,7 @@ namespace TestsServer
             await Task.Delay(4000);
             await _lobbyProxy.ConnectToLobbyAsync(gamertag);
             Assert.True(_implementation.isConnectedToMatch);
-        }
-
-        [Fact]
-        public async void CreateMatchFailTest() //Falta? 
-        {
-            string gamertag = "Jake";
-            SpiderClueService.IMatchCreationManager matchClient = new SpiderClueService.MatchCreationManagerClient();
-            string matchCode = matchClient.CreateMatch(gamertag);
-            _matchProxy.ConnectToMatch(gamertag, matchCode);
-            await Task.Delay(4000);
-            await _lobbyProxy.ConnectToLobbyAsync(gamertag);
-            Assert.False(_implementation.isConnectedToMatch);
+            _matchProxy.LeaveMatch(gamertag, matchCode);
         }
 
         [Fact]

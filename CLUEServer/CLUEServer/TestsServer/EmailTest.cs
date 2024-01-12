@@ -71,6 +71,8 @@ namespace TestsServer
             bool result = emailVerificationManager.VerifyCode(emailValid, wrongCode);
             Assert.False(result);
         }
+
+        [Fact]
         public void SendInvitationTestErrorConnection()
         {
             string emailValid = "lalocel09@gmail.com";
