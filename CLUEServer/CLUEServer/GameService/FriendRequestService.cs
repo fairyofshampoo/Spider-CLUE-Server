@@ -7,8 +7,18 @@ using System.Linq;
 
 namespace GameService.Services
 {
+    /// <summary>
+    /// Partial class for the GameService, implementing the IFriendRequestManager interface.
+    /// Manages friend request-related functionality such as retrieving friend requests,
+    /// creating friend requests, responding to friend requests, and deleting friend requests.
+    /// </summary>
     public partial class GameService : IFriendRequestManager
     {
+        /// <summary>
+        /// Retrieves friend requests for the specified gamertag.
+        /// </summary>
+        /// <param name="gamertag">The gamertag for which to retrieve friend requests.</param>
+        /// <returns>An array of gamertags representing friend requests in "Pending" status.</returns>
         public string[] GetFriendsRequest(string gamertag)
         {
             HostBehaviorManager.ChangeToSingle();
@@ -37,6 +47,12 @@ namespace GameService.Services
             return friendsRequest;
         }
 
+        /// <summary>
+        /// Creates a friend request from the specified gamertag to the target friend gamertag.
+        /// </summary>
+        /// <param name="gamertag">The gamertag initiating the friend request.</param>
+        /// <param name="friendGamertag">The gamertag of the friend receiving the friend request.</param>
+        /// <returns>An integer indicating the operation result. Constants.SuccessInOperation if successful, otherwise Constants.ErrorInOperation.</returns>
         public int CreateFriendRequest(string gamertag, string friendGamertag)
         {
             int result = Constants.ErrorInOperation;
@@ -69,6 +85,13 @@ namespace GameService.Services
             return result;
         }
 
+        /// <summary>
+        /// Responds to a friend request by updating its status.
+        /// </summary>
+        /// <param name="gamertag">The gamertag responding to the friend request.</param>
+        /// <param name="friendGamertag">The gamertag of the friend who initiated the request.</param>
+        /// <param name="response">The response to the friend request ("Accepted" or "Rejected").</param>
+        /// <returns>An integer indicating the operation result. Constants.SuccessInOperation if successful, otherwise Constants.ErrorInOperation.</returns>
         public int ResponseFriendRequest(string gamertag, string friendGamertag, string response)
         {
             HostBehaviorManager.ChangeToSingle();
@@ -99,6 +122,12 @@ namespace GameService.Services
             return result;
         }
 
+        /// <summary>
+        /// Deletes a friend request between two gamertags.
+        /// </summary>
+        /// <param name="gamertag">The gamertag initiating the friend request.</param>
+        /// <param name="friendGamertag">The gamertag of the friend receiving the friend request.</param>
+        /// <returns>An integer indicating the operation result. Constants.SuccessInOperation if successful, otherwise Constants.ErrorInOperation.</returns>
         public int DeleteFriendRequest(string gamertag, string friendGamertag)
         {
             HostBehaviorManager.ChangeToSingle();

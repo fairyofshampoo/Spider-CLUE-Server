@@ -4,12 +4,24 @@ using System.Net.Mail;
 using System.Net;
 using GameService.Utilities;
 
-namespace GameService
+namespace GameService.Services
 {
+    /// <summary>
+    /// Class that provides functionality to send emails in the application.
+    /// </summary>
     public class EmailService
     {
+        /// <summary>
+        /// Constructor of the EmailService class.
+        /// </summary>
         public EmailService(){}
 
+        /// <summary>
+        /// Sends an email with a verification code.
+        /// </summary>
+        /// <param name="toEmail">Recipient's email address.</param>
+        /// <param name="code">Verification code.</param>
+        /// <returns>True if the email is successfully sent, false otherwise.</returns>
         public bool SendEmailWithCode(string toEmail, string code)
         {
             LoggerManager logger = new LoggerManager(this.GetType());
@@ -35,6 +47,13 @@ namespace GameService
             return result;
         }
 
+        /// <summary>
+        /// Sends an email with an invitation.
+        /// </summary>
+        /// <param name="email">Recipient's email address.</param>
+        /// <param name="matchCode">Match code.</param>
+        /// <param name="gamertag">Username of the invitation sender.</param>
+        /// <returns>True if the email is successfully sent, false otherwise.</returns>
         public bool SendEmailWithInvitation(string email, string matchCode, string gamertag)
         {
             LoggerManager logger = new LoggerManager(this.GetType());

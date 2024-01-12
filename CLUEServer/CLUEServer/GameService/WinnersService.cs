@@ -10,6 +10,10 @@ namespace GameService.Services
 {
     public partial class GameService : IWinnersManager
     {
+        /// <summary>
+        /// Retrieves a list of the top global winners based on the number of games won.
+        /// </summary>
+        /// <returns>A list of Winner objects representing the top global winners.</returns>
         public List<Winner> GetTopGlobalWinners()
         {
             LoggerManager logger = new LoggerManager(this.GetType());

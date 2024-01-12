@@ -11,12 +11,22 @@ using System.Data.SqlClient;
 
 namespace GameService.Services
 {
+    /// <summary>
+    /// Partial class for the GameService, implementing the IMatchManager interface.
+    /// Manages game-related functionality such as connecting to a match, retrieving match information,
+    /// and handling actions when gamers leave a match.
+    /// </summary>
     public partial class GameService : IMatchManager
     {
         private static readonly Dictionary<string, string> gamersInMatch = new Dictionary<string, string>();
         private static readonly Dictionary<string, IMatchManagerCallback> gamersMatchCallback = new Dictionary<string, IMatchManagerCallback>();
         private static readonly Dictionary<string, List<Pawn>> pawnsAvailableInMatch = new Dictionary<string, List<Pawn>>();
 
+        /// <summary>
+        /// Connects a gamer to a match, associates the gamer with the match, and sets up initial character properties.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer.</param>
+        /// <param name="matchCode">The code of the match.</param>
         public void ConnectToMatch(string gamertag, string matchCode)
         {
             HostBehaviorManager.ChangeToReentrant();
@@ -62,6 +72,11 @@ namespace GameService.Services
             return gamersInMatch.Where(gamer => gamer.Value == matchCode).Select(gamer => gamer.Key).ToList();
         }
 
+        /// <summary>
+        /// Retrieves the gamers in a match and notifies the calling gamer's callback channel.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the calling gamer.</param>
+        /// <param name="code">The code identifying the match.</param>
         public void GetGamersInMatch(string gamertag, string code)
         {
             LoggerManager loggerManager = new LoggerManager(this.GetType());
@@ -80,6 +95,11 @@ namespace GameService.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves information about a specific match.
+        /// </summary>
+        /// <param name="code">The code of the match.</param>
+        /// <returns>The information about the match or null if the match doesn't exist.</returns>
         public Match GetMatchInformation(string code)
         {
             Match result = new Match();
@@ -113,6 +133,11 @@ namespace GameService.Services
             return result;
         }
 
+        /// <summary>
+        /// Disconnects a gamer from a match, removes the gamer from associated data structures, and shows updated player profiles in the match.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer to disconnect.</param>
+        /// <param name="matchCode">The code of the match.</param>
         public void LeaveMatch(string gamertag, string matchCode)
         {
             HostBehaviorManager.ChangeToReentrant();
@@ -166,6 +191,11 @@ namespace GameService.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves the character associated with a specific gamer.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer.</param>
+        /// <returns>The character associated with the gamer or null if no character is found.</returns>
         public Pawn GetCharacterPerGamer(string gamertag)
         {
             Pawn character = null;
@@ -178,6 +208,11 @@ namespace GameService.Services
             return character;
         }
 
+        /// <summary>
+        /// Retrieves the characters of gamers in a specific match.
+        /// </summary>
+        /// <param name="code">The code of the match.</param>
+        /// <returns>A dictionary containing gamertags and their corresponding characters in the match.</returns>
         public Dictionary<string, Pawn> GetCharactersInMatch(string code)
         {
             List<string> gamers = GetGamersByMatch(code);

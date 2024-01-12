@@ -23,6 +23,14 @@ namespace GameService.Services
     public partial class GameService : IUserManager
     {
 
+        /// <summary>
+        /// Adds a new gamer and access account to the database within a transaction.
+        /// </summary>
+        /// <param name="gamer">The gamer object containing user details to be added.</param>
+        /// <returns>
+        /// Returns Constants.SuccessInOperation (1) if the operation is successful,
+        /// Constants.ErrorInOperation (0) if an error occurs during the operation.
+        /// </returns>
         public int AddUserTransaction(Gamer gamer)
         {
             LoggerManager logger = new LoggerManager(this.GetType());
@@ -84,6 +92,15 @@ namespace GameService.Services
             return result;
         }
 
+        /// <summary>
+        /// Authenticates a user account by verifying the provided gamertag and password.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the user account to be authenticated.</param>
+        /// <param name="password">The password associated with the user account.</param>
+        /// <returns>
+        /// Returns true if the provided gamertag and password match an existing account,
+        /// otherwise returns false. Returns false in case of errors during authentication.
+        /// </returns>
         public bool AuthenticateAccount(string gamertag, string password)
         {
             bool result = false;
@@ -110,6 +127,12 @@ namespace GameService.Services
             return result;
         }
 
+        /// <summary>
+        /// Requests a unique guest player gamertag by generating a random username
+        /// and ensuring it does not already exist. Creates a guest gamer with the
+        /// generated gamertag before returning it.
+        /// </summary>
+        /// <returns>The unique guest player gamertag.</returns>
         public string RequestGuestPlayer()
         {
             HostBehaviorManager.ChangeToSingle();
@@ -126,6 +149,13 @@ namespace GameService.Services
             return guestGamertag;
         }
 
+        /// <summary>
+        /// Creates a guest gamer with the provided gamertag, assigning default values
+        /// for the guest's name, games won, and image code. The operation is performed
+        /// within a transaction for data consistency.
+        /// </summary>
+        /// <param name="gamertag">The gamertag for the guest gamer.</param>
+        /// <returns>An integer indicating the result of the operation (success or error).</returns>
         public int CreateGuestGamer(string gamertag)
         {
             HostBehaviorManager.ChangeToSingle();
@@ -190,6 +220,11 @@ namespace GameService.Services
             return randomUsername;
         }
 
+        /// <summary>
+        /// Checks if an email address already exists in the database.
+        /// </summary>
+        /// <param name="email">The email address to check for existence.</param>
+        /// <returns>True if the email address exists; otherwise, false.</returns>
         public bool IsEmailExisting(string email)
         {
             bool result = false;
@@ -216,6 +251,11 @@ namespace GameService.Services
             return result;
         }
 
+        /// <summary>
+        /// Checks if a gamer's gamertag already exists in the database.
+        /// </summary>
+        /// <param name="gamertag">The gamertag to check for existence.</param>
+        /// <returns>True if the gamertag exists; otherwise, false.</returns>
         public bool IsGamertagExisting(string gamertag)
         {
             bool result = false;
@@ -241,7 +281,11 @@ namespace GameService.Services
             return result;
         }
 
-
+        /// <summary>
+        /// Retrieves gamer information based on the provided gamertag from the database.
+        /// </summary>
+        /// <param name="gamertag">The gamertag to retrieve gamer information.</param>
+        /// <returns>A Gamer object containing the retrieved gamer information or null if not found.</returns>
         public Gamer GetGamerByGamertag(string gamertag)
         {
             LoggerManager logger = new LoggerManager(this.GetType());
@@ -283,6 +327,11 @@ namespace GameService.Services
             return gamer;
         }
 
+        /// <summary>
+        /// Retrieves gamer information based on the provided email from the database.
+        /// </summary>
+        /// <param name="email">The email to retrieve gamer information.</param>
+        /// <returns>A Gamer object containing the retrieved gamer information or null if not found.</returns>
         public Gamer GetGamerByEmail(string email)
         {
             LoggerManager logger = new LoggerManager(this.GetType());
@@ -327,6 +376,13 @@ namespace GameService.Services
             return gamer;
         }
 
+        /// <summary>
+        /// Modifies the first and last name of a gamer identified by the provided gamertag in the database.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer to be modified.</param>
+        /// <param name="firstName">The updated first name for the gamer.</param>
+        /// <param name="lastName">The updated last name for the gamer.</param>
+        /// <returns>An integer indicating the result of the modification operation (Constants.SuccessInOperation or Constants.ErrorInOperation).</returns>
         public int ModifyAccount(string gamertag, string firstName, string lastName)
         {
             LoggerManager logger = new LoggerManager(this.GetType());
@@ -364,6 +420,12 @@ namespace GameService.Services
             return result;
         }
 
+        /// <summary>
+        /// Updates the password of a gamer identified by the provided gamertag in the database.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer whose password needs to be updated.</param>
+        /// <param name="password">The new password for the gamer.</param>
+        /// <returns>An integer indicating the result of the password update operation (Constants.SuccessInOperation or Constants.ErrorInOperation).</returns>
         public int UpdatePassword(String gamertag, String password)
         {
             HostBehaviorManager.ChangeToSingle();
@@ -392,6 +454,12 @@ namespace GameService.Services
             return result;
         }
 
+        /// <summary>
+        /// Changes the icon of a gamer identified by the provided gamertag in the database.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer whose icon needs to be changed.</param>
+        /// <param name="titleIcon">The new icon code for the gamer.</param>
+        /// <returns>An integer indicating the result of the icon change operation (Constants.SuccessInOperation or Constants.ErrorInOperation).</returns>
         public int ChangeIcon(string gamertag, string titleIcon)
         {
             LoggerManager logger = new LoggerManager(this.GetType());
@@ -428,6 +496,11 @@ namespace GameService.Services
             return result;
         }
 
+        /// <summary>
+        /// Retrieves the icon code associated with a gamer identified by the provided gamertag.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer whose icon code is to be retrieved.</param>
+        /// <returns>The icon code associated with the specified gamer. Returns the default icon code if not found or in case of an error.</returns>
         public string GetIcon(string gamertag)
         {
             LoggerManager logger = new LoggerManager(this.GetType());
@@ -456,6 +529,11 @@ namespace GameService.Services
             return imageCode;
         }
 
+        /// <summary>
+        /// Deletes a guest player record from the database based on the provided gamertag.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the guest player to be deleted.</param>
+        /// <returns>An operation result code. Returns success if the guest player is deleted, otherwise returns an error code.</returns>
         public int DeleteGuestPlayer(string gamertag)
         {
             HostBehaviorManager.ChangeToSingle();
