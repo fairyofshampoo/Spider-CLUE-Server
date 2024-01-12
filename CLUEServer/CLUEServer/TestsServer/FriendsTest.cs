@@ -10,21 +10,7 @@ using Xunit;
 
 namespace TestsServer
 {
-    public class FriendTestConfiguration : IDisposable
-    {
-        public FriendTestConfiguration()
-        {
-            
-        }
-
-        public void Dispose()
-        {
-
-        }
-    }
-    public class FriendsTest : IClassFixture<FriendTestConfiguration>
-    {
-        FriendTestConfiguration Configuration;
+    public class FriendsTest { 
 
         [Fact]
         public void AreNotFriendsTestSuccess()
