@@ -30,7 +30,8 @@ namespace GameService.Services
         private void DisplayMessages(String matchCode)
         {
             LoggerManager loggerManager = new LoggerManager(this.GetType());
-            foreach (var gamertag in gamersInMatch.Select(gamer => gamer.Key))
+            var gamertagsCopy = gamersInMatch.Select(gamer => gamer.Key).ToList();
+            foreach (var gamertag in gamertagsCopy)
             {
                 if (chatCallbacks.ContainsKey(gamertag))
                 {
