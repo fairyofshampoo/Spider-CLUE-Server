@@ -130,7 +130,7 @@ namespace GameService.Services
         {
             HostBehaviorManager.ChangeToSingle();
             LoggerManager loggerManager = new LoggerManager(this.GetType());
-            int result = Constants.ERROR_IN_OPERATION;
+            int result = Constants.ErrorInOperation;
 
             using (var dbContext = new SpiderClueDbEntities())
             {
@@ -152,25 +152,25 @@ namespace GameService.Services
                         dbContext.SaveChanges();
 
                         transaction.Commit();
-                        result = Constants.SUCCESS_IN_OPERATION;
+                        result = Constants.SuccessInOperation;
                     }
                     catch (SqlException sQLException)
                     {
                         transaction.Rollback();
                         loggerManager.LogError(sQLException);
-                        result = Constants.ERROR_IN_OPERATION;
+                        result = Constants.ErrorInOperation;
                     }
                     catch (EntityException ex)
                     {
                         transaction.Rollback();
                         loggerManager.LogError(ex);
-                        result = Constants.ERROR_IN_OPERATION;
+                        result = Constants.ErrorInOperation;
                     }
                     catch (DataException ex)
                     {
                         transaction.Rollback();
                         loggerManager.LogFatal(ex);
-                        result = Constants.ERROR_IN_OPERATION;
+                        result = Constants.ErrorInOperation;
                     }
                 }
             }
@@ -331,7 +331,7 @@ namespace GameService.Services
         {
             LoggerManager logger = new LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToSingle();
-            int result = Constants.ERROR_IN_OPERATION;
+            int result = Constants.ErrorInOperation;
             try
             {
                 using (var dataBaseContext = new SpiderClueDbEntities())
@@ -342,23 +342,23 @@ namespace GameService.Services
                         gamer.firstName = firstName;
                         gamer.lastName = lastName;
                         dataBaseContext.SaveChanges();
-                        result = Constants.SUCCESS_IN_OPERATION;
+                        result = Constants.SuccessInOperation;
                     }
                     else
                     {
-                        result = Constants.ERROR_IN_OPERATION;
+                        result = Constants.ErrorInOperation;
                     }
                 }
             }
             catch (EntityException entityException)
             {
                 logger.LogError(entityException);
-                result = Constants.ERROR_IN_OPERATION;
+                result = Constants.ErrorInOperation;
             }
             catch (SqlException sqlException)
             {
                 logger.LogError(sqlException);
-                result = Constants.ERROR_IN_OPERATION;
+                result = Constants.ErrorInOperation;
             }
             
             return result;
@@ -368,7 +368,7 @@ namespace GameService.Services
         {
             HostBehaviorManager.ChangeToSingle();
             LoggerManager loggerManager = new LoggerManager(this.GetType());
-            int result = Constants.ERROR_IN_OPERATION;
+            int result = Constants.ErrorInOperation;
 
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
@@ -380,13 +380,13 @@ namespace GameService.Services
                     {
                         existingAccessAccount.password = password;
                         dataBaseContext.SaveChanges();
-                        result = Constants.SUCCESS_IN_OPERATION;
+                        result = Constants.SuccessInOperation;
                     }
                 }
                 catch (SqlException sQLException)
                 {
                     loggerManager.LogError(sQLException);
-                    result = Constants.ERROR_IN_OPERATION;
+                    result = Constants.ErrorInOperation;
                 }
             }
             return result;
@@ -396,7 +396,7 @@ namespace GameService.Services
         {
             LoggerManager logger = new LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToSingle();
-            int result = Constants.ERROR_IN_OPERATION;
+            int result = Constants.ErrorInOperation;
             try
             {
                 using (var dataBaseContext = new SpiderClueDbEntities())
@@ -406,23 +406,23 @@ namespace GameService.Services
                     {
                         gamer.imageCode = titleIcon;
                         dataBaseContext.SaveChanges();
-                        result = Constants.SUCCESS_IN_OPERATION;
+                        result = Constants.SuccessInOperation;
                     }
                     else
                     {
-                        result = Constants.ERROR_IN_OPERATION;
+                        result = Constants.ErrorInOperation;
                     }
                 }
             }
             catch (EntityException entityException)
             {
                 logger.LogError(entityException);
-                result = Constants.ERROR_IN_OPERATION;
+                result = Constants.ErrorInOperation;
             }
             catch (SqlException sqlException)
             {
                 logger.LogError(sqlException);
-                result = Constants.ERROR_IN_OPERATION;
+                result = Constants.ErrorInOperation;
             }
             
             return result;
@@ -432,7 +432,7 @@ namespace GameService.Services
         {
             LoggerManager logger = new LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToSingle();
-            string imageCode = Constants.DEFAULT_ICON;
+            string imageCode = Constants.DefaultIcon;
             try
             {
                 using (var dataBaseContext = new SpiderClueDbEntities())
@@ -446,12 +446,12 @@ namespace GameService.Services
             catch (EntityException entityException)
             {
                 logger.LogError(entityException);
-                imageCode = Constants.DEFAULT_ICON;
+                imageCode = Constants.DefaultIcon;
             }
             catch (SqlException sqlException)
             {
                 logger.LogError(sqlException);
-                imageCode = Constants.DEFAULT_ICON;
+                imageCode = Constants.DefaultIcon;
             }
             return imageCode;
         }
@@ -460,7 +460,7 @@ namespace GameService.Services
         {
             HostBehaviorManager.ChangeToSingle();
             LoggerManager loggerManager = new LoggerManager(this.GetType());
-            int result = Constants.ERROR_IN_OPERATION;
+            int result = Constants.ErrorInOperation;
 
             using (var dataBaseContext = new SpiderClueDbEntities())
             {
@@ -476,24 +476,24 @@ namespace GameService.Services
                             dataBaseContext.SaveChanges();
 
                             dataBaseContextTransaction.Commit();
-                            result = Constants.SUCCESS_IN_OPERATION;
+                            result = Constants.SuccessInOperation;
                         }
                         else
                         {
-                            result = Constants.ERROR_IN_OPERATION;
+                            result = Constants.ErrorInOperation;
                         }
                     }
                     catch (SqlException sqlException)
                     {
                         dataBaseContextTransaction.Rollback();
                         loggerManager.LogError(sqlException);
-                        result = Constants.ERROR_IN_OPERATION;
+                        result = Constants.ErrorInOperation;
                     }
                     catch (DataException dataException)
                     {
                         dataBaseContextTransaction.Rollback();
                         loggerManager.LogFatal(dataException);
-                        result = Constants.ERROR_IN_OPERATION;
+                        result = Constants.ErrorInOperation;
                     }
                 }
             }

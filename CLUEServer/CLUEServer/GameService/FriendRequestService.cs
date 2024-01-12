@@ -39,7 +39,7 @@ namespace GameService.Services
 
         public int CreateFriendRequest(string gamertag, string friendGamertag)
         {
-            int result = Constants.ERROR_IN_OPERATION;
+            int result = Constants.ErrorInOperation;
             HostBehaviorManager.ChangeToSingle();
             Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
             try
@@ -73,7 +73,7 @@ namespace GameService.Services
         {
             HostBehaviorManager.ChangeToSingle();
             Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
-            int result = Constants.ERROR_IN_OPERATION;
+            int result = Constants.ErrorInOperation;
             try
             {
                 using (var databaseContext = new SpiderClueDbEntities())
@@ -103,7 +103,7 @@ namespace GameService.Services
         {
             HostBehaviorManager.ChangeToSingle();
             Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
-            int result = Constants.ERROR_IN_OPERATION;
+            int result = Constants.ErrorInOperation;
             try
             {
                 using (var databaseContext = new SpiderClueDbEntities())

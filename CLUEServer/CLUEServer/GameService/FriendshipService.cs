@@ -43,7 +43,7 @@ namespace GameService.Services
 
         public int DeleteFriend(string gamertag, string friendGamertag)
         {
-            int result = Constants.ERROR_IN_OPERATION;
+            int result = Constants.ErrorInOperation;
 
             Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
             HostBehaviorManager.ChangeToSingle();
@@ -76,7 +76,7 @@ namespace GameService.Services
 
         public int AddFriend(string gamertag, string friendGamertag)
         {
-            int result = Constants.ERROR_IN_OPERATION;
+            int result = Constants.ErrorInOperation;
             HostBehaviorManager.ChangeToSingle();
             Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
 
