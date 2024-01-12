@@ -12,6 +12,15 @@ namespace GameService.Services
 {
     public partial class GameService : IMatchCreationManager
     {
+        /// <summary>
+        /// Creates a new match initiated by the specified gamertag.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the user creating the match.</param>
+        /// <returns>
+        /// A string representing the code of the created match if successful, 
+        /// otherwise an empty string indicating the failure to create the match.
+        /// </returns>
+
         public string CreateMatch(string gamertag)
         {
             HostBehaviorManager.ChangeToSingle();

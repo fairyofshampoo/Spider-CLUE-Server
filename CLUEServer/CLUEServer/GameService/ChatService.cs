@@ -30,8 +30,7 @@ namespace GameService.Services
         private void DisplayMessages(String matchCode)
         {
             LoggerManager loggerManager = new LoggerManager(this.GetType());
-            var gamertagsCopy = gamersInMatch.Select(gamer => gamer.Key).ToList();
-            foreach (var gamertag in gamertagsCopy)
+            foreach (var gamertag in gamersInMatch.Select(gamer => gamer.Key))
             {
                 if (chatCallbacks.ContainsKey(gamertag))
                 {
@@ -43,7 +42,7 @@ namespace GameService.Services
                     {
                         loggerManager.LogError(communicationException);
                     }
-                    catch(TimeoutException timeoutException)
+                    catch (TimeoutException timeoutException)
                     {
                         loggerManager.LogError(timeoutException);
                     }

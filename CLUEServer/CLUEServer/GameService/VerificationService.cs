@@ -12,6 +12,12 @@ namespace GameService.Services
         private readonly Dictionary<string, VerificationData> verificationDictionary = new Dictionary<string, VerificationData>();
         private TimeSpan verificationCodeValidity = TimeSpan.FromMinutes(8);
 
+        /// <summary>
+        /// Generates a verification code, associates it with the provided email, sends an email with the code,
+        /// and returns the result of the code generation and email sending process.
+        /// </summary>
+        /// <param name="email">The email address to which the verification code will be sent.</param>
+        /// <returns>True if the code generation and email sending process is successful; otherwise, false.</returns>
         public bool GenerateVerificationCode(string email)
         {
             EmailService emailService = new EmailService();
@@ -24,6 +30,13 @@ namespace GameService.Services
             return codeProcessResult;
         }
 
+        /// <summary>
+        /// Verifies the provided code for the given email. If the code is valid within the specified validity period,
+        /// removes the verification data associated with the email and returns true; otherwise, returns false.
+        /// </summary>
+        /// <param name="email">The email address to verify the code for.</param>
+        /// <param name="code">The verification code to be checked.</param>
+        /// <returns>True if the code is valid and the verification is successful; otherwise, false.</returns>
         public bool VerifyCode(string email, string code)
         {
             bool verificationStatus = false;
@@ -71,20 +84,42 @@ namespace GameService.Services
 
     }
 
+    /// <summary>
+    /// Represents data for verification, including a code and a local stopwatch.
+    /// </summary>
     public class VerificationData
     {
+        /// <summary>
+        /// Gets the verification code.
+        /// </summary>
         public string Code { get; private set; }
+
+        /// <summary>
+        /// Gets the local stopwatch associated with the verification.
+        /// </summary>
         public Stopwatch LocalStopwatch { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VerificationData"/> class with the specified code and local stopwatch.
+        /// </summary>
+        /// <param name="code">The verification code.</param>
+        /// <param name="localStopwatch">The local stopwatch associated with the verification.</param>
         public VerificationData(string code, Stopwatch localStopwatch)
         {
             Code = code;
             LocalStopwatch = localStopwatch;
         }
 
+        /// <summary>
+        /// Checks if the provided code matches the stored code and if the elapsed time on the local stopwatch is within the specified validity period.
+        /// </summary>
+        /// <param name="code">The code to be verified.</param>
+        /// <param name="validityPeriod">The maximum allowed time span for the verification to be considered valid.</param>
+        /// <returns>True if the verification is valid; otherwise, false.</returns>
         public bool IsValid(string code, TimeSpan validityPeriod)
         {
             return Code == code && LocalStopwatch.Elapsed <= validityPeriod;
         }
     }
+
 }

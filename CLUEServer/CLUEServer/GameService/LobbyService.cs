@@ -14,6 +14,11 @@ namespace GameService.Services
     {
 
         private static readonly Dictionary<string, ILobbyManagerCallback> gamersLobbyCallback = new Dictionary<string, ILobbyManagerCallback>();
+
+        /// <summary>
+        /// Initiates the specified match by notifying connected gamers and starting the game.
+        /// </summary>
+        /// <param name="matchCode">The unique code of the match to begin.</param>
         public void BeginMatch(string matchCode)
         {
             LoggerManager loggerManager = new LoggerManager(this.GetType());
@@ -40,6 +45,10 @@ namespace GameService.Services
             }
         }
 
+        /// <summary>
+        /// Connects a gamer to the lobby, adding them to the lobby callback dictionary.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer to connect.</param>
         public void ConnectToLobby(string gamertag)
         {
             HostBehaviorManager.ChangeToReentrant();
@@ -49,6 +58,12 @@ namespace GameService.Services
             }
         }
 
+        /// <summary>
+        /// Checks if a gamer is the owner of the specified match.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer to check.</param>
+        /// <param name="matchCode">The unique code of the match to check.</param>
+        /// <returns>True if the gamer is the owner, false otherwise.</returns>
         public bool IsOwnerOfTheMatch(string gamertag, string matchCode)
         {
             LoggerManager loggerManager = new LoggerManager(this.GetType());
@@ -76,6 +91,10 @@ namespace GameService.Services
             return isOwner;
         }
 
+        /// <summary>
+        /// Kicks a player from the match by notifying them through their lobby callback.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer to kick.</param>
         public void KickPlayer(string gamertag)
         {
             LoggerManager loggerManager = new LoggerManager(this.GetType());

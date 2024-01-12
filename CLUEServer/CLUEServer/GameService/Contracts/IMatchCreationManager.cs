@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ServiceModel;
 
 namespace GameService.Contracts
 {
+    /// <summary>
+    /// Service contract for managing the creation of matches in a gaming system.
+    /// </summary>
     [ServiceContract]
-    interface IMatchCreationManager
+    public interface IMatchCreationManager
     {
+        /// <summary>
+        /// Creates a match and returns the match code for the specified player with the given gamertag.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the player creating the match.</param>
+        /// <returns>The unique code identifying the created match.</returns>
         [OperationContract]
         string CreateMatch(string gamertag);
     }

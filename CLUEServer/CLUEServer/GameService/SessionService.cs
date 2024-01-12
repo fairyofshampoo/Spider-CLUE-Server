@@ -9,6 +9,11 @@ namespace GameService.Services
 {
     public partial class GameService : ISessionManager
     {
+        /// <summary>
+        /// Connects a gamer to the game service, updating the list of connected users and notifying friends.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer to connect.</param>
+        /// <returns>The operation result code: Constants.SuccessInOperation or Constants.ErrorInOperation.</returns>
         public int Connect(string gamertag)
         {
             HostBehaviorManager.ChangeToSingle();
@@ -24,13 +29,21 @@ namespace GameService.Services
             return result;
         }
 
-
+        /// <summary>
+        /// Disconnects a gamer from the game service, updating the list of connected users and notifying friends.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer to disconnect.</param>
         public void Disconnect(string gamertag)
         {
             HostBehaviorManager.ChangeToSingle();
             RemoveFromUsersConnected(gamertag);
         }
 
+        /// <summary>
+        /// Checks if a gamer is already connected to the game service.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer to check.</param>
+        /// <returns>True if the gamer is already online, false otherwise.</returns>
         public bool IsGamerAlreadyOnline(string gamertag)
         {
             HostBehaviorManager.ChangeToSingle();
