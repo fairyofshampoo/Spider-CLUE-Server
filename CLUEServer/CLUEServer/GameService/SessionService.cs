@@ -12,13 +12,13 @@ namespace GameService.Services
         public int Connect(string gamertag)
         {
             HostBehaviorManager.ChangeToSingle();
-            int result = Constants.ERROR_IN_OPERATION;
+            int result = Constants.ErrorInOperation;
 
             if (!UsersConnected.Contains(gamertag))
             {
                 UsersConnected.Add(gamertag);
                 UpdateConnectedFriends(gamertag);
-                result = Constants.SUCCESS_IN_OPERATION;
+                result = Constants.SuccessInOperation;
             }
 
             return result;
