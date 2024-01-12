@@ -10,7 +10,7 @@ using Xunit;
 
 namespace TestsServer
 {
-    public class ChatTest : IDisposable
+    public class ChatTest 
     {
         private static ChatManagerClient chatProxy;
         private static ChatManagerCallbackImplementation chatCallbackImplementation;
@@ -20,12 +20,6 @@ namespace TestsServer
             chatCallbackImplementation = new ChatManagerCallbackImplementation();
             chatProxy = new ChatManagerClient(new InstanceContext(chatCallbackImplementation));
         }
-
-        public void Dispose()
-        {
-            
-        }
-
 
         [Fact]
         public async void ConnectToChatTestSuccess()

@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 
 namespace TestsServer
 {
-    public class LobbyTest : IDisposable
+    public class LobbyTest 
     {
         private static LobbyManagerClient _lobbyProxy;
         private static LobbyManagerImplementation _implementation;
@@ -21,11 +21,6 @@ namespace TestsServer
             _implementation = new LobbyManagerImplementation();
             _lobbyProxy = new LobbyManagerClient(new InstanceContext(_implementation));
             _matchProxy = new MatchManagerClient(new InstanceContext(_implementation));
-        }
-
-        public void Dispose()
-        {
-
         }
 
         [Fact]
@@ -41,7 +36,7 @@ namespace TestsServer
         }
 
         [Fact]
-        public async void KickPlayerFailTest() //Falta? 
+        public async void KickPlayerFailTest() 
         {
             string gamertag = "Star3oy";
             _lobbyProxy.ConnectToLobby(gamertag);

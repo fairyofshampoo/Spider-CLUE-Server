@@ -14,28 +14,10 @@ using Xunit;
 
 namespace TestsServer
 {
-    public class UsetTestConfiguration : IDisposable
+    
+    public class UserTest 
     {
-        public UsetTestConfiguration()
-        {
-            
-        }
-
-        public void Dispose()
-        {
-            
-        }
-    }
-
-    public class UsetTest : IClassFixture<UsetTestConfiguration>
-    {
-        UsetTestConfiguration Configuration;
-
-        public UsetTest(UsetTestConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
+       
         [Fact]
         public void InsertGamerTest()
         {

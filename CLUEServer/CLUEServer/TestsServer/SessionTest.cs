@@ -65,7 +65,5 @@ namespace TestsServer
             Assert.False(result);
         }
 
-
-
     }
 }
