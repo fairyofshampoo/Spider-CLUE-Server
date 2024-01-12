@@ -587,10 +587,10 @@ namespace TestsServer.SpiderClueService {
         System.Threading.Tasks.Task<int> AddUserTransactionAsync(TestsServer.SpiderClueService.Gamer gamer);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/AuthenticateAccount", ReplyAction="http://tempuri.org/IUserManager/AuthenticateAccountResponse")]
-        bool AuthenticateAccount(string gamertag, string password);
+        int AuthenticateAccount(string gamertag, string password);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/AuthenticateAccount", ReplyAction="http://tempuri.org/IUserManager/AuthenticateAccountResponse")]
-        System.Threading.Tasks.Task<bool> AuthenticateAccountAsync(string gamertag, string password);
+        System.Threading.Tasks.Task<int> AuthenticateAccountAsync(string gamertag, string password);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/RequestGuestPlayer", ReplyAction="http://tempuri.org/IUserManager/RequestGuestPlayerResponse")]
         string RequestGuestPlayer();
@@ -599,10 +599,10 @@ namespace TestsServer.SpiderClueService {
         System.Threading.Tasks.Task<string> RequestGuestPlayerAsync();
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/IsEmailExisting", ReplyAction="http://tempuri.org/IUserManager/IsEmailExistingResponse")]
-        bool IsEmailExisting(string email);
+        int IsEmailExisting(string email);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/IsEmailExisting", ReplyAction="http://tempuri.org/IUserManager/IsEmailExistingResponse")]
-        System.Threading.Tasks.Task<bool> IsEmailExistingAsync(string email);
+        System.Threading.Tasks.Task<int> IsEmailExistingAsync(string email);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/UpdatePassword", ReplyAction="http://tempuri.org/IUserManager/UpdatePasswordResponse")]
         int UpdatePassword(string gamertag, string password);
@@ -611,10 +611,10 @@ namespace TestsServer.SpiderClueService {
         System.Threading.Tasks.Task<int> UpdatePasswordAsync(string gamertag, string password);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/IsGamertagExisting", ReplyAction="http://tempuri.org/IUserManager/IsGamertagExistingResponse")]
-        bool IsGamertagExisting(string gamertag);
+        int IsGamertagExisting(string gamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/IsGamertagExisting", ReplyAction="http://tempuri.org/IUserManager/IsGamertagExistingResponse")]
-        System.Threading.Tasks.Task<bool> IsGamertagExistingAsync(string gamertag);
+        System.Threading.Tasks.Task<int> IsGamertagExistingAsync(string gamertag);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserManager/GetGamerByGamertag", ReplyAction="http://tempuri.org/IUserManager/GetGamerByGamertagResponse")]
         TestsServer.SpiderClueService.Gamer GetGamerByGamertag(string gamertag);
@@ -688,11 +688,11 @@ namespace TestsServer.SpiderClueService {
             return base.Channel.AddUserTransactionAsync(gamer);
         }
         
-        public bool AuthenticateAccount(string gamertag, string password) {
+        public int AuthenticateAccount(string gamertag, string password) {
             return base.Channel.AuthenticateAccount(gamertag, password);
         }
         
-        public System.Threading.Tasks.Task<bool> AuthenticateAccountAsync(string gamertag, string password) {
+        public System.Threading.Tasks.Task<int> AuthenticateAccountAsync(string gamertag, string password) {
             return base.Channel.AuthenticateAccountAsync(gamertag, password);
         }
         
@@ -704,11 +704,11 @@ namespace TestsServer.SpiderClueService {
             return base.Channel.RequestGuestPlayerAsync();
         }
         
-        public bool IsEmailExisting(string email) {
+        public int IsEmailExisting(string email) {
             return base.Channel.IsEmailExisting(email);
         }
         
-        public System.Threading.Tasks.Task<bool> IsEmailExistingAsync(string email) {
+        public System.Threading.Tasks.Task<int> IsEmailExistingAsync(string email) {
             return base.Channel.IsEmailExistingAsync(email);
         }
         
@@ -720,11 +720,11 @@ namespace TestsServer.SpiderClueService {
             return base.Channel.UpdatePasswordAsync(gamertag, password);
         }
         
-        public bool IsGamertagExisting(string gamertag) {
+        public int IsGamertagExisting(string gamertag) {
             return base.Channel.IsGamertagExisting(gamertag);
         }
         
-        public System.Threading.Tasks.Task<bool> IsGamertagExistingAsync(string gamertag) {
+        public System.Threading.Tasks.Task<int> IsGamertagExistingAsync(string gamertag) {
             return base.Channel.IsGamertagExistingAsync(gamertag);
         }
         
