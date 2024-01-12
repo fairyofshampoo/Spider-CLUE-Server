@@ -89,14 +89,10 @@ namespace TestsServer
         [Fact]
         public void GetFriendListFail()
         {
-            string[] resultExpected = new string[]
-            {
-                "michito", "Star3oy"
-            };
-
             SpiderClueService.IFriendshipManager friendshipManager = new FriendshipManagerClient();
-            string[] result = friendshipManager.GetFriendList("soobin");
-            Assert.False(resultExpected.Equals(result));
+            string gamertag = "Kendrick";
+            string[] result = friendshipManager.GetFriendList(gamertag);
+            Assert.Empty(result);
         }
 
         [Fact]
@@ -259,7 +255,7 @@ namespace TestsServer
             string gamertag = "CharlesLeclerc";
             string secondGamertag = "CarlosSainz";
             bool result = friendshipManager.ThereIsNoFriendRequest(gamertag, secondGamertag);
-            Assert.True(result);
+            Assert.False(result);
         }
 
         [Fact]
@@ -278,7 +274,7 @@ namespace TestsServer
             string gamertag = "CarlosSainz";
             string secondGamertag = "CharlesLeclerc";
             bool result = friendshipManager.ThereIsNoFriendRequest(gamertag, secondGamertag);
-            Assert.False(result);
+            Assert.True(result);
         }
 
     }

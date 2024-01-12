@@ -100,12 +100,12 @@ namespace TestsServer
         [Fact]
         public void ModifyGamerDataTest()
         {
-            int resultExcepted = ConstantsTests.Failure;
             string gamertag = "Lalonch3ra";
             string firstName = "Mac";
             string lastName = "Miller";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             int result = userManager.ModifyAccount(gamertag, firstName, lastName);
+            int resultExcepted = ConstantsTests.Success;
             Assert.Equal(resultExcepted, result);
         }
 
@@ -122,12 +122,12 @@ namespace TestsServer
         [Fact]
         public void ModifyGamerDataFailTest()
         {
-            int resultExcepted = ConstantsTests.Failure;
             string gamertag = "Swift";
             string firstName = "Taylor";
             string lastName = "Swift";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
             int result = userManager.ModifyAccount(gamertag, firstName, lastName);
+            int resultExcepted = ConstantsTests.Failure;
             Assert.Equal(resultExcepted, result);
         }
 
@@ -248,7 +248,6 @@ namespace TestsServer
         public void GetGamerByGamertagTest()
         {
             string gamertag = "Lalonch3ra";
-
             Gamer gamer = new Gamer
             {
                 FirstName = "Eduardo",
@@ -259,10 +258,8 @@ namespace TestsServer
                 Password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9",
                 Email = "eduardo@gmail.com"
             };
-
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             Gamer secondGamer = userManager.GetGamerByGamertag(gamertag);
-
             Assert.Equal(gamer, secondGamer);
         }
 
@@ -288,21 +285,9 @@ namespace TestsServer
         public void GetGamerByGamertagFailTest()
         {
             string gamertag = "dakara";
-
-            Gamer gamer = new Gamer
-            {
-                FirstName = "Mac",
-                LastName = "Miller",
-                Gamertag = "mac",
-                GamesWon = 0,
-                ImageCode = "Icon2.jpg",
-                Password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9",
-                Email = "MacMiller@hotmail.com"
-            };
-
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             Gamer secondGamer = userManager.GetGamerByGamertag(gamertag);
-            Assert.False(gamer.Equals(secondGamer));
+            Assert.Equal(secondGamer, null);
         }
 
         [Fact]
@@ -345,20 +330,10 @@ namespace TestsServer
         [Fact]
         public void GetGamerByEmailFailTest()
         {
-            string gamertag = "aldoJr@gmail.com";
-            Gamer gamer = new Gamer
-            {
-                FirstName = "Eduardo",
-                LastName = "Carrera",
-                Gamertag = "Lalonch3ra",
-                GamesWon = 0,
-                ImageCode = "Icon1.jpg",
-                Password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9",
-                Email = "eduardo@gmail.com"
-            };
+            string gamertag = "dakara@gmail.com";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
-            Gamer secondGamer = userManager.GetGamerByEmail(gamertag);
-            Assert.False(gamer.Equals(secondGamer));
+            Gamer gamer = userManager.GetGamerByEmail(gamertag);
+            Assert.Equal(gamer, null);
         }
 
         [Fact]
@@ -416,8 +391,7 @@ namespace TestsServer
             string gamertag = "YoungMiko";
             SpiderClueService.IUserManager userManager = new UserManagerClient();
             string result = userManager.GetIcon(gamertag);
-            string resultExcepted = "Icon3.jpg";
-            Assert.False(result.Equals(resultExcepted));
+            Assert.Equal(result, null);
         }
 
         [Fact]

@@ -35,6 +35,7 @@ namespace TestsServer
             chatProxy.ConnectToChat(gamertag, codeMatch);
             await Task.Delay(4000);
             Assert.True(chatCallbackImplementation.isMessageBack);
+            chatProxy.DisconnectFromChat(gamertag);
         }
 
         [Fact]

@@ -56,7 +56,7 @@ namespace TestsServer
         public void VerifyCodeTestSuccess()
         {
             string emailValid = "lalocel09@gmail.com";
-            string code = "418034";
+            string code = "543406";
             SpiderClueService.IEmailVerificationManager emailVerificationManager = new EmailVerificationManagerClient();
             bool result = emailVerificationManager.VerifyCode(emailValid, code);
             Assert.True(result);
@@ -71,6 +71,8 @@ namespace TestsServer
             bool result = emailVerificationManager.VerifyCode(emailValid, wrongCode);
             Assert.False(result);
         }
+
+        [Fact]
         public void SendInvitationTestErrorConnection()
         {
             string emailValid = "lalocel09@gmail.com";
