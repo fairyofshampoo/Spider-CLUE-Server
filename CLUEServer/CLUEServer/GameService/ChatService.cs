@@ -14,6 +14,12 @@ namespace GameService.Services
     {
         private static readonly Dictionary<string, IChatManagerCallback> chatCallbacks = new Dictionary<string, IChatManagerCallback>();
         private static readonly Dictionary<String, List<Message>> messagesforMatch = new Dictionary<String, List<Message>>();
+
+        /// <summary>
+        /// Connects the user to the chat service for a specific game.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the user connecting.</param>
+        /// <param name="matchCode">The unique code of the game being joined.</param>
         public void ConnectToChat(string gamertag, String matchCode)
         {
             HostBehaviorManager.ChangeToReentrant();
@@ -44,7 +50,7 @@ namespace GameService.Services
             }
         }
 
-        private List<Message> RetrieveMessagesForMatch(String matchCode)
+        private List<Message> RetrieveMessagesForMatch(string matchCode)
         {
             if (!messagesforMatch.ContainsKey(matchCode))
             {
@@ -54,6 +60,10 @@ namespace GameService.Services
             return messagesforMatch[matchCode];
         }
 
+        /// <summary>
+        /// Disconnects the user from the chat service for a specific game.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the user to disconnect.</param>
         public void DisconnectFromChat(string gamertag)
         {
             HostBehaviorManager.ChangeToReentrant();
@@ -63,7 +73,13 @@ namespace GameService.Services
             }
         }
 
-        public void BroadcastMessage(String matchCode, Message message)
+
+        /// <summary>
+        /// Broadcasts a message to all users in a specific game.
+        /// </summary>
+        /// <param name="matchCode">The unique code of the game to broadcast the message to.</param>
+        /// <param name="message">The message to be broadcasted.</param>
+        public void BroadcastMessage(string matchCode, Message message)
         {
             HostBehaviorManager.ChangeToReentrant();
             messagesforMatch[matchCode].Add(message);

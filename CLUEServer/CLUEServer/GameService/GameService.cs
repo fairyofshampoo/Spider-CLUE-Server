@@ -727,7 +727,7 @@ namespace GameService.Services
         {
             HostBehaviorManager.ChangeToSingle();
             LoggerManager loggerManager = new LoggerManager(this.GetType());
-            int result = Constants.ERROR_IN_OPERATION;
+            int result = Constants.ErrorInOperation;
 
             try
             {
@@ -738,23 +738,23 @@ namespace GameService.Services
                     {
                         gamer.gamesWon++;
                         dataBaseContext.SaveChanges();
-                        result = Constants.SUCCESS_IN_OPERATION;
+                        result = Constants.SuccessInOperation;
                     }
                     else
                     {
-                        result = Constants.ERROR_IN_OPERATION;
+                        result = Constants.ErrorInOperation;
                     }
                 }
             }
             catch (SqlException sqlException)
             {
                 loggerManager.LogError(sqlException);
-                result = Constants.ERROR_IN_OPERATION;
+                result = Constants.ErrorInOperation;
             }
             catch (EntityException entityException)
             {
                 loggerManager.LogError(entityException);
-                result = Constants.ERROR_IN_OPERATION;
+                result = Constants.ErrorInOperation;
             }
             
             HostBehaviorManager.ChangeToReentrant();
