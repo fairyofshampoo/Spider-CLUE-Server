@@ -293,17 +293,23 @@ namespace GameService.Services
                 using (var dataBaseContext = new SpiderClueDbEntities())
                 {
                     var accessAcountInformation = dataBaseContext.accessAccounts.FirstOrDefault(accessAccount => accessAccount.email == email);
-                    var gamerInformation = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == accessAcountInformation.gamertag);
-                    
-                    if (gamerInformation != null && accessAcountInformation != null)
-                    {
-                        gamer.Gamertag = gamerInformation.gamertag;
-                        gamer.FirstName = gamerInformation.firstName;
-                        gamer.GamesWon = gamerInformation.gamesWon;
-                        gamer.LastName = gamerInformation.lastName;
-                        gamer.Email = accessAcountInformation.email;
 
-                    }
+                    if (accessAcountInformation != null)
+                    {
+                        var gamerInformation = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == accessAcountInformation.gamertag);
+                        if (gamerInformation != null && accessAcountInformation != null)
+                        {
+                            gamer.Gamertag = gamerInformation.gamertag;
+                            gamer.FirstName = gamerInformation.firstName;
+                            gamer.GamesWon = gamerInformation.gamesWon;
+                            gamer.LastName = gamerInformation.lastName;
+                            gamer.Email = accessAcountInformation.email;
+                        } 
+                        else
+                        {
+                            gamer = null;
+                        }
+                    } 
                     else
                     {
                         gamer = null;
