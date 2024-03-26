@@ -8,17 +8,8 @@ using Xunit;
 
 namespace TestsServer
 {
-    internal class MatchTetsConfiguration : IDisposable
-    {
 
-        public MatchTetsConfiguration() { }
-        public void Dispose()
-        {
-            
-        }
-    }
-
-    public class MatchTest : IClassFixture<MatchTetsConfiguration>
+    public class MatchTest 
     {
         [Fact]
         public void CreateMatchTest()

@@ -158,10 +158,10 @@
   </wsp:Policy>
   <wsdl:types>
     <xsd:schema targetNamespace="http://tempuri.org/Imports">
-      <xsd:import schemaLocation="http://192.168.100.189:8082/?xsd=xsd0" namespace="http://tempuri.org/" />
-      <xsd:import schemaLocation="http://192.168.100.189:8082/?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
-      <xsd:import schemaLocation="http://192.168.100.189:8082/?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/GameService.Contracts" />
-      <xsd:import schemaLocation="http://192.168.100.189:8082/?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://192.168.62.238:8082/?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://192.168.62.238:8082/?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://192.168.62.238:8082/?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/GameService.Contracts" />
+      <xsd:import schemaLocation="http://192.168.62.238:8082/?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="IUserManager_AddUserTransaction_InputMessage">
@@ -1400,81 +1400,81 @@
   </wsdl:binding>
   <wsdl:service name="GameService">
     <wsdl:port name="NetTcpBinding_IUserManager" binding="tns:NetTcpBinding_IUserManager">
-      <soap12:address location="net.tcp://192.168.100.189:8081/UserService" />
+      <soap12:address location="net.tcp://192.168.62.238:8081/UserService" />
       <wsa10:EndpointReference>
-        <wsa10:Address>net.tcp://192.168.100.189:8081/UserService</wsa10:Address>
+        <wsa10:Address>net.tcp://192.168.62.238:8081/UserService</wsa10:Address>
       </wsa10:EndpointReference>
     </wsdl:port>
     <wsdl:port name="NetTcpBinding_IEmailVerificationManager" binding="tns:NetTcpBinding_IEmailVerificationManager">
-      <soap12:address location="net.tcp://192.168.100.189:8081/EmailVerificationService" />
+      <soap12:address location="net.tcp://192.168.62.238:8081/EmailVerificationService" />
       <wsa10:EndpointReference>
-        <wsa10:Address>net.tcp://192.168.100.189:8081/EmailVerificationService</wsa10:Address>
+        <wsa10:Address>net.tcp://192.168.62.238:8081/EmailVerificationService</wsa10:Address>
       </wsa10:EndpointReference>
     </wsdl:port>
     <wsdl:port name="NetTcpBinding_IFriendsManager" binding="tns:NetTcpBinding_IFriendsManager">
-      <soap12:address location="net.tcp://192.168.100.189:8081/FriendsService" />
+      <soap12:address location="net.tcp://192.168.62.238:8081/FriendsService" />
       <wsa10:EndpointReference>
-        <wsa10:Address>net.tcp://192.168.100.189:8081/FriendsService</wsa10:Address>
+        <wsa10:Address>net.tcp://192.168.62.238:8081/FriendsService</wsa10:Address>
       </wsa10:EndpointReference>
     </wsdl:port>
     <wsdl:port name="NetTcpBinding_IFriendshipManager" binding="tns:NetTcpBinding_IFriendshipManager">
-      <soap12:address location="net.tcp://192.168.100.189:8081/FriendshipService" />
+      <soap12:address location="net.tcp://192.168.62.238:8081/FriendshipService" />
       <wsa10:EndpointReference>
-        <wsa10:Address>net.tcp://192.168.100.189:8081/FriendshipService</wsa10:Address>
+        <wsa10:Address>net.tcp://192.168.62.238:8081/FriendshipService</wsa10:Address>
       </wsa10:EndpointReference>
     </wsdl:port>
     <wsdl:port name="NetTcpBinding_IMatchManager" binding="tns:NetTcpBinding_IMatchManager">
-      <soap12:address location="net.tcp://192.168.100.189:8081/MatchService" />
+      <soap12:address location="net.tcp://192.168.62.238:8081/MatchService" />
       <wsa10:EndpointReference>
-        <wsa10:Address>net.tcp://192.168.100.189:8081/MatchService</wsa10:Address>
+        <wsa10:Address>net.tcp://192.168.62.238:8081/MatchService</wsa10:Address>
       </wsa10:EndpointReference>
     </wsdl:port>
     <wsdl:port name="NetTcpBinding_IFriendRequestManager" binding="tns:NetTcpBinding_IFriendRequestManager">
-      <soap12:address location="net.tcp://192.168.100.189:8081/FriendRequest" />
+      <soap12:address location="net.tcp://192.168.62.238:8081/FriendRequest" />
       <wsa10:EndpointReference>
-        <wsa10:Address>net.tcp://192.168.100.189:8081/FriendRequest</wsa10:Address>
+        <wsa10:Address>net.tcp://192.168.62.238:8081/FriendRequest</wsa10:Address>
       </wsa10:EndpointReference>
     </wsdl:port>
     <wsdl:port name="NetTcpBinding_ILobbyManager" binding="tns:NetTcpBinding_ILobbyManager">
-      <soap12:address location="net.tcp://192.168.100.189:8081/LobbyService" />
+      <soap12:address location="net.tcp://192.168.62.238:8081/LobbyService" />
       <wsa10:EndpointReference>
-        <wsa10:Address>net.tcp://192.168.100.189:8081/LobbyService</wsa10:Address>
+        <wsa10:Address>net.tcp://192.168.62.238:8081/LobbyService</wsa10:Address>
       </wsa10:EndpointReference>
     </wsdl:port>
     <wsdl:port name="NetTcpBinding_IInvitationManager" binding="tns:NetTcpBinding_IInvitationManager">
-      <soap12:address location="net.tcp://192.168.100.189:8081/InvitationService" />
+      <soap12:address location="net.tcp://192.168.62.238:8081/InvitationService" />
       <wsa10:EndpointReference>
-        <wsa10:Address>net.tcp://192.168.100.189:8081/InvitationService</wsa10:Address>
+        <wsa10:Address>net.tcp://192.168.62.238:8081/InvitationService</wsa10:Address>
       </wsa10:EndpointReference>
     </wsdl:port>
     <wsdl:port name="NetTcpBinding_IMatchCreationManager" binding="tns:NetTcpBinding_IMatchCreationManager">
-      <soap12:address location="net.tcp://192.168.100.189:8081/MatchCreationService" />
+      <soap12:address location="net.tcp://192.168.62.238:8081/MatchCreationService" />
       <wsa10:EndpointReference>
-        <wsa10:Address>net.tcp://192.168.100.189:8081/MatchCreationService</wsa10:Address>
+        <wsa10:Address>net.tcp://192.168.62.238:8081/MatchCreationService</wsa10:Address>
       </wsa10:EndpointReference>
     </wsdl:port>
     <wsdl:port name="NetTcpBinding_IGameManager" binding="tns:NetTcpBinding_IGameManager">
-      <soap12:address location="net.tcp://192.168.100.189:8081/GameService" />
+      <soap12:address location="net.tcp://192.168.62.238:8081/GameService" />
       <wsa10:EndpointReference>
-        <wsa10:Address>net.tcp://192.168.100.189:8081/GameService</wsa10:Address>
+        <wsa10:Address>net.tcp://192.168.62.238:8081/GameService</wsa10:Address>
       </wsa10:EndpointReference>
     </wsdl:port>
     <wsdl:port name="NetTcpBinding_ISessionManager" binding="tns:NetTcpBinding_ISessionManager">
-      <soap12:address location="net.tcp://192.168.100.189:8081/SessionService" />
+      <soap12:address location="net.tcp://192.168.62.238:8081/SessionService" />
       <wsa10:EndpointReference>
-        <wsa10:Address>net.tcp://192.168.100.189:8081/SessionService</wsa10:Address>
+        <wsa10:Address>net.tcp://192.168.62.238:8081/SessionService</wsa10:Address>
       </wsa10:EndpointReference>
     </wsdl:port>
     <wsdl:port name="NetTcpBinding_IChatManager" binding="tns:NetTcpBinding_IChatManager">
-      <soap12:address location="net.tcp://192.168.100.189:8081/ChatsService" />
+      <soap12:address location="net.tcp://192.168.62.238:8081/ChatsService" />
       <wsa10:EndpointReference>
-        <wsa10:Address>net.tcp://192.168.100.189:8081/ChatsService</wsa10:Address>
+        <wsa10:Address>net.tcp://192.168.62.238:8081/ChatsService</wsa10:Address>
       </wsa10:EndpointReference>
     </wsdl:port>
     <wsdl:port name="NetTcpBinding_IWinnersManager" binding="tns:NetTcpBinding_IWinnersManager">
-      <soap12:address location="net.tcp://192.168.100.189:8081/WinnersService" />
+      <soap12:address location="net.tcp://192.168.62.238:8081/WinnersService" />
       <wsa10:EndpointReference>
-        <wsa10:Address>net.tcp://192.168.100.189:8081/WinnersService</wsa10:Address>
+        <wsa10:Address>net.tcp://192.168.62.238:8081/WinnersService</wsa10:Address>
       </wsa10:EndpointReference>
     </wsdl:port>
   </wsdl:service>

@@ -14,28 +14,10 @@ using Xunit;
 
 namespace TestsServer
 {
-    public class UsetTestConfiguration : IDisposable
+    
+    public class UserTest 
     {
-        public UsetTestConfiguration()
-        {
-            
-        }
-
-        public void Dispose()
-        {
-            
-        }
-    }
-
-    public class UsetTest : IClassFixture<UsetTestConfiguration>
-    {
-        UsetTestConfiguration Configuration;
-
-        public UsetTest(UsetTestConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
+       
         [Fact]
         public void InsertGamerTest()
         {
@@ -137,8 +119,9 @@ namespace TestsServer
             string gamertag = "Lalonch3ra";
             string password = "164cdbd8614682a2cf2f7e944badcf5aa95d41a9";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
-            bool result = userManager.AuthenticateAccount(gamertag, password);
-            Assert.True(result);
+            int result = userManager.AuthenticateAccount(gamertag, password);
+            int resultExpected = ConstantsTests.Success;
+            Assert.Equal(result, resultExpected);
         }
 
         [Fact]
@@ -157,8 +140,9 @@ namespace TestsServer
             string gamertag = "NoobMaster";
             string password = "xPasswordx";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
-            bool result = userManager.AuthenticateAccount(gamertag, password);
-            Assert.False(result);
+            int result = userManager.AuthenticateAccount(gamertag, password);
+            int resultExpected = ConstantsTests.Failure;
+            Assert.Equal(result, resultExpected);
         }
 
         [Fact]
@@ -166,8 +150,9 @@ namespace TestsServer
         {
             string email = "eduardo@gmail.com";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
-            bool result = userManager.IsEmailExisting(email);
-            Assert.True(result);
+            int result = userManager.IsEmailExisting(email);
+            int resultExpected = ConstantsTests.Failure;
+            Assert.Equal(result, resultExpected);
         }
 
         [Fact]
@@ -183,8 +168,9 @@ namespace TestsServer
         {
             string email = "correoinexistente@gmail.com";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
-            bool result = userManager.IsEmailExisting(email);
-            Assert.False(result);
+            int result = userManager.IsEmailExisting(email);
+            int resultExpected = ConstantsTests.Success;
+            Assert.Equal(result, resultExpected);
         }
 
         [Fact]
@@ -223,8 +209,9 @@ namespace TestsServer
         {
             string gamertag = "Lalonch3ra";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
-            bool result = userManager.IsGamertagExisting(gamertag);
-            Assert.True(result);
+            int result = userManager.IsGamertagExisting(gamertag);
+            int resultExpected = ConstantsTests.Failure;
+            Assert.Equal(result, resultExpected);
         }
 
         [Fact]
@@ -240,8 +227,9 @@ namespace TestsServer
         {
             string gamertag = "dakara";
             SpiderClueService.IUserManager userManager = new SpiderClueService.UserManagerClient();
-            bool result = userManager.IsGamertagExisting(gamertag);
-            Assert.False(result);
+            int result = userManager.IsGamertagExisting(gamertag);
+            int resultExpected = ConstantsTests.Success;
+            Assert.Equal(result, resultExpected);
         }
 
         [Fact]

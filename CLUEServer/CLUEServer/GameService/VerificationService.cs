@@ -48,7 +48,7 @@ namespace GameService.Services
                     verificationDictionary.Remove(email);
                     verificationStatus = true;
                 }
-            }0
+            }
 
             return verificationStatus;
         }
