@@ -1,77 +1,458 @@
-﻿using GameService.Contracts;
+﻿using DataBaseManager;
+using GameService.Contracts;
+using GameService.Utilities;
 using System;
-using System.CodeDom;
-using System.Collections;
+using System.Timers;
 using System.Collections.Generic;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Configuration;
+using System.ServiceModel;
+using System.Data.Entity.Core;
+using System.Data.SqlClient;
 
 namespace GameService.Services
 {
+    /// <summary>
+    /// Represents a gamer and their left and right neighbors in a gaming context.
+    /// </summary>
+    public class GamerLeftAndRight
+    {
+        /// <summary>
+        /// Gets or sets the gamertag of the gamer.
+        /// </summary>
+        public string Gamertag { get; set; }
+
+        /// <summary>
+        /// Gets or sets the gamertag of the gamer on the left.
+        /// </summary>
+        public string Left { get; set; }
+
+        /// <summary>
+        /// Gets or sets the gamertag of the gamer on the right.
+        /// </summary>
+        public string Right { get; set; }
+    }
+
+
     public partial class GameService : IGameManager
     {
-        public static int DiceRoll;
-        Dictionary<string, Pawn> PawnsGamer = new Dictionary<string, Pawn>();
+        private static Dictionary<string, Timer> turnTimers = new Dictionary<string, Timer>();
+        private static readonly Dictionary<string, IGameManagerCallback> GamersInGameBoardCallback = new Dictionary<string, IGameManagerCallback>();
+        private static readonly Dictionary<string, string> GamersInGameBoard = new Dictionary<string, string>();
+        private static readonly Dictionary<string, List<GamerLeftAndRight>> DirectionInGameBoard = new Dictionary<string, List<GamerLeftAndRight>>();
+        private static readonly Dictionary<string, string> TurnsInGameboard = new Dictionary<string, string>(); 
+        private static readonly Dictionary<string, int> GameBoardDiceRoll = new Dictionary<string, int>();
 
-        public List<GridNode> AllowedCorners = new List<GridNode>();
-        public List<GridNode> InvalidZones = new List<GridNode>();
-        public List<Door> Doors = new List<Door>();
-
-        private static readonly Dictionary<string, IGameManagerCallback> gamersGameBoardCallback = new Dictionary<string, IGameManagerCallback>();
-
-        public void AddToDoorsList(Door door)
+        /// <summary>
+        /// Connects a gamer to the game board, establishing a callback channel for communication.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer to connect.</param>
+        /// <param name="matchCode">The match code associated with the game board.</param>
+        public void ConnectGamerToGameBoard(string gamertag, string matchCode)
         {
-            Doors.Add(door);
-        }
-
-        public void AddToAllowedCorners(GridNode node)
-        {
-            AllowedCorners.Add(node);
-        }
-
-        public void AddToInvalidZones(GridNode node)
-        {
-            InvalidZones.Add(node);
-        }
-
-        public void MovePawn(int column, int row, string gamertag)
-        {
-            if (IsAValidMove(column, row, gamertag))
+            HostBehaviorManager.ChangeToReentrant();
+            var callback = OperationContext.Current.GetCallbackChannel<IGameManagerCallback>();
+            if (!GamersInGameBoardCallback.ContainsKey(gamertag))
             {
-                //Crear un pawn con la columan, fila y color 
-                //Mandar el pawn
-                //Cambiar la posición actual del pawn
+                GamersInGameBoardCallback.Add(gamertag, callback);
+                GamersInGameBoard.Add(gamertag, matchCode);
+                StartMatchInGameBoard(matchCode);
+            }
+        }
+
+        private void StartMatchInGameBoard(string matchCode)
+        {
+            if (AreAllPlayersConnected(matchCode))
+            {
+                SetTurns(matchCode);
+                CreateCards(matchCode);
+                SendFirstTurn(matchCode);
+                StartTurnTimer(matchCode);
+            }
+        }
+
+        private void StartTurnTimer(string matchCode)
+        {
+            Timer turnTimer = new Timer(30000);
+            turnTimer.Elapsed += (sender, e) => OnTurnTimerElapsed(matchCode);
+            turnTimer.AutoReset = false;
+            turnTimer.Start();
+
+            turnTimers[matchCode] = turnTimer;
+        }
+
+        private void OnTurnTimerElapsed(string matchCode)
+        {
+            ChangeTurn(matchCode, TurnsInGameboard[matchCode]);
+        }
+
+        private bool AreAllPlayersConnected(string matchCode)
+        {
+            bool areAllPlayersConnected = false;
+            List<string> gamersInLobby = GetGamersByMatch(matchCode);
+            int playersCount = gamersInLobby.Count(gamer => GamersInGameBoard.ContainsKey(gamer));
+
+            if (playersCount == 3)
+            {
+                areAllPlayersConnected = true;
+            }
+
+            return areAllPlayersConnected;
+        }
+
+        private void SendFirstTurn(string matchCode)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            List<GamerLeftAndRight> turnsList = DirectionInGameBoard[matchCode];
+            string gamertag = turnsList[0].Gamertag;
+            TurnsInGameboard.Add(matchCode, gamertag );
+
+            try
+            {
+                GamersInGameBoardCallback[gamertag].ReceiveTurn(true);
+            }
+            catch (CommunicationException communicationException)
+            {
+                loggerManager.LogError(communicationException);
+            }
+            catch (TimeoutException timeoutException)
+            {
+                loggerManager.LogError(timeoutException);
+            }
+            
+        }
+
+        private List<string> GetGamersByGameBoard(string matchCode)
+        {
+            return GamersInGameBoard.Where(gamer => gamer.Value == matchCode).Select(gamer => gamer.Key).ToList();
+        }
+
+        private void RemoveFromGameboard(string gamertag)
+        {
+            decks.Remove(gamertag);
+            GamersInGameBoard.Remove(gamertag);
+            GamersInGameBoardCallback.Remove(gamertag);
+        }
+
+        /// <summary>
+        /// Disconnects a gamer from the game board by removing them from the match and game board collections.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer to disconnect.</param>
+        public void DisconnectFromBoard(string gamertag)
+        {
+            RemoveFromMatch(gamertag);
+            RemoveFromGameboard(gamertag);
+        }
+
+        /// <summary>
+        /// Ends the game associated with the specified match code, disconnecting all gamers and cleaning up resources.
+        /// </summary>
+        /// <param name="matchCode">The match code of the game to end.</param>
+        public void EndGame(string matchCode)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            HostBehaviorManager.ChangeToReentrant();
+            List<string> gamerByBoard = GetGamersByGameBoard(matchCode);
+            foreach(string gamer in gamerByBoard)
+            {
+                if (GamersInGameBoardCallback.ContainsKey(gamer))
+                {
+                    try
+                    {
+                        GamersInGameBoardCallback[gamer].LeaveGameBoard();
+                        DisconnectFromBoard(gamer);
+                    }
+                    catch (CommunicationException communicationException)
+                    {
+                        loggerManager.LogError(communicationException);
+                    }
+                    catch (TimeoutException timeoutException)
+                    {
+                        loggerManager.LogError(timeoutException);
+                    }
+                }
+            }
+
+            RemoveGameboard(matchCode);
+        }
+
+        private void RemoveGameboard(string matchCode)
+        {
+            DirectionInGameBoard.Remove(matchCode);
+            GameBoardDiceRoll.Remove(matchCode);
+            clueDeckByMatch.Remove(matchCode);
+        }
+
+        private void SetTurns(string matchCode)
+        {
+            List<string> gamerByBoard = GetGamersByGameBoard(matchCode);
+            string gamer1 = gamerByBoard[0];
+            string gamer2 = gamerByBoard[1];
+            string gamer3 = gamerByBoard[2];
+
+            List<GamerLeftAndRight> gamerLeftAndRights = new List<GamerLeftAndRight>()
+            {
+                new GamerLeftAndRight { Gamertag = gamer1, Left = gamer2, Right = gamer3},
+                new GamerLeftAndRight { Gamertag = gamer2, Left = gamer3, Right = gamer1},
+                new GamerLeftAndRight { Gamertag = gamer3, Left = gamer1, Right =  gamer2}
+            };
+            DirectionInGameBoard.Add(matchCode, gamerLeftAndRights);
+        }
+
+        /// <summary>
+        /// Moves the pawn of a gamer on the game board to the specified column and row, updating game state and notifying players.
+        /// </summary>
+        /// <param name="column">The column to move the pawn to.</param>
+        /// <param name="row">The row to move the pawn to.</param>
+        /// <param name="gamertag">The gamertag of the gamer making the move.</param>
+        /// <param name="matchCode">The match code associated with the game board.</param>
+        public void MovePawn(int column, int row, string gamertag, string matchCode)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            HostBehaviorManager.ChangeToReentrant();
+            Pawn pawn = new Pawn();
+            if (IsAValidMove(column, row, gamertag, matchCode))
+            {
+                pawn.XPosition = column;
+                pawn.YPosition = row;
+                if (charactersPerGamer.ContainsKey(gamertag))
+                {
+                    pawn.Color = charactersPerGamer[gamertag].Color;
+                    charactersPerGamer[gamertag].XPosition = column;
+                    charactersPerGamer[gamertag].YPosition = row;
+                }
+                ShowMovePawn(pawn, GetMatchCode(gamertag));
+                ChangeTurn(matchCode, gamertag);
             }
             else
             {
-                //Envíar el pawn nulo
+                ShowMoveIsInvalid(gamertag);
+
+                try
+                {
+                    GamersInGameBoardCallback[gamertag].ReceiveTurn(true);
+                }
+                catch (CommunicationException communicationException)
+                {
+                    loggerManager.LogError(communicationException);
+                }
+                catch (TimeoutException timeoutException)
+                {
+                    loggerManager.LogError(timeoutException);
+                }
             }
         }
 
-        public GridNode GetPawnPosition(string gamertag) 
+        private string GetMatchCode(string gamertag)
+        {
+            string matchCode = string.Empty;
+            foreach (var gamer in GamersInGameBoard)
+            {
+                if (gamer.Key == gamertag)
+                {
+                    matchCode = gamer.Value;
+                }
+            }
+            return matchCode;
+        }
+
+        /// <summary>
+        /// Changes the turn in the game board for the specified match code and gamer, notifying players and updating turn timers.
+        /// </summary>
+        /// <param name="matchCode">The match code associated with the game board.</param>
+        /// <param name="gamertag">The gamertag of the gamer whose turn is changing.</param>
+        public void ChangeTurn(string matchCode, string gamertag)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+
+            if (turnTimers.ContainsKey(matchCode))
+            {
+                turnTimers[matchCode].Stop();
+            }
+
+            foreach (var turn in DirectionInGameBoard)
+            {
+                if (turn.Key.Equals(matchCode))
+                {
+                    List<GamerLeftAndRight> GamersTurns = turn.Value;
+                    foreach (var gamer in GamersTurns)
+                    {
+                        if (gamer.Gamertag == gamertag)
+                        {
+                            if (GamersInGameBoardCallback.ContainsKey(gamer.Left) && GamersInGameBoardCallback.ContainsKey(gamertag))
+                            {
+                                try
+                                {
+                                    GamersInGameBoardCallback[gamertag].ReceiveTurn(false);
+                                    TurnsInGameboard[matchCode] = gamer.Left;
+                                    GamersInGameBoardCallback[gamer.Left].ReceiveTurn(true);
+                                    StartTurnTimer(matchCode);
+                                }
+                                catch (CommunicationException communicationException)
+                                {
+                                    loggerManager.LogError(communicationException);
+                                }
+                                catch (TimeoutException timeoutException)
+                                {
+                                    loggerManager.LogError(timeoutException);
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Notifies all gamers in the specified game board of a pawn movement and resets the dice for the associated match.
+        /// </summary>
+        /// <param name="pawn">The pawn representing the movement on the game board.</param>
+        /// <param name="matchCode">The match code associated with the game board.</param>
+        public void ShowMovePawn(Pawn pawn, string matchCode)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            foreach (var gamer in GamersInGameBoard 
+                .Where(entry => entry.Value.Equals(matchCode))
+                .Select(entry => entry.Key)
+                .Where(gamertag => GamersInGameBoardCallback.ContainsKey(gamertag)))
+            {
+                if (GamersInGameBoardCallback.ContainsKey(gamer))
+                {
+                    try
+                    {
+                        GamersInGameBoardCallback[gamer].ReceivePawnsMove(pawn);
+                    }
+                    catch (CommunicationException communicationException)
+                    {
+                        loggerManager.LogError(communicationException);
+                    }
+                    catch (TimeoutException timeoutException)
+                    {
+                        loggerManager.LogError(timeoutException);
+                    }
+                }
+            }
+
+            ResetDice(matchCode);
+
+        }
+
+        private void ResetDice(string matchCode)
+        {
+            if (GameBoardDiceRoll.ContainsKey(matchCode))
+            {
+                GameBoardDiceRoll[matchCode] = 0;
+            }
+        }
+
+        /// <summary>
+        /// Notifies a specific gamer in the game board that their attempted move is invalid.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer with the invalid move.</param>
+        public void ShowMoveIsInvalid(string gamertag)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+
+            if (GamersInGameBoard.ContainsKey(gamertag) && GamersInGameBoardCallback.ContainsKey(gamertag))
+            {
+                try
+                {
+                    GamersInGameBoardCallback[gamertag].ReceiveInvalidMove();
+                }
+                catch (CommunicationException communicationException)
+                {
+                    loggerManager.LogError(communicationException);
+                }
+                catch (TimeoutException timeoutException)
+                {
+                    loggerManager.LogError(timeoutException);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the current position of the pawn associated with the specified gamer.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the gamer whose pawn position is requested.</param>
+        /// <returns>A GridNode representing the current position of the pawn on the game board.</returns>
+        public GridNode GetPawnPosition(string gamertag)
         {
             GridNode node = new GridNode();
-            if (PawnsGamer.ContainsKey(gamertag))
+            if (charactersPerGamer.ContainsKey(gamertag))
             {
-                Pawn pawn = PawnsGamer[gamertag];
+                Pawn pawn = charactersPerGamer[gamertag];
                 node.Xposition = pawn.XPosition;
                 node.Yposition = pawn.YPosition;
             }
             return node;
         }
 
-        public Boolean IsAValidMove(int column, int row, string gamertag)
+        private int GetGameBoardRollDice(string matchCode)
         {
-            Boolean isAValidMove    ;
-            Door door = IsADoor(column, row);
+            int rollDice = 0;
+            if (GameBoardDiceRoll.ContainsKey(matchCode))
+            {
+                rollDice = GameBoardDiceRoll[matchCode];
+            }
+            return rollDice;
+        }
 
-            if (door != null) //Sí es una puerta
+        private void SendAccusationOption(string gamertag, Door door)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+
+            if (GamersInGameBoardCallback.ContainsKey(gamertag))
+            {
+                try
+                {
+                    GamersInGameBoardCallback[gamertag].ReceiveCommonAccusationOption(true, door);
+                }
+                catch (CommunicationException communicationException)
+                {
+                    loggerManager.LogError(communicationException);
+                }
+                catch (TimeoutException timeoutException)
+                {
+                    loggerManager.LogError(timeoutException);
+                }
+            }
+        }
+
+        private Door GetDoor(int column, int row)
+        {
+            Door doorData = new Door();
+            foreach (var door in Doors)
+            {
+                if (door.Xposition == column && door.Yposition == row)
+                {
+                    doorData.Xposition = door.Xposition;
+                    doorData.Yposition = door.Yposition;
+                    doorData.ZoneName = door.ZoneName;
+                    break;
+                }
+            }
+            return doorData;
+        }
+
+        /// <summary>
+        /// Determines whether a move specified by column and row for a gamer in the given match code is valid on the game board.
+        /// </summary>
+        /// <param name="column">The column of the target position for the move.</param>
+        /// <param name="row">The row of the target position for the move.</param>
+        /// <param name="gamertag">The gamertag of the gamer making the move.</param>
+        /// <param name="matchCode">The match code associated with the game board.</param>
+        /// <returns>
+        /// True if the move is valid; otherwise, false. The method also handles door interactions, invalid zones, and the center.
+        /// </returns>
+        public bool IsAValidMove(int column, int row, string gamertag, string matchCode)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            bool isAValidMove = false;
+            int rollDice = GetGameBoardRollDice(matchCode);
+            if (IsADoor(column, row)) 
             {
                 GridNode start = GetPawnPosition(gamertag);
                 GridNode finish = new GridNode
@@ -79,9 +460,15 @@ namespace GameService.Services
                     Xposition = column,
                     Yposition = row,
                 };
-                isAValidMove = AreTheStepsValid(start, finish, DiceRoll);
+                isAValidMove = AreTheStepsValid(start, finish, rollDice);
+
+                if (isAValidMove)
+                {
+                    Door door = GetDoor(column, row);
+                    SendAccusationOption(gamertag, door);
+                } 
             }
-            else if (IsAnInvalidZone(column, row)) //Sí es una zona prohibida
+            else if (IsAnInvalidZone(column, row)) 
             {
                 if (IsAValidCorner(column, row))
                 {
@@ -91,13 +478,36 @@ namespace GameService.Services
                         Xposition = column,
                         Yposition = row,
                     };
-                    isAValidMove = AreTheStepsValid(start, finish, DiceRoll);
-                }
-                else
-                {
-                    isAValidMove = false;
+                    isAValidMove = AreTheStepsValid(start, finish, rollDice);
                 }
             }
+            else if(IsTheCenter(column, row))
+            {
+                GridNode start = GetPawnPosition(gamertag);
+                GridNode finish = new GridNode
+                {
+                    Xposition = column,
+                    Yposition = row,
+                };
+                isAValidMove = AreTheStepsValid(start, finish, rollDice);
+                if(isAValidMove)
+                {
+                    try
+                    {
+                        GamersInGameBoardCallback[gamertag].ReceiveFinalAccusationOption(true);
+                    }
+                    catch (CommunicationException communicationException)
+                    {
+                        loggerManager.LogError(communicationException);
+                        isAValidMove = false;
+                    }
+                    catch (TimeoutException timeoutException)
+                    {
+                        loggerManager.LogError(timeoutException);
+                        isAValidMove = false;
+                    }
+                }
+            } 
             else
             {
                 GridNode start = GetPawnPosition(gamertag);
@@ -106,137 +516,244 @@ namespace GameService.Services
                     Xposition = column,
                     Yposition = row,
                 };
-                isAValidMove = AreTheStepsValid(start, finish, DiceRoll);
+                isAValidMove = AreTheStepsValid(start, finish, rollDice);
             }
-
             return isAValidMove;
         }
 
-        public Boolean AreTheStepsValid(GridNode start, GridNode finish, int steps)
+        private bool IsTheCenter(int column, int row)
         {
-            return DFSAlgoritm(start, finish, steps, new HashSet<GridNode>());
+            bool isTheCenter = false;
+            if(column >= 8 && column <= 12 && row >= 7 && row <= 13)
+            {
+                isTheCenter = true;
+            }
+            return isTheCenter;
         }
 
-        public Boolean DFSAlgoritm(GridNode current, GridNode finish, int steps, HashSet<GridNode> visited)
+        private bool AreTheStepsValid(GridNode start, GridNode finish, int rollDice)
         {
-            if (current.Xposition == finish.Xposition && current.Yposition == finish.Yposition && steps >= 0)
+            bool isValidStep = false;
+            if(rollDice != 0)
+            {
+                isValidStep = SearchMoves(start, start, finish, rollDice, new List<GridNode>(), new Queue<GridNode>());
+            }
+            return isValidStep;
+        }
+
+        private bool SearchMoves(GridNode start, GridNode current, GridNode end, int steps, List<GridNode> visitedNodes, Queue<GridNode> nextNodes)
+        {
+            if (current.Xposition == end.Xposition && current.Yposition == end.Yposition && GetNumberOfSteps(start, current) >= 0)
             {
                 return true;
             }
-            if (steps <= 0 || visited.Contains(current) || InvalidZones.Contains(current)) 
+
+            if (GetNumberOfSteps(start, current) > steps)
             {
                 return false;
-            }
-            
-            visited.Add(current);
+            }      
+            visitedNodes.Add(current);
+            nextNodes = GetNeighbors(current, nextNodes, visitedNodes);
+            GridNode nextNode = nextNodes.Dequeue();
+            return SearchMoves(start, nextNode, end, steps, visitedNodes, nextNodes);
+        }
 
-            var neighbors = GetNeighbors(current, visited);
+        private int GetNumberOfSteps(GridNode start, GridNode end)
+        {
+            int differenceColumn = start.Xposition - end.Xposition;
+            int differentRow = start.Yposition - end.Yposition;
+            int total = Math.Abs(differenceColumn) + Math.Abs(differentRow);
+            return total;
+        }
 
-            foreach(var neighbor in neighbors)
+        private Queue<GridNode> GetNeighbors(GridNode current, Queue<GridNode> nextNodes, List<GridNode> visitedNodes)
+        {
+            List<GridNode> neighbors = new List<GridNode>() {
+                new GridNode() { Xposition = current.Xposition, Yposition = current.Yposition - 1 },
+                new GridNode() { Xposition = current.Xposition, Yposition = current.Yposition + 1 },
+                new GridNode() { Xposition = current.Xposition - 1, Yposition = current.Yposition },
+                new GridNode() { Xposition = current.Xposition + 1, Yposition = current.Yposition },
+            };
+
+            foreach (GridNode neighborNode in neighbors.Where(node => IsNeighborValid(node, visitedNodes)).ToList())
             {
-                if(DFSAlgoritm(neighbor, finish, steps-1, visited)){
-                    return true;
+                nextNodes.Enqueue(neighborNode);
+            }
+
+            return nextNodes;
+        }
+
+        private bool IsNeighborValid (GridNode neighbor, List<GridNode> visitedNodes)
+        {
+            bool isNeighborValid = false;
+            if (!IsNeighborInVisitedNodes(neighbor, visitedNodes) && !IsNeighborInInvalidZone(neighbor))
+            {
+                isNeighborValid = true;
+            }
+            return isNeighborValid;
+        }
+
+        private bool IsNeighborInVisitedNodes(GridNode neighbor, List<GridNode> visitedNodes)
+        {
+            bool isNeighborVisited = false;
+            foreach (GridNode node in visitedNodes) 
+            {
+                if(node.Xposition == neighbor.Xposition && node.Yposition == neighbor.Yposition)
+                {
+                    isNeighborVisited = true;
                 }
             }
-            return false;
+            return isNeighborVisited;
         }
 
-        public IEnumerable<GridNode> GetNeighbors(GridNode node, HashSet<GridNode> visited)
+        private bool IsNeighborInInvalidZone(GridNode neighbor)
         {
-            AddNeighbors(node.Xposition, node.Yposition - 1, visited);
-            AddNeighbors(node.Xposition, node.Yposition + 1, visited);
-            AddNeighbors(node.Xposition - 1, node.Yposition, visited);
-            AddNeighbors(node.Xposition + 1, node.Yposition, visited);
-
-            return visited;
-        }
-        
-        public void AddNeighbors(int colum, int row, HashSet<GridNode> visited)
-        {
-            var neighbor = new GridNode
+            bool isNeighborInvalid = false;
+            foreach (GridNode node in InvalidZones)
             {
-                Xposition = colum,
-                Yposition = row,
-            };
-            if (!visited.Contains(neighbor) && !InvalidZones.Contains(neighbor))
-            {
-                visited.Add(neighbor);
+                if (node.Xposition == neighbor.Xposition && node.Yposition == neighbor.Yposition)
+                {
+                    isNeighborInvalid = true;
+                }
             }
+
+            return isNeighborInvalid;
         }
 
-        public int RollDice()
+        /// <summary>
+        /// Rolls a six-sided dice and updates the dice roll value for the specified match code on the game board.
+        /// </summary>
+        /// <param name="matchCode">The match code associated with the game board.</param>
+        /// <returns>The rolled dice value, an integer between 2 and 12 (inclusive).</returns>
+        public int RollDice(string matchCode)
         {
             Random random = new Random();
             int rollDice = random.Next(2, 13);
-            DiceRoll = rollDice;
+            if (GameBoardDiceRoll.ContainsKey(matchCode))
+            {
+                GameBoardDiceRoll[matchCode] = rollDice;
+            }
+            else
+            {
+                GameBoardDiceRoll.Add(matchCode, rollDice);
+            }
             return rollDice;
         }
 
-        public Boolean IsAnInvalidZone (int column, int row)
+        /// <summary>
+        /// Determines if the specified column and row position falls within an invalid zone on the game board.
+        /// </summary>
+        /// <param name="column">The column position on the game board.</param>
+        /// <param name="row">The row position on the game board.</param>
+        /// <returns>
+        /// True if the position is within an invalid zone; otherwise, false.
+        /// The method distinguishes between three sections of the game board for evaluation.
+        /// </returns>
+        public bool IsAnInvalidZone(int column, int row)
         {
-            Boolean isAnInvalidZone = false;
-            if(column < 6)
+            bool isAnInvalidZone;
+
+            if (column < 6)
             {
-                if (row < 3) //Salón F103
-                {
-                    isAnInvalidZone = true;
-                } else if(row > 4 && row < 10) //Salón cristal
-                {
-                    isAnInvalidZone = true;
-                } else if (row > 10 && row < 16) //Laboratorio
-                {
-                    isAnInvalidZone = true;
-                } else if (column < 5 && row > 17) //Cubículo
-                {
-                    isAnInvalidZone = true;
-                }
-            } else if(column >= 7 && column <= 14 ) 
+                isAnInvalidZone = IsAnInvalidZoneOfTheFirstSection(column, row);
+            }
+            else if (column >= 7 && column <= 14)
             {
-                if( row < 6 && column > 7 && column < 14)//Anfiteatro
-                {
-                    isAnInvalidZone = true;
-                } else if (row > 15) //Centro de cómputo
-                {
-                    isAnInvalidZone = true;
-                }
-            }else
+                isAnInvalidZone = IsAnInvalidZoneOfTheSecondSection(column, row);
+            }
+            else
             {
-                if(column > 15 && row < 5) //Cancha
-                {
-                    isAnInvalidZone = true;
-                } else if(row > 7 && row < 15) //Estacionamiento
-                {
-                    isAnInvalidZone = true;
-                }else if(column > 16 && row > 16) //Salón de profesores
-                {
-                    isAnInvalidZone = true;
-                }
+                isAnInvalidZone = IsAnInvalidZoneOfTheThirdSection(column, row);
             }
             return isAnInvalidZone;
         }
 
-        public Door IsADoor(int column, int row)
+        private bool IsAnInvalidZoneOfTheFirstSection (int column, int row)
         {
-            Door door = null;
-            foreach(var grid in Doors)
+            bool isAnInvalidZone = false;
+            if (row < 3) 
             {
-                if(grid.Xposition.Equals(column) && grid.Yposition.Equals(row))
+                isAnInvalidZone = true;
+            }
+            else if (row > 4 && row < 10) 
+            {
+                isAnInvalidZone = true;
+            }
+            else if (row > 10 && row < 16 && column < 5) 
+            {
+                isAnInvalidZone = true;
+            }
+            else if (column < 5 && row > 17) 
+            {
+                isAnInvalidZone = true;
+            }
+            return isAnInvalidZone;
+        }
+
+        private bool IsAnInvalidZoneOfTheSecondSection(int column, int row)
+        {
+            bool isAnInvalidZone = false;
+            if (row < 6 && column > 7 && column < 14)
+            {
+                isAnInvalidZone = true;
+            }
+            else if (row > 15) 
+            {
+                isAnInvalidZone = true;
+            }
+            return isAnInvalidZone;
+        }
+
+        private bool IsAnInvalidZoneOfTheThirdSection(int column, int row)
+        {
+            bool isAnInvalidZone = false;
+            if (column > 15 && row < 5) 
+            {
+                isAnInvalidZone = true;
+            }
+            else if (row > 7 && row < 15 && column >= 15) 
+            {
+                isAnInvalidZone = true;
+            }
+            else if (column > 16 && row > 16) 
+            {
+                isAnInvalidZone = true;
+            }
+            return isAnInvalidZone;
+        }
+
+        /// <summary>
+        /// Determines if the specified column and row position represents a door on the game board.
+        /// </summary>
+        /// <param name="column">The column position on the game board.</param>
+        /// <param name="row">The row position on the game board.</param>
+        /// <returns>True if the position corresponds to a door; otherwise, false.</returns>
+        public bool IsADoor(int column, int row)
+        {
+            bool isADoor = false;
+            foreach (var door in Doors)
+            {
+                if (door.Xposition == column && door.Yposition == row)
                 {
-                    door.Xposition = grid.Xposition;
-                    door.Yposition = grid.Yposition;
-                    door.ZoneName = grid.ZoneName;
+                    isADoor = true;
                     break;
                 }
             }
-            return door;
+            return isADoor;
         }
 
-        public Boolean IsAValidCorner(int column, int row)
+        /// <summary>
+        /// Determines if the specified column and row position is a valid corner on the game board.
+        /// </summary>
+        /// <param name="column">The column position on the game board.</param>
+        /// <param name="row">The row position on the game board.</param>
+        /// <returns>True if the position is a valid corner; otherwise, false.</returns>
+        public bool IsAValidCorner(int column, int row)
         {
-            Boolean isAValidCorner = false;
-            foreach(var grid in AllowedCorners)
+            bool isAValidCorner = false;
+            foreach (var grid in AllowedCorners)
             {
-                if(grid.Xposition.Equals(column) && grid.Yposition.Equals(row))
+                if (grid.Xposition.Equals(column) && grid.Yposition.Equals(row))
                 {
                     isAValidCorner = true;
                 }
@@ -244,6 +761,284 @@ namespace GameService.Services
             return isAValidCorner;
         }
 
+        /// <summary>
+        /// Initiates a final accusation by a gamer in the specified match, validating the provided cards.
+        /// If the accusation is correct (all three cards match), the gamer is declared the winner,
+        /// and their games won count is updated. Otherwise, the gamer is removed from the turns in the match.
+        /// </summary>
+        /// <param name="cards">The list of cards representing the final accusation.</param>
+        /// <param name="matchCode">The code identifying the match on the game board.</param>
+        /// <param name="gamertag">The gamertag of the gamer making the accusation.</param>
+        public void MakeFinalAccusation(List<string> cards, string matchCode, string gamertag)
+        {
+            HostBehaviorManager.ChangeToReentrant();
+            int cardsCount = CountMatchingCards(cards, matchCode);
+
+            if (cardsCount == 3)
+            {
+                NotifyWinner(gamertag, matchCode);
+                UpdateGamesWonByGamer(gamertag);
+            }
+            else
+            {
+                RemoveFromTurns(gamertag, matchCode);
+            }
+        }
+
+        private int CountMatchingCards(List<string> cards, string matchCode)
+        {
+            int cardsCount = 0;
+
+            if (clueDeckByMatch.TryGetValue(matchCode, out List<Card> clueDeck))
+            {
+                cardsCount = clueDeck.Count(card => cards.Contains(card.ID));
+            }
+
+            return cardsCount;
+        }
+
+        private void NotifyWinner(string winnerGamertag, string matchCode)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            string winnerIcon = GetIcon(winnerGamertag);
+
+            foreach (var gamerEntry in GamersInGameBoard.Where(entry => entry.Value.Equals(matchCode)))
+            {
+                string gamerFound = gamerEntry.Key;
+
+                if (GamersInGameBoardCallback.ContainsKey(gamerFound))
+                {
+                    try
+                    {
+                        GamersInGameBoardCallback[gamerFound].ReceiveWinner(winnerGamertag, winnerIcon);
+                    }
+                    catch (CommunicationException communicationException)
+                    {
+                        loggerManager.LogError(communicationException);
+                    }
+                    catch (TimeoutException timeoutException)
+                    {
+                        loggerManager.LogError(timeoutException);
+                    }
+                }
+            }
+        }
+
+        private int UpdateGamesWonByGamer(string gamertag)
+        {
+            HostBehaviorManager.ChangeToSingle();
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            int result = Constants.ErrorInOperation;
+
+            try
+            {
+                using (var dataBaseContext = new SpiderClueDbEntities())
+                {
+                    var gamer = dataBaseContext.gamers.FirstOrDefault(player => player.gamertag == gamertag);
+                    if (gamer != null)
+                    {
+                        gamer.gamesWon++;
+                        dataBaseContext.SaveChanges();
+                        result = Constants.SuccessInOperation;
+                    }
+                    else
+                    {
+                        result = Constants.ErrorInOperation;
+                    }
+                }
+            }
+            catch (SqlException sqlException)
+            {
+                loggerManager.LogError(sqlException);
+                result = Constants.ErrorInOperation;
+            }
+            catch (EntityException entityException)
+            {
+                loggerManager.LogError(entityException);
+                result = Constants.ErrorInOperation;
+            }
+            
+            HostBehaviorManager.ChangeToReentrant();
+            return result;
+        }
+
+        private void RemoveFromTurns(string gamertag, string matchCode)
+        {
+            string leftGamer = string.Empty;
+            string rightGamer = string.Empty;
+            int index = 0;
+            if (DirectionInGameBoard.ContainsKey(matchCode))
+            {
+                foreach (var gamer in DirectionInGameBoard[matchCode])
+                {
+                    if (gamer.Gamertag == gamertag)
+                    {
+                        leftGamer = gamer.Left;
+                        rightGamer = gamer.Right;
+                        break;
+                    }
+                }
+
+                foreach(var gamer in DirectionInGameBoard[matchCode])
+                {
+                    if(gamer.Gamertag == rightGamer)
+                    {
+                        break;
+                    }
+                    index++;
+                }
+                DirectionInGameBoard[matchCode][index].Left = leftGamer;
+            }
+        }
+
+        /// <summary>
+        /// Notifies the accuser in the specified match about the accused card,
+        /// providing information about the type of the accused card.
+        /// </summary>
+        /// <param name="card">The card being accused.</param>
+        /// <param name="matchCode">The code identifying the match on the game board.</param>
+        /// <param name="accuser">The gamertag of the gamer making the accusation.</param>
+        public void ShowCard(Card card, string matchCode, string accuser)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            HostBehaviorManager.ChangeToReentrant();
+            try
+            {
+                GamersInGameBoardCallback[accuser].ReceiveCardAccused(card);
+            }
+            catch (SqlException sqlException)
+            {
+                loggerManager.LogError(sqlException);
+            }
+            catch (EntityException entityException)
+            {
+                loggerManager.LogError(entityException);
+            }
+        }
+
+        /// <summary>
+        /// Notifies all gamers in the specified match about a common accusation made by a gamer.
+        /// </summary>
+        /// <param name="accusation">The array of strings representing the common accusation.</param>
+        /// <param name="matchCode">The code identifying the match on the game board.</param>
+        /// <param name="accuser">The gamertag of the gamer making the common accusation.</param>
+        public void ShowCommonAccusation(string[] accusation, string matchCode, string accuser)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            HostBehaviorManager.ChangeToReentrant();
+            foreach (var gamerEntry in GamersInGameBoard.Where(entry => entry.Value.Equals(matchCode)))
+            {
+                string gamertag = gamerEntry.Key;
+
+                if (GamersInGameBoardCallback.ContainsKey(gamertag))
+                {
+                    try
+                    {
+                        GamersInGameBoardCallback[gamertag].ReceiveCommonAccusationByOtherGamer(accusation);
+                    }
+                    catch (SqlException sqlException)
+                    {
+                        loggerManager.LogError(sqlException);
+                    }
+                    catch (EntityException entityException)
+                    {
+                        loggerManager.LogError(entityException);
+                    }
+                }
+            }
+
+            string leftGamer = GetLeftGamer(matchCode, accuser);
+            IsLeftOwnerOfCards(accusation, accuser, leftGamer, matchCode);
+        }
+
+        private void IsLeftOwnerOfCards(string[] accusation, string accuser, string leftGamer, string matchCode)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+
+            if (accuser != leftGamer)
+            {
+                List<Card> leftGamerDeck = GetDeck(leftGamer);
+                List<Card> cardsInCommon = FindCardsInCommon(accusation, leftGamerDeck);
+
+                if (cardsInCommon.Any())
+                {
+                    try
+                    {
+                        GamersInGameBoardCallback[leftGamer].RequestShowCard(cardsInCommon, accuser);
+                    }
+                    catch (CommunicationException communicationException)
+                    {
+                        loggerManager.LogError(communicationException);
+                    }
+                    catch (TimeoutException timeoutException)
+                    {
+                        loggerManager.LogError(timeoutException);
+                    }
+                }
+                else
+                {
+                    string leftOfLeftGamer = GetLeftGamer(matchCode, leftGamer);
+                    IsLeftOwnerOfCards(accusation, accuser, leftOfLeftGamer, matchCode);
+                }
+            }
+            else
+            {
+                ShowNobodyAnswers(matchCode);
+            }
+        }
+
+        private List<Card> FindCardsInCommon(string[] accusation, List<Card> deck)
+        {
+            return deck.Where(card => accusation.Contains(card.ID)).ToList();
+        }
+
+        private void ShowNobodyAnswers(string matchCode)
+        {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
+            foreach (var gamer in GamersInGameBoard.ToList())
+            {
+                if (gamer.Value.Equals(matchCode))
+                {
+                    string gamertag = gamer.Key;
+                    try
+                    {
+                        if (GamersInGameBoardCallback.ContainsKey(gamertag))
+                        {
+                            GamersInGameBoardCallback[gamertag].ShowNobodyAnswers();
+                        }
+                    }
+                    catch (CommunicationException communicationException)
+                    {
+                        loggerManager.LogError(communicationException);
+                    }
+                    catch (TimeoutException timeoutException)
+                    {
+                        loggerManager.LogError(timeoutException);
+                    }
+                }
+            }
+        }
+
+        private string GetLeftGamer(string matchCode, string gamertag)
+        {
+            string leftGamer = string.Empty;
+            if(DirectionInGameBoard.ContainsKey(matchCode))
+            {
+                foreach (var gamer in DirectionInGameBoard[matchCode])
+                {
+                    if(gamer.Right == gamertag)
+                    {
+                        leftGamer = gamer.Gamertag;
+                    }
+                }
+            }
+            return leftGamer;
+        }
+
+        /// <summary>
+        /// Creates and returns a list of pawn objects with specified colors and initial positions on the game board.
+        /// </summary>
+        /// <returns>A list containing pawn objects representing different players' pawns.</returns>
         public List<Pawn> CreatePawns()
         {
             Pawn bluePawn = new Pawn { Color = "BluePawn.png", XPosition = 0, YPosition = 17 };
@@ -263,363 +1058,212 @@ namespace GameService.Services
             return pawns;
         }
 
-        public void CreatDoors()
+        /// <summary>
+        /// Retrieves and returns the deck of cards associated with a specific gamer identified by gamertag.
+        /// </summary>
+        /// <param name="gamertag">The unique identifier of the gamer whose deck is to be retrieved.</param>
+        /// <returns>A list containing card objects representing the gamer's deck.</returns>
+        public List<Card> GetDeck(string gamertag)
         {
-            Door roomf103 = new Door { Xposition = 5, Yposition = 2, ZoneName = "place6" };
-            Door glassRoom = new Door { Xposition = 5, Yposition = 7, ZoneName = "place1" };
-            Door glassRoom2 = new Door { Xposition = 2, Yposition = 9, ZoneName = "place1" };
-            Door laboratory = new Door { Xposition = 0, Yposition = 11, ZoneName = "place8" };
-            Door laboratory2 = new Door { Xposition = 4, Yposition = 14, ZoneName = "place8" };
-            Door cubicle = new Door { Xposition = 3, Yposition = 18, ZoneName = "place7" };
-            Door amphitheater = new Door { Xposition = 8, Yposition = 3, ZoneName = "place9" };
-            Door amphitheater2 = new Door { Xposition = 10, Yposition = 5, ZoneName = "place9" };
-            Door amphitheater3= new Door { Xposition = 11, Yposition = 5, ZoneName = "place9" };
-            Door computingCenter = new Door { Xposition = 8, Yposition = 16, ZoneName = "place2" };
-            Door computingCenter2 = new Door { Xposition = 13, Yposition = 16, ZoneName = "place2" };
-            Door computingCenter3 = new Door { Xposition = 7, Yposition = 18, ZoneName = "place2" };
-            Door computingCenter4 = new Door { Xposition = 14, Yposition = 18, ZoneName = "place2" };
-            Door field = new Door { Xposition = 16, Yposition = 4, ZoneName = "place4" };
-            Door parkingLot = new Door { Xposition = 16, Yposition = 8, ZoneName = "place5" };
-            Door parkingLot2 = new Door { Xposition = 15, Yposition = 11, ZoneName = "place5" };
-            Door professorsRoom = new Door { Xposition = 18, Yposition = 17, ZoneName = "place3" };
-            this.AddToDoorsList(roomf103);
-            this.AddToDoorsList(glassRoom);
-            this.AddToDoorsList(glassRoom2);
-            this.AddToDoorsList(laboratory);
-            this.AddToDoorsList(laboratory2);
-            this.AddToDoorsList(cubicle);
-            this.AddToDoorsList(amphitheater);
-            this.AddToDoorsList(amphitheater2);
-            this.AddToDoorsList(amphitheater3);
-            this.AddToDoorsList(computingCenter);
-            this.AddToDoorsList(computingCenter2);
-            this.AddToDoorsList(computingCenter3);
-            this.AddToDoorsList(computingCenter4);
-            this.AddToDoorsList(field);
-            this.AddToDoorsList(parkingLot);
-            this.AddToDoorsList(parkingLot2);
-            this.AddToDoorsList(professorsRoom);
+            List<Card> gamerDeck = new List<Card>();
+            if (decks.ContainsKey(gamertag))
+            {
+                gamerDeck = decks[gamertag];
+            }
+            return gamerDeck;
         }
 
-        public void createValidCorners()
+        private readonly List<GridNode> AllowedCorners = new List<GridNode>()
         {
-            GridNode corner1 = new GridNode { Xposition = 5, Yposition = 5, };
-            GridNode corner2 = new GridNode { Xposition = 5, Yposition = 9, };
-            GridNode corner3 = new GridNode { Xposition = 4, Yposition = 18, };
-            GridNode corner4 = new GridNode { Xposition = 8, Yposition = 22, };
-            GridNode corner5 = new GridNode { Xposition = 7, Yposition = 22, };
-            GridNode corner6 = new GridNode { Xposition = 13, Yposition = 22, };
-            GridNode corner7 = new GridNode { Xposition = 14, Yposition = 22, };
-            GridNode corner8 = new GridNode { Xposition = 17, Yposition = 14, };
-            GridNode corner9 = new GridNode { Xposition = 16, Yposition = 14, };
-            GridNode corner10 = new GridNode { Xposition = 15, Yposition = 14, };
-            this.AddToAllowedCorners(corner1);
-            this.AddToAllowedCorners(corner2);
-            this.AddToAllowedCorners(corner3);  
-            this.AddToAllowedCorners(corner4);
-            this.AddToAllowedCorners(corner5);
-            this.AddToAllowedCorners(corner6);
-            this.AddToAllowedCorners(corner7);
-            this.AddToAllowedCorners(corner8);
-            this.AddToAllowedCorners(corner9);
-            this.AddToAllowedCorners(corner10);
-        }
+            new GridNode { Xposition = 5, Yposition = 5,},
+            new GridNode { Xposition = 5, Yposition = 9,},
+            new GridNode { Xposition = 4, Yposition = 18,},
+            new GridNode { Xposition = 8, Yposition = 22,},
+            new GridNode { Xposition = 7, Yposition = 22,},
+            new GridNode { Xposition = 13, Yposition = 22,},
+            new GridNode { Xposition = 14, Yposition = 22,},
+            new GridNode { Xposition = 17, Yposition = 14,},
+            new GridNode { Xposition = 16, Yposition = 14,},
+            new GridNode { Xposition = 15, Yposition = 14,}
+        };
 
-        public void createInvaZones()
+        /// <summary>
+        /// Represents a collection of grid nodes that define the invalid zones on the game board.
+        /// These zones are restricted areas where players cannot make valid moves.
+        /// </summary>
+        public List<GridNode> InvalidZones { get; set; } = new List<GridNode>()
         {
-            GridNode corner1 = new GridNode { Xposition = 0, Yposition = 2, };
-            GridNode corner2 = new GridNode { Xposition = 1, Yposition = 2, };
-            GridNode corner3 = new GridNode { Xposition = 2, Yposition = 2, };
-            GridNode corner4 = new GridNode { Xposition = 3, Yposition = 2, };
-            GridNode corner5 = new GridNode { Xposition = 4, Yposition = 2, };
-            GridNode corner6 = new GridNode { Xposition = 5, Yposition = 1, };
-            GridNode corner7 = new GridNode { Xposition = 5, Yposition = 0, };
-            GridNode corner8 = new GridNode { Xposition = 4, Yposition = 1, };
+            new GridNode { Xposition = 0, Yposition = 2, },
+            new GridNode { Xposition = 1, Yposition = 2, },
+            new GridNode { Xposition = 2, Yposition = 2, },
+            new GridNode { Xposition = 3, Yposition = 2, },
+            new GridNode { Xposition = 4, Yposition = 2, },
+            new GridNode { Xposition = 5, Yposition = 1, },
+            new GridNode { Xposition = 5, Yposition = 0, },
+            new GridNode { Xposition = 4, Yposition = 1, },
 
-            GridNode corner9 = new GridNode { Xposition = 0, Yposition = 5, };
-            GridNode corner10 = new GridNode { Xposition = 1, Yposition = 5, };
-            GridNode corner11 = new GridNode { Xposition = 2, Yposition = 5, };
-            GridNode corner12 = new GridNode { Xposition = 3, Yposition = 5, };
-            GridNode corner13 = new GridNode { Xposition = 4, Yposition = 5, };
-            GridNode corner14 = new GridNode { Xposition = 5, Yposition = 6, };
-            GridNode corner15 = new GridNode { Xposition = 5, Yposition = 8, };
-            GridNode corner16 = new GridNode { Xposition = 4, Yposition = 9, };
-            GridNode corner17 = new GridNode { Xposition = 3, Yposition = 9, };
-            GridNode corner18 = new GridNode { Xposition = 1, Yposition = 9, };
-            GridNode corner19 = new GridNode { Xposition = 0, Yposition = 9, };
-            GridNode corner20 = new GridNode { Xposition = 4, Yposition = 7, };
-            GridNode corner21 = new GridNode { Xposition = 2, Yposition = 8, };
+            new GridNode { Xposition = 0, Yposition = 5, },
+            new GridNode { Xposition = 1, Yposition = 5, },
+            new GridNode { Xposition = 2, Yposition = 5, },
+            new GridNode { Xposition = 3, Yposition = 5, },
+            new GridNode { Xposition = 4, Yposition = 5, },
+            new GridNode { Xposition = 5, Yposition = 6, },
+            new GridNode { Xposition = 5, Yposition = 8, },
+            new GridNode { Xposition = 4, Yposition = 9, },
+            new GridNode { Xposition = 3, Yposition = 9, },
+            new GridNode { Xposition = 1, Yposition = 9, },
+            new GridNode { Xposition = 0, Yposition = 9, },
+            new GridNode { Xposition = 4, Yposition = 7, },
+            new GridNode { Xposition = 2, Yposition = 8, },
 
-            GridNode corner22 = new GridNode { Xposition = 0, Yposition = 12, };
-            GridNode corner23 = new GridNode { Xposition = 1, Yposition = 11, };
-            GridNode corner24 = new GridNode { Xposition = 2, Yposition = 11, };
-            GridNode corner25 = new GridNode { Xposition = 3, Yposition = 11, };
-            GridNode corner26 = new GridNode { Xposition = 4, Yposition = 11, };
-            GridNode corner27 = new GridNode { Xposition = 4, Yposition = 12, };
-            GridNode corner28 = new GridNode { Xposition = 4, Yposition = 13, };
-            GridNode corner29 = new GridNode { Xposition = 3, Yposition = 14, };
-            GridNode corner30 = new GridNode { Xposition = 0, Yposition = 15, };
-            GridNode corner31 = new GridNode { Xposition = 1, Yposition = 15, };
-            GridNode corner32 = new GridNode { Xposition = 2, Yposition = 15, };
-            GridNode corner33 = new GridNode { Xposition = 3, Yposition = 15, };
-            GridNode corner34 = new GridNode { Xposition = 4, Yposition = 15, };
+            new GridNode { Xposition = 0, Yposition = 12, },
+            new GridNode { Xposition = 1, Yposition = 11, },
+            new GridNode { Xposition = 2, Yposition = 11, },
+            new GridNode { Xposition = 3, Yposition = 11, },
+            new GridNode { Xposition = 4, Yposition = 11, },
+            new GridNode { Xposition = 4, Yposition = 12, },
+            new GridNode { Xposition = 4, Yposition = 13, },
+            new GridNode { Xposition = 3, Yposition = 14, },
+            new GridNode { Xposition = 0, Yposition = 15, },
+            new GridNode { Xposition = 1, Yposition = 15, },
+            new GridNode { Xposition = 2, Yposition = 15, },
+            new GridNode { Xposition = 3, Yposition = 15, },
+            new GridNode { Xposition = 4, Yposition = 15, },
 
-            GridNode corner35 = new GridNode { Xposition = 0, Yposition = 18, };
-            GridNode corner36 = new GridNode { Xposition = 1, Yposition = 18, };
-            GridNode corner37 = new GridNode { Xposition = 2, Yposition = 18, };
-            GridNode corner38 = new GridNode { Xposition = 4, Yposition = 19, };
-            GridNode corner39 = new GridNode { Xposition = 4, Yposition = 20, };
-            GridNode corner40 = new GridNode { Xposition = 4, Yposition = 21, };
-            GridNode corner41 = new GridNode { Xposition = 3, Yposition = 19, };
+            new GridNode { Xposition = 0, Yposition = 18, },
+            new GridNode { Xposition = 1, Yposition = 18, },
+            new GridNode { Xposition = 2, Yposition = 18, },
+            new GridNode { Xposition = 4, Yposition = 19, },
+            new GridNode { Xposition = 4, Yposition = 20, },
+            new GridNode { Xposition = 4, Yposition = 21, },
+            new GridNode { Xposition = 3, Yposition = 19, },
 
-            GridNode corner42 = new GridNode { Xposition = 8, Yposition = 0, };
-            GridNode corner43 = new GridNode { Xposition = 8, Yposition = 1, };
-            GridNode corner44 = new GridNode { Xposition = 8, Yposition = 2, };
-            GridNode corner45 = new GridNode { Xposition = 9, Yposition = 3, };
-            GridNode corner46 = new GridNode { Xposition = 8, Yposition = 4, };
-            GridNode corner47 = new GridNode { Xposition = 8, Yposition = 5, };
-            GridNode corner48 = new GridNode { Xposition = 9, Yposition = 5, };
-            GridNode corner49 = new GridNode { Xposition = 10, Yposition = 4, };
-            GridNode corner50 = new GridNode { Xposition = 11, Yposition = 4, };
-            GridNode corner51 = new GridNode { Xposition = 12, Yposition = 5, };
-            GridNode corner52 = new GridNode { Xposition = 13, Yposition = 5, };
-            GridNode corner53 = new GridNode { Xposition = 13, Yposition = 4, };
-            GridNode corner54 = new GridNode { Xposition = 13, Yposition = 3, };
-            GridNode corner55 = new GridNode { Xposition = 13, Yposition = 2, };
-            GridNode corner56 = new GridNode { Xposition = 13, Yposition = 1, };
-            GridNode corner57 = new GridNode { Xposition = 13, Yposition = 0, };
+            new GridNode { Xposition = 8, Yposition = 0, },
+            new GridNode { Xposition = 8, Yposition = 1, },
+            new GridNode { Xposition = 8, Yposition = 2, },
+            new GridNode { Xposition = 9, Yposition = 3, },
+            new GridNode { Xposition = 8, Yposition = 4, },
+            new GridNode { Xposition = 8, Yposition = 5, },
+            new GridNode { Xposition = 9, Yposition = 5, },
+            new GridNode { Xposition = 10, Yposition = 4, },
+            new GridNode { Xposition = 11, Yposition = 4, },
+            new GridNode { Xposition = 12, Yposition = 5, },
+            new GridNode { Xposition = 13, Yposition = 5, },
+            new GridNode { Xposition = 13, Yposition = 4, },
+            new GridNode { Xposition = 13, Yposition = 3, },
+            new GridNode { Xposition = 13, Yposition = 2, },
+            new GridNode { Xposition = 13, Yposition = 1, },
+            new GridNode { Xposition = 13, Yposition = 0, },
 
-            GridNode corner58 = new GridNode { Xposition = 7, Yposition = 16, };
-            GridNode corner59 = new GridNode { Xposition = 7, Yposition = 17, };
-            GridNode corner60 = new GridNode { Xposition = 8, Yposition = 18, };
-            GridNode corner61 = new GridNode { Xposition = 7, Yposition = 19, };
-            GridNode corner62 = new GridNode { Xposition = 7, Yposition = 20, };
-            GridNode corner63 = new GridNode { Xposition = 7, Yposition = 21, };
-            GridNode corner64 = new GridNode { Xposition = 8, Yposition = 21, };
-            GridNode corner65 = new GridNode { Xposition = 9, Yposition = 22, };
-            GridNode corner66 = new GridNode { Xposition = 9, Yposition = 16, };
-            GridNode corner67 = new GridNode { Xposition = 10, Yposition = 16, };
-            GridNode corner68 = new GridNode { Xposition = 11, Yposition = 16, };
-            GridNode corner69 = new GridNode { Xposition = 12, Yposition = 16, };
-            GridNode corner70 = new GridNode { Xposition = 13, Yposition = 17, };
-            GridNode corner71 = new GridNode { Xposition = 14, Yposition = 16, };
-            GridNode corner72 = new GridNode { Xposition = 14, Yposition = 17, };
-            GridNode corner73 = new GridNode { Xposition = 13, Yposition = 18, };
-            GridNode corner74 = new GridNode { Xposition = 14, Yposition = 19, };
-            GridNode corner75 = new GridNode { Xposition = 14, Yposition = 20, };
-            GridNode corner76 = new GridNode { Xposition = 14, Yposition = 21, };
-            GridNode corner77 = new GridNode { Xposition = 13, Yposition = 21, };
-            GridNode corner78 = new GridNode { Xposition = 12, Yposition = 22, };
+            new GridNode { Xposition = 7, Yposition = 16, },
+            new GridNode { Xposition = 7, Yposition = 17, },
+            new GridNode { Xposition = 8, Yposition = 18, },
+            new GridNode { Xposition = 7, Yposition = 19, },
+            new GridNode { Xposition = 7, Yposition = 20, },
+            new GridNode { Xposition = 7, Yposition = 21, },
+            new GridNode { Xposition = 8, Yposition = 21, },
+            new GridNode { Xposition = 9, Yposition = 22, },
+            new GridNode { Xposition = 9, Yposition = 16, },
+            new GridNode { Xposition = 10, Yposition = 16, },
+            new GridNode { Xposition = 11, Yposition = 16, },
+            new GridNode { Xposition = 12, Yposition = 16, },
+            new GridNode { Xposition = 13, Yposition = 17, },
+            new GridNode { Xposition = 14, Yposition = 16, },
+            new GridNode { Xposition = 14, Yposition = 17, },
+            new GridNode { Xposition = 13, Yposition = 18, },
+            new GridNode { Xposition = 14, Yposition = 19, },
+            new GridNode { Xposition = 14, Yposition = 20, },
+            new GridNode { Xposition = 14, Yposition = 21, },
+            new GridNode { Xposition = 13, Yposition = 21, },
+            new GridNode { Xposition = 12, Yposition = 22, },
 
-            GridNode corner79 = new GridNode { Xposition = 16, Yposition = 0, };
-            GridNode corner80 = new GridNode { Xposition = 16, Yposition = 1, };
-            GridNode corner81 = new GridNode { Xposition = 16, Yposition = 2, };
-            GridNode corner82 = new GridNode { Xposition = 16, Yposition = 3, };
-            GridNode corner83 = new GridNode { Xposition = 17, Yposition = 4, };
-            GridNode corner84 = new GridNode { Xposition = 18, Yposition = 4, };
-            GridNode corner85 = new GridNode { Xposition = 19, Yposition = 4, };
-            GridNode corner86 = new GridNode { Xposition = 20, Yposition = 4, };
-            GridNode corner87 = new GridNode { Xposition = 21, Yposition = 4, };
+            new GridNode { Xposition = 16, Yposition = 0, },
+            new GridNode { Xposition = 16, Yposition = 1, },
+            new GridNode { Xposition = 16, Yposition = 2, },
+            new GridNode { Xposition = 16, Yposition = 3, },
+            new GridNode { Xposition = 17, Yposition = 4, },
+            new GridNode { Xposition = 18, Yposition = 4, },
+            new GridNode { Xposition = 19, Yposition = 4, },
+            new GridNode { Xposition = 20, Yposition = 4, },
+            new GridNode { Xposition = 21, Yposition = 4, },
 
 
-            GridNode corner88 = new GridNode { Xposition = 15, Yposition = 8, };
-            GridNode corner89 = new GridNode { Xposition = 15, Yposition = 9, };
-            GridNode corner90 = new GridNode { Xposition = 15, Yposition = 10, }; 
-            GridNode corner91 = new GridNode { Xposition = 16, Yposition = 11, }; 
-            GridNode corner92 = new GridNode { Xposition = 15, Yposition = 12, }; 
-            GridNode corner93 = new GridNode { Xposition = 15, Yposition = 13, }; 
-            GridNode corner94 = new GridNode { Xposition = 16, Yposition = 13, }; 
-            GridNode corner95 = new GridNode { Xposition = 17, Yposition = 13, }; 
-            GridNode corner96 = new GridNode { Xposition = 18, Yposition = 14, }; 
-            GridNode corner97 = new GridNode { Xposition = 19, Yposition = 14, }; 
-            GridNode corner98 = new GridNode { Xposition = 20, Yposition = 14, }; 
-            GridNode corner99 = new GridNode { Xposition = 21, Yposition = 14, }; 
-            GridNode corner100 = new GridNode { Xposition = 16, Yposition = 9, }; 
-            GridNode corner101 = new GridNode { Xposition = 17, Yposition = 8, }; 
-            GridNode corner102 = new GridNode { Xposition = 18, Yposition = 8, }; 
-            GridNode corner103 = new GridNode { Xposition = 19, Yposition = 8, }; 
-            GridNode corner104 = new GridNode { Xposition = 20, Yposition = 8, }; 
-            GridNode corner105 = new GridNode { Xposition = 21, Yposition = 8, };
-            
-            GridNode corner106 = new GridNode { Xposition = 21, Yposition = 17, }; 
-            GridNode corner107 = new GridNode { Xposition = 20, Yposition = 17, }; 
-            GridNode corner108 = new GridNode { Xposition = 19, Yposition = 17, };  
-            GridNode corner109 = new GridNode { Xposition = 17, Yposition = 18, }; 
-            GridNode corner110 = new GridNode { Xposition = 17, Yposition = 19, }; 
-            GridNode corner111 = new GridNode { Xposition = 17, Yposition = 20, }; 
-            GridNode corner112 = new GridNode { Xposition = 17, Yposition = 21, };
-            GridNode corner113 = new GridNode { Xposition = 17, Yposition = 17, };
-            GridNode corner114 = new GridNode { Xposition = 18, Yposition = 18, };
-            
-            GridNode corner115 = new GridNode { Xposition = -1, Yposition = 17, }; 
-            GridNode corner116 = new GridNode { Xposition = -1, Yposition = 16, }; 
-            GridNode corner117 = new GridNode { Xposition = -1  , Yposition = 10,}; 
-            GridNode corner118 = new GridNode { Xposition = -1, Yposition = 4, }; 
-            GridNode corner119 = new GridNode { Xposition = -1, Yposition = 3, }; 
-            GridNode corner120 = new GridNode { Xposition = 6, Yposition = -1, }; 
-            GridNode corner121 = new GridNode { Xposition = 7, Yposition = -1, }; 
-            GridNode corner122 = new GridNode { Xposition = 14, Yposition = -1, }; 
-            GridNode corner123 = new GridNode { Xposition = 15, Yposition = -1, }; 
-            GridNode corner124 = new GridNode { Xposition = 22, Yposition = 5, }; 
-            GridNode corner125 = new GridNode { Xposition = 22, Yposition = 6, }; 
-            GridNode corner126 = new GridNode { Xposition = 22, Yposition = 7, }; 
-            GridNode corner127 = new GridNode { Xposition = 22, Yposition = 15, }; 
-            GridNode corner128 = new GridNode { Xposition = 22, Yposition = 16, }; 
-            GridNode corner129 = new GridNode { Xposition = 16, Yposition = 22, }; 
-            GridNode corner130 = new GridNode { Xposition = 15, Yposition = 23, }; 
-            GridNode corner131 = new GridNode { Xposition = 14, Yposition = 23, }; 
-            GridNode corner132 = new GridNode { Xposition = 13, Yposition = 23, }; 
-            GridNode corner133 = new GridNode { Xposition = 8, Yposition = 23, }; 
-            GridNode corner134 = new GridNode { Xposition = 7, Yposition = 23, }; 
-            GridNode corner135 = new GridNode { Xposition = 6, Yposition = 23, }; 
-            GridNode corner136 = new GridNode { Xposition = 5, Yposition = 21, };
+            new GridNode { Xposition = 15, Yposition = 8, },
+            new GridNode { Xposition = 15, Yposition = 9, },
+            new GridNode { Xposition = 15, Yposition = 10, },
+            new GridNode { Xposition = 16, Yposition = 11, },
+            new GridNode { Xposition = 15, Yposition = 12, },
+            new GridNode { Xposition = 15, Yposition = 13, },
+            new GridNode { Xposition = 16, Yposition = 13, },
+            new GridNode { Xposition = 17, Yposition = 13, },
+            new GridNode { Xposition = 18, Yposition = 14, },
+            new GridNode { Xposition = 19, Yposition = 14, },
+            new GridNode { Xposition = 20, Yposition = 14, },
+            new GridNode { Xposition = 21, Yposition = 14, },
+            new GridNode { Xposition = 16, Yposition = 9, },
+            new GridNode { Xposition = 17, Yposition = 8, },
+            new GridNode { Xposition = 18, Yposition = 8, },
+            new GridNode { Xposition = 19, Yposition = 8, },
+            new GridNode { Xposition = 20, Yposition = 8, },
+            new GridNode { Xposition = 21, Yposition = 8, },
 
-            this.AddToInvalidZones(corner1);
-            this.AddToInvalidZones(corner2);
-            this.AddToInvalidZones(corner3);
-            this.AddToInvalidZones(corner4);
-            this.AddToInvalidZones(corner5);
-            this.AddToInvalidZones(corner6);
-            this.AddToInvalidZones(corner7);
-            this.AddToInvalidZones(corner8);
-            this.AddToInvalidZones(corner9);
-            this.AddToInvalidZones(corner10);
+            new GridNode { Xposition = 21, Yposition = 17, },
+            new GridNode { Xposition = 20, Yposition = 17, },
+            new GridNode { Xposition = 19, Yposition = 17, },
+            new GridNode { Xposition = 17, Yposition = 18, },
+            new GridNode { Xposition = 17, Yposition = 19, },
+            new GridNode { Xposition = 17, Yposition = 20, },
+            new GridNode { Xposition = 17, Yposition = 21, },
+            new GridNode { Xposition = 17, Yposition = 17, },
+            new GridNode { Xposition = 18, Yposition = 18, },
 
-            this.AddToInvalidZones(corner11);
-            this.AddToInvalidZones(corner12);
-            this.AddToInvalidZones(corner13);
-            this.AddToInvalidZones(corner14);
-            this.AddToInvalidZones(corner15);
-            this.AddToInvalidZones(corner16);
-            this.AddToInvalidZones(corner17);
-            this.AddToInvalidZones(corner18);
-            this.AddToInvalidZones(corner19);
-            this.AddToInvalidZones(corner20);
+            new GridNode { Xposition = -1, Yposition = 17, },
+            new GridNode { Xposition = -1, Yposition = 16, },
+            new GridNode { Xposition = -1, Yposition = 10, },
+            new GridNode { Xposition = -1, Yposition = 4, },
+            new GridNode { Xposition = -1, Yposition = 3, },
+            new GridNode { Xposition = 6, Yposition = -1, },
+            new GridNode { Xposition = 7, Yposition = -1, },
+            new GridNode { Xposition = 14, Yposition = -1, },
+            new GridNode { Xposition = 15, Yposition = -1, },
+            new GridNode { Xposition = 22, Yposition = 5, },
+            new GridNode { Xposition = 22, Yposition = 6, },
+            new GridNode { Xposition = 22, Yposition = 7, },
+            new GridNode { Xposition = 22, Yposition = 15, },
+            new GridNode { Xposition = 22, Yposition = 16, },
+            new GridNode { Xposition = 16, Yposition = 22, },
+            new GridNode { Xposition = 15, Yposition = 23, },
+            new GridNode { Xposition = 14, Yposition = 23, },
+            new GridNode { Xposition = 13, Yposition = 23, },
+            new GridNode { Xposition = 8, Yposition = 23, },
+            new GridNode { Xposition = 7, Yposition = 23, },
+            new GridNode { Xposition = 6, Yposition = 23, },
+            new GridNode { Xposition = 5, Yposition = 21, },
+        };
 
-            this.AddToInvalidZones(corner21);
-            this.AddToInvalidZones(corner22);
-            this.AddToInvalidZones(corner23);
-            this.AddToInvalidZones(corner24);
-            this.AddToInvalidZones(corner25);
-            this.AddToInvalidZones(corner26);
-            this.AddToInvalidZones(corner27);
-            this.AddToInvalidZones(corner28);
-            this.AddToInvalidZones(corner29);
+        /// <summary>
+        /// Represents a collection of doors on the game board, each defined by its position and associated zone name.
+        /// Doors act as connections between different zones on the game board.
+        /// </summary>
+        public List<Door> Doors { get; set; } = new List<Door>
+        {
+            new Door { Xposition = 5, Yposition = 2, ZoneName = "place6.png" },
+            new Door { Xposition = 5, Yposition = 7, ZoneName = "place1.png" },
+            new Door { Xposition = 2, Yposition = 9, ZoneName = "place1.png" },
+            new Door { Xposition = 4, Yposition = 14, ZoneName = "place8.png" },
+            new Door { Xposition = 3, Yposition = 18, ZoneName = "place7.png" },
+            new Door { Xposition = 8, Yposition = 3, ZoneName = "place9.png" },
+            new Door { Xposition = 10, Yposition = 5, ZoneName = "place9.png" },
+            new Door { Xposition = 11, Yposition = 5, ZoneName = "place9.png" },
+            new Door { Xposition = 8, Yposition = 16, ZoneName = "place2.png" },
+            new Door { Xposition = 13, Yposition = 16, ZoneName = "place2.png" },
+            new Door { Xposition = 7, Yposition = 18, ZoneName = "place2.png" },
+            new Door { Xposition = 14, Yposition = 18, ZoneName = "place2.png" },
+            new Door { Xposition = 16, Yposition = 4, ZoneName = "place4.png" },
+            new Door { Xposition = 16, Yposition = 8, ZoneName = "place5.png" },
+            new Door { Xposition = 15, Yposition = 11, ZoneName = "place5.png" },
+            new Door { Xposition = 18, Yposition = 17, ZoneName = "place3.png" }
+        };
 
-            this.AddToInvalidZones(corner30);
-            this.AddToInvalidZones(corner31);
-            this.AddToInvalidZones(corner32);
-            this.AddToInvalidZones(corner33);
-            this.AddToInvalidZones(corner34);
-            this.AddToInvalidZones(corner35);
-            this.AddToInvalidZones(corner36);
-            this.AddToInvalidZones(corner37);
-            this.AddToInvalidZones(corner38);
-            this.AddToInvalidZones(corner39);
-
-            this.AddToInvalidZones(corner40);
-            this.AddToInvalidZones(corner41);
-            this.AddToInvalidZones(corner42);
-            this.AddToInvalidZones(corner43);
-            this.AddToInvalidZones(corner44);
-            this.AddToInvalidZones(corner45);
-            this.AddToInvalidZones(corner46);
-            this.AddToInvalidZones(corner47);
-            this.AddToInvalidZones(corner48);
-            this.AddToInvalidZones(corner49);
-            this.AddToInvalidZones(corner50);
-
-            this.AddToInvalidZones(corner51);
-            this.AddToInvalidZones(corner52);
-            this.AddToInvalidZones(corner53);
-            this.AddToInvalidZones(corner54);
-            this.AddToInvalidZones(corner55);
-            this.AddToInvalidZones(corner56);
-            this.AddToInvalidZones(corner57);
-            this.AddToInvalidZones(corner58);
-            this.AddToInvalidZones(corner59);
-            this.AddToInvalidZones(corner60);
-
-            this.AddToInvalidZones(corner61);
-            this.AddToInvalidZones(corner62);
-            this.AddToInvalidZones(corner63);
-            this.AddToInvalidZones(corner64);
-            this.AddToInvalidZones(corner65);
-            this.AddToInvalidZones(corner66);
-            this.AddToInvalidZones(corner67);
-            this.AddToInvalidZones(corner68);
-            this.AddToInvalidZones(corner69);
-            this.AddToInvalidZones(corner70);
-
-            this.AddToInvalidZones(corner71);
-            this.AddToInvalidZones(corner72);
-            this.AddToInvalidZones(corner73);
-            this.AddToInvalidZones(corner74);
-            this.AddToInvalidZones(corner75);
-            this.AddToInvalidZones(corner76);
-            this.AddToInvalidZones(corner77);
-            this.AddToInvalidZones(corner78);
-            this.AddToInvalidZones(corner79);
-            this.AddToInvalidZones(corner80);
-            this.AddToInvalidZones(corner81);
-
-            this.AddToInvalidZones(corner82);
-            this.AddToInvalidZones(corner83);
-            this.AddToInvalidZones(corner84);
-            this.AddToInvalidZones(corner85);
-            this.AddToInvalidZones(corner86);
-            this.AddToInvalidZones(corner87);
-            this.AddToInvalidZones(corner88);
-            this.AddToInvalidZones(corner89);
-            this.AddToInvalidZones(corner90);
-            this.AddToInvalidZones(corner91);
-            this.AddToInvalidZones(corner92);
-            this.AddToInvalidZones(corner93);
-            this.AddToInvalidZones(corner94);
-            this.AddToInvalidZones(corner95);
-            this.AddToInvalidZones(corner96);
-            this.AddToInvalidZones(corner97);
-            this.AddToInvalidZones(corner98);
-            this.AddToInvalidZones(corner99);
-            this.AddToInvalidZones(corner100);
-            this.AddToInvalidZones(corner101);
-                
-            this.AddToInvalidZones(corner102);
-            this.AddToInvalidZones(corner103);
-            this.AddToInvalidZones(corner104);
-            this.AddToInvalidZones(corner105);
-            this.AddToInvalidZones(corner106);
-            this.AddToInvalidZones(corner107);
-            this.AddToInvalidZones(corner108);
-            this.AddToInvalidZones(corner109);
-            this.AddToInvalidZones(corner110);
-            this.AddToInvalidZones(corner111);
-            this.AddToInvalidZones(corner112);
-            this.AddToInvalidZones(corner113);
-                
-            this.AddToInvalidZones(corner114);
-            this.AddToInvalidZones(corner115);
-            this.AddToInvalidZones(corner116);
-            this.AddToInvalidZones(corner117);
-            this.AddToInvalidZones(corner118);
-            this.AddToInvalidZones(corner119);
-            this.AddToInvalidZones(corner120);
-            this.AddToInvalidZones(corner121);
-            this.AddToInvalidZones(corner122);
-            this.AddToInvalidZones(corner123);
-            this.AddToInvalidZones(corner124);
-            this.AddToInvalidZones(corner125);
-            this.AddToInvalidZones(corner126);
-            this.AddToInvalidZones(corner127);
-            this.AddToInvalidZones(corner128);
-            this.AddToInvalidZones(corner129);
-            this.AddToInvalidZones(corner130);
-            this.AddToInvalidZones(corner131);
-            this.AddToInvalidZones(corner132);
-            this.AddToInvalidZones(corner133);
-            this.AddToInvalidZones(corner134);
-            this.AddToInvalidZones(corner135);
-            this.AddToInvalidZones(corner136);
-        }
     }
 }

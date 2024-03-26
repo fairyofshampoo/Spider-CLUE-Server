@@ -2,16 +2,28 @@
 using GameService.Contracts;
 using GameService.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity.Core;
 using System.Data.SqlClient;
 using System.Linq;
+using System.ServiceModel;
 
 namespace GameService.Services
 {
     public partial class GameService : IMatchCreationManager
     {
+        /// <summary>
+        /// Creates a new match initiated by the specified gamertag.
+        /// </summary>
+        /// <param name="gamertag">The gamertag of the user creating the match.</param>
+        /// <returns>
+        /// A string representing the code of the created match if successful, 
+        /// otherwise an empty string indicating the failure to create the match.
+        /// </returns>
+
         public string CreateMatch(string gamertag)
         {
+            HostBehaviorManager.ChangeToSingle();
             LoggerManager logger = new LoggerManager(this.GetType());
             string matchcreationResult = string.Empty;
             try
@@ -28,6 +40,7 @@ namespace GameService.Services
                     if (databaseContext.SaveChanges() > 0)
                     {
                         matchcreationResult = match.codeMatch;
+                        AddPawnsToMatch(match.codeMatch, CreatePawns());
                     }
                 }
             }
@@ -39,12 +52,20 @@ namespace GameService.Services
             {
                 logger.LogError(sqlException);
             }
-            catch (Exception exception)
-            {
-                logger.LogFatal(exception);
-            }
-
+            HostBehaviorManager.ChangeToReentrant();
             return matchcreationResult;
+        }
+
+        private void AddPawnsToMatch(string matchCode, List<Pawn> pawns)
+        {
+            if (!pawnsAvailableInMatch.ContainsKey(matchCode))
+            {
+                pawnsAvailableInMatch.Add(matchCode, pawns);
+            }
+            else
+            {
+                pawnsAvailableInMatch[matchCode] = pawns;
+            }
         }
 
         private string GenerateMatchCode()
@@ -56,22 +77,37 @@ namespace GameService.Services
                 Random random = new Random();
                 matchCode = new string(Enumerable.Repeat(allowedCharacters, 6)
                     .Select(selection => selection[random.Next(selection.Length)]).ToArray());
-            } while (IsCodeValid(matchCode) == false);
+            } while (!IsCodeValid(matchCode));
             return matchCode;
         }
 
         private bool IsCodeValid(string matchCode)
         {
+            LoggerManager loggerManager = new LoggerManager(this.GetType());
             bool validation = false;
-            using (var databaseContext = new SpiderClueDbEntities())
+            try
             {
-                var isCodeExisting = databaseContext.matches.FirstOrDefault(match => match.codeMatch == matchCode);
-                if (isCodeExisting == null)
+                using (var databaseContext = new SpiderClueDbEntities())
                 {
-                    validation = true;
+                    var isCodeExisting = databaseContext.matches.FirstOrDefault(match => match.codeMatch == matchCode);
+                    if (isCodeExisting == null)
+                    {
+                        validation = true;
+                    }
                 }
-                return validation;
             }
+            catch (CommunicationException communicationException)
+            {
+                loggerManager.LogError(communicationException);
+                validation = false;
+            }
+            catch (TimeoutException timeoutException)
+            {
+                loggerManager.LogError(timeoutException);
+                validation = false;
+            }
+
+            return validation;
         }
     }
 }

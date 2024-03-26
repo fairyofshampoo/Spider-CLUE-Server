@@ -1,93 +1,141 @@
-﻿using DataBaseManager;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System;
 using System.Runtime.Serialization;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameService.Contracts
 {
-
+    /// <summary>
+    /// Service contract for managing user-related operations.
+    /// </summary>
     [ServiceContract]
     public interface IUserManager
     {
+        /// <summary>
+        /// Adds a user transaction and returns the result.
+        /// </summary>
         [OperationContract]
-        int AddUserTransaction(Gamer gamer); 
+        int AddUserTransaction(Gamer gamer);
 
+        /// <summary>
+        /// Authenticates an account using the provided gamertag and password.
+        /// </summary>
         [OperationContract]
         bool AuthenticateAccount(string gamertag, string password);
 
+        /// <summary>
+        /// Requests a guest player and returns the generated code.
+        /// </summary>
         [OperationContract]
         string RequestGuestPlayer();
 
+        /// <summary>
+        /// Checks if an email already exists in the system.
+        /// </summary>
         [OperationContract]
         bool IsEmailExisting(String email);
 
+        /// <summary>
+        /// Updates the password for the specified gamertag.
+        /// </summary>
         [OperationContract]
-        int UpdatePassword(String gamertag,  String password);
+        int UpdatePassword(String gamertag, String password);
 
+        /// <summary>
+        /// Checks if a gamertag already exists in the system.
+        /// </summary>
         [OperationContract]
-        bool IsGamertagExisting (String gamertag);
+        bool IsGamertagExisting(String gamertag);
 
+        /// <summary>
+        /// Retrieves a gamer profile by gamertag.
+        /// </summary>
         [OperationContract]
         Gamer GetGamerByGamertag(string gamertag);
 
+        /// <summary>
+        /// Retrieves a gamer profile by email.
+        /// </summary>
         [OperationContract]
-        Gamer GetGamerByEmail(string gamertag);
+        Gamer GetGamerByEmail(string email);
 
+        /// <summary>
+        /// Modifies the account details for the specified gamertag.
+        /// </summary>
         [OperationContract]
-        int ModifyAccount (String gamertag, String firstName, String lastName);
-        
-        [OperationContract]
-        int ChangeIcon (string gamertag, String titleIcon);
+        int ModifyAccount(String gamertag, String firstName, String lastName);
 
+        /// <summary>
+        /// Changes the icon associated with the specified gamertag.
+        /// </summary>
         [OperationContract]
-        string GetIcon (String gamertag);
+        int ChangeIcon(string gamertag, String titleIcon);
 
+        /// <summary>
+        /// Retrieves the icon associated with the specified gamertag.
+        /// </summary>
+        [OperationContract]
+        string GetIcon(String gamertag);
+
+        /// <summary>
+        /// Deletes a guest player profile by gamertag.
+        /// </summary>
         [OperationContract]
         int DeleteGuestPlayer(string gamertag);
     }
 
+    /// <summary>
+    /// Represents a gamer with additional properties.
+    /// </summary>
     [DataContract]
     public class Gamer : AccessAccount
     {
-        private string firstName;
-        private string lastName;
-        private int gamesWon;
-        private string imageCode;
-
-
+        /// <summary>
+        /// Gets or sets the first name of the gamer.
+        /// </summary>
         [DataMember]
-        public string FirstName { get { return firstName; } set { firstName = value; } }
+        public string FirstName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the last name of the gamer.
+        /// </summary>
         [DataMember]
-        public string LastName { get { return lastName; } set { lastName = value; } }
+        public string LastName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the number of games won by the gamer.
+        /// </summary>
         [DataMember]
-        public int GamesWon { get { return gamesWon; } set { gamesWon = value; } }
+        public int GamesWon { get; set; }
 
+        /// <summary>
+        /// Gets or sets the image code associated with the gamer.
+        /// </summary>
         [DataMember]
-        public string ImageCode { get { return imageCode; } set { imageCode = value; } }
-
+        public string ImageCode { get; set; }
     }
 
+    /// <summary>
+    /// Represents an access account with basic properties.
+    /// </summary>
     [DataContract]
     public class AccessAccount
     {
-        private string email;
-        private string gamertag;
-        private string password;
-
+        /// <summary>
+        /// Gets or sets the email associated with the access account.
+        /// </summary>
         [DataMember]
-        public string Email { get { return email; } set { email = value; } }
+        public string Email { get; set; }
 
+        /// <summary>
+        /// Gets or sets the gamertag associated with the access account.
+        /// </summary>
         [DataMember]
-        public string Gamertag { get { return gamertag; } set { gamertag = value; } }
+        public string Gamertag { get; set; }
 
+        /// <summary>
+        /// Gets or sets the password associated with the access account.
+        /// </summary>
         [DataMember]
-        public string Password { get { return password; } set { password = value; } }
+        public string Password { get; set; }
     }
 }

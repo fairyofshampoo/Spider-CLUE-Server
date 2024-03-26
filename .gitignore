@@ -6,3 +6,7 @@ CLUEServer/CLUEServer/GameService/bin/
 CLUEServer/CLUEServer/SpiderClueService/obj/
 CLUEServer/CLUEServer/SpiderClueService/bin/
 CLUEServer/CLUEServer/SpiderClueService/.vs/
+CLUEServer/CLUEServer/TestsServer/obj/
+CLUEServer/CLUEServer/TestsServer/bin/
+CLUEServer/CLUEServer/TestsServer/.vs/
+CLUEServer/CLUEServer/SpiderClueService/.sonarqube/

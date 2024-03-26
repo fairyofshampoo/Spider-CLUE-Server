@@ -1,81 +1,176 @@
 ﻿using DataBaseManager;
 using GameService.Contracts;
-using System;
-using System.Collections.Generic;
+using GameService.Utilities;
+using System.Data.Entity.Core;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameService.Services
 {
+    /// <summary>
+    /// Partial class for the GameService, implementing the IFriendRequestManager interface.
+    /// Manages friend request-related functionality such as retrieving friend requests,
+    /// creating friend requests, responding to friend requests, and deleting friend requests.
+    /// </summary>
     public partial class GameService : IFriendRequestManager
     {
-        public string[] GetFriendsRequets(string gamertag)
+        /// <summary>
+        /// Retrieves friend requests for the specified gamertag.
+        /// </summary>
+        /// <param name="gamertag">The gamertag for which to retrieve friend requests.</param>
+        /// <returns>An array of gamertags representing friend requests in "Pending" status.</returns>
+        public string[] GetFriendsRequest(string gamertag)
         {
-            using(var databaseConext = new SpiderClueDbEntities())
+            HostBehaviorManager.ChangeToSingle();
+            Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
+            string[] friendsRequest = null;
+            try
             {
-                var friendsRequest = databaseConext.friendRequests
-                    .Where(friendrequest => friendrequest.receiverGamertag == gamertag && friendrequest.friendRequestStatus == "Pending")
-                    .Select(friendRequest => friendRequest.senderGamertag )
-                    .ToArray();
-                return friendsRequest;
-            }
-        }   
-
-        public void CreateFriendRequest(string gamertag, string friendGamertag)
-        {
-            using (var databaseContext = new SpiderClueDbEntities())
-            {
-                var friendRequest = new DataBaseManager.friendRequest
+                using (var databaseContext = new SpiderClueDbEntities())
                 {
-                    senderGamertag = gamertag,
-                    receiverGamertag = friendGamertag,
-                    friendRequestStatus = "Pending"
-                };
-                databaseContext.friendRequests.Add(friendRequest);
-                databaseContext.SaveChanges();
-            }
-        }
-
-        public void ResponseFriendRequest(string gamertag, string friendGamertag, string response)
-        {
-            using (var databaseContext = new SpiderClueDbEntities())
-            {
-                var friendRequest = databaseContext.friendRequests.FirstOrDefault(friendRequestPending => friendRequestPending.senderGamertag == friendGamertag && friendRequestPending.receiverGamertag == gamertag);
-                if (friendRequest != null)
-                {
-                    friendRequest.friendRequestStatus = response;
-                    databaseContext.SaveChanges();
+                    friendsRequest = databaseContext.friendRequests
+                            .Where(friendRequest => friendRequest.receiverGamertag == gamertag && friendRequest.friendRequestStatus == "Pending")
+                            .Select(friendRequest => friendRequest.senderGamertag)
+                            .ToArray();
                 }
             }
+            catch (SqlException sqlException)
+            {
+                loggerManager.LogError(sqlException);
+            }
+            catch (EntityException entityException)
+            {
+                loggerManager.LogError(entityException);
+            }
+
+            HostBehaviorManager.ChangeToReentrant();
+            return friendsRequest;
         }
 
-        public void DeleteFriendRequest(string gamertag, string friendGamertag)
+        /// <summary>
+        /// Creates a friend request from the specified gamertag to the target friend gamertag.
+        /// </summary>
+        /// <param name="gamertag">The gamertag initiating the friend request.</param>
+        /// <param name="friendGamertag">The gamertag of the friend receiving the friend request.</param>
+        /// <returns>An integer indicating the operation result. Constants.SuccessInOperation if successful, otherwise Constants.ErrorInOperation.</returns>
+        public int CreateFriendRequest(string gamertag, string friendGamertag)
         {
-            using (var databaseContext = new SpiderClueDbEntities())
+            int result = Constants.ErrorInOperation;
+            HostBehaviorManager.ChangeToSingle();
+            Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
+            try
             {
-                var friendRequest = databaseContext.friendRequests
-                .Where(friend => friend.senderGamertag == gamertag && friend.receiverGamertag == friendGamertag);
-
-                var secondfriendRequest = databaseContext.friendRequests
-                    .Where(second => second.senderGamertag == friendGamertag && second.receiverGamertag == gamertag);
-
-                if (friendRequest.Any() || secondfriendRequest.Any())
+                using (var databaseContext = new SpiderClueDbEntities())
                 {
-                    if (secondfriendRequest.Any())
+                    var friendRequest = new DataBaseManager.friendRequest
                     {
-                        databaseContext.friendRequests.RemoveRange(secondfriendRequest);
-                        databaseContext.SaveChanges();
-                    }
+                        senderGamertag = gamertag,
+                        receiverGamertag = friendGamertag,
+                        friendRequestStatus = "Pending"
+                    };
+                    databaseContext.friendRequests.Add(friendRequest);
+                    result = databaseContext.SaveChanges();
+                }
+            }
+            catch (SqlException sqlException)
+            {
+                loggerManager.LogError(sqlException);
+            }
+            catch (EntityException entityException)
+            {
+                loggerManager.LogError(entityException);
+            }
+            HostBehaviorManager.ChangeToReentrant();
 
-                    if(friendRequest.Any())
+            return result;
+        }
+
+        /// <summary>
+        /// Responds to a friend request by updating its status.
+        /// </summary>
+        /// <param name="gamertag">The gamertag responding to the friend request.</param>
+        /// <param name="friendGamertag">The gamertag of the friend who initiated the request.</param>
+        /// <param name="response">The response to the friend request ("Accepted" or "Rejected").</param>
+        /// <returns>An integer indicating the operation result. Constants.SuccessInOperation if successful, otherwise Constants.ErrorInOperation.</returns>
+        public int ResponseFriendRequest(string gamertag, string friendGamertag, string response)
+        {
+            HostBehaviorManager.ChangeToSingle();
+            Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
+            int result = Constants.ErrorInOperation;
+            try
+            {
+                using (var databaseContext = new SpiderClueDbEntities())
+                {
+                    var friendRequest = databaseContext.friendRequests.FirstOrDefault(friendRequestPending => friendRequestPending.senderGamertag == friendGamertag && friendRequestPending.receiverGamertag == gamertag);
+                    if (friendRequest != null)
                     {
-                        databaseContext.friendRequests.RemoveRange(friendRequest);
-                        databaseContext.SaveChanges();
+                        friendRequest.friendRequestStatus = response;
+                        result = databaseContext.SaveChanges();
                     }
                 }
             }
+            catch (SqlException sqlException)
+            {
+                loggerManager.LogError(sqlException);
+            }
+            catch (EntityException entityException)
+            {
+                loggerManager.LogError(entityException);
+            }
+            HostBehaviorManager.ChangeToReentrant();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Deletes a friend request between two gamertags.
+        /// </summary>
+        /// <param name="gamertag">The gamertag initiating the friend request.</param>
+        /// <param name="friendGamertag">The gamertag of the friend receiving the friend request.</param>
+        /// <returns>An integer indicating the operation result. Constants.SuccessInOperation if successful, otherwise Constants.ErrorInOperation.</returns>
+        public int DeleteFriendRequest(string gamertag, string friendGamertag)
+        {
+            HostBehaviorManager.ChangeToSingle();
+            Utilities.LoggerManager loggerManager = new Utilities.LoggerManager(this.GetType());
+            int result = Constants.ErrorInOperation;
+            try
+            {
+                using (var databaseContext = new SpiderClueDbEntities())
+                {
+                    var friendRequest = databaseContext.friendRequests
+                            .Where(friend => friend.senderGamertag == gamertag && friend.receiverGamertag == friendGamertag);
+
+                    var secondfriendRequest = databaseContext.friendRequests
+                        .Where(second => second.senderGamertag == friendGamertag && second.receiverGamertag == gamertag);
+
+                    if (friendRequest.Any() || secondfriendRequest.Any())
+                    {
+                        if (secondfriendRequest.Any())
+                        {
+                            databaseContext.friendRequests.RemoveRange(secondfriendRequest);
+                            result = Constants.SuccessInOperation;
+                        }
+
+                        if (friendRequest.Any())
+                        {
+                            databaseContext.friendRequests.RemoveRange(friendRequest);
+                            result = Constants.SuccessInOperation;
+                        }
+                    }
+                }
+            }
+            catch (SqlException sqlException)
+            {
+                loggerManager.LogError(sqlException);
+            }
+            catch (EntityException entityException)
+            {
+                loggerManager.LogError(entityException);
+            }
+            
+            HostBehaviorManager.ChangeToReentrant();
+
+            return result;
         }
     }
 }

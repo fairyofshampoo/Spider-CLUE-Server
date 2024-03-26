@@ -1,85 +1,67 @@
 ﻿using GameService.Contracts;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace GameService.Services
 {
-    public partial class GameService : ICardManager
+    public partial class GameService
     {
-        private List<Card> clueDeck = new List<Card>();
+        private static readonly Dictionary<string, List<Card>> decks = new Dictionary<string, List<Card>>();
+        private static readonly Dictionary<string, List<Card>> clueDeckByMatch = new Dictionary<string, List<Card>>();
 
-        public void AddCard (Card card)
+        private List<Card> ChooseCards(List<Card> firstDeck, List<Card> secondDeck, List<Card> thirdDeck, string matchCode)
         {
-            clueDeck.Add(card);
-        }
+            List<Card> clueDeck = new List<Card>();
 
-        Dictionary <string, List<Card>> decks = new Dictionary<string, List<Card>>();
-
-        public List<Card> ChooseCards(List<Card> firstDeck, List<Card> secondDeck, List<Card> thirdDeck)
-        {
             Random random = new Random();
-            int cardChoosed = random.Next(1, 7);
+            int lowerLimit = 0;
+            int numberOfCharacters = 6;
+            int numberOfPlaces = 9;
+            int numberOfMotives = 6;
+            int cardChoosed = random.Next(lowerLimit, numberOfCharacters);
 
             Card characterCard = firstDeck[cardChoosed];
             firstDeck.RemoveAt(cardChoosed);
-            this.AddCard(characterCard);
+            clueDeck.Add(characterCard);
 
-            cardChoosed = random.Next(1, 10);
+            cardChoosed = random.Next(lowerLimit, numberOfPlaces);
             Card placeCard = secondDeck[cardChoosed];
             secondDeck.RemoveAt(cardChoosed);
-            this.AddCard(placeCard);
+            clueDeck.Add(placeCard);
 
-            cardChoosed = random.Next(1, 7);
+            cardChoosed = random.Next(lowerLimit, numberOfMotives);
             Card motiveCard = thirdDeck[cardChoosed];
             thirdDeck.RemoveAt(cardChoosed);
-            this.AddCard(motiveCard);
+            clueDeck.Add(motiveCard);
 
+            clueDeckByMatch.Add(matchCode, clueDeck);
             List<Card> cards = firstDeck.Concat(secondDeck).Concat(thirdDeck).ToList();
             return cards;
         }
 
-        public void CreatCards(string gamer1, string gamer2, string gamer3)
+        private void CreateCards(string matchCode)
         {
+            List<string> gamerByBoard = GetGamersByGameBoard(matchCode);
             List<Card> firstDeck = CreateCharacterCards();
             List<Card> secondDeck = CreatePlaceCards();
             List<Card> thirdDeck = CreateMotiveCards();
-            List<Card> cards = ChooseCards(firstDeck, secondDeck, thirdDeck);
-            DealCards(gamer1, gamer2, gamer3, ShuffleCards(cards));
-            Show();
+            List<Card> cards = ChooseCards(firstDeck, secondDeck, thirdDeck, matchCode);
+
+            DealCards(gamerByBoard, ShuffleCards(cards));
         }
 
-        private void Show()
+        private List<Card> CreateCharacterCards()
         {
-            foreach(var valor in decks)
-            {
-                Console.WriteLine($"Gamertag: {valor.Key}");
-
-                Console.WriteLine("Cartas");
-                foreach(var card in valor.Value)
-                {
-                    Console.WriteLine($"{card.ID}");
-                }
-                Console.WriteLine("--------------------");
-            }
-
-            Console.WriteLine("Cartas en el sobre");
-            foreach( var sobre in clueDeck)
-            {
-                Console.WriteLine(sobre.ID);
-            }
-        }
-
-        public List<Card> CreateCharacterCards()
-        {
-            Card card1 =  new Card { ID = "Character1", Type = "Character"};
-            Card card2 =  new Card { ID = "Character2", Type = "Character" };
-            Card card3 =  new Card { ID = "Character3", Type = "Character" };
-            Card card4 =  new Card { ID = "Character4", Type = "Character" };
-            Card card5 =  new Card { ID = "Character5", Type = "Character" };
-            Card card6 =  new Card { ID = "Character6", Type = "Character" };
+            Card card1 =  new Card { ID = "DocOchCard.png", Type = "Character"};
+            Card card2 =  new Card { ID = "ElectroJuanCard.png", Type = "Character" };
+            Card card3 =  new Card { ID = "MysteRevoCard.png", Type = "Character" };
+            Card card4 =  new Card { ID = "RhinosidroCard.png", Type = "Character" };
+            Card card5 =  new Card { ID = "VernomCard.png", Type = "Character" };
+            Card card6 =  new Card { ID = "XandManCard.png", Type = "Character" };
 
             List<Card> firstDeck = new List<Card>();
             firstDeck.Add(card1);
@@ -90,17 +72,17 @@ namespace GameService.Services
             firstDeck.Add(card6);
             return firstDeck;
         }   
-        public List<Card> CreatePlaceCards()
+        private List<Card> CreatePlaceCards()
         {
-            Card card7 = new Card { ID = "place1", Type = "Place" };
-            Card card8 = new Card { ID = "place2", Type = "Place" };
-            Card card9 = new Card { ID = "place3", Type = "Place" };
-            Card card10 = new Card { ID = "place4", Type = "Place" };
-            Card card11 = new Card { ID = "place5", Type = "Place" };
-            Card card12 = new Card { ID = "place6", Type = "Place" };
-            Card card13 = new Card { ID = "place7", Type = "Place" };
-            Card card14 = new Card { ID = "place8", Type = "Place" };
-            Card card15 = new Card { ID = "place9", Type = "Place" };
+            Card card7 = new Card { ID = "place1.png", Type = "Place" };
+            Card card8 = new Card { ID = "place2.png", Type = "Place" };
+            Card card9 = new Card { ID = "place3.png", Type = "Place" };
+            Card card10 = new Card { ID = "place4.png", Type = "Place" };
+            Card card11 = new Card { ID = "place5.png", Type = "Place" };
+            Card card12 = new Card { ID = "place6.png", Type = "Place" };
+            Card card13 = new Card { ID = "place7.png", Type = "Place" };
+            Card card14 = new Card { ID = "place8.png", Type = "Place" };
+            Card card15 = new Card { ID = "place9.png", Type = "Place" };
 
             List<Card> secondDeck = new List<Card>();
             secondDeck.Add(card7);
@@ -115,14 +97,14 @@ namespace GameService.Services
             return secondDeck;
         }
 
-        public List<Card> CreateMotiveCards()
+        private List<Card> CreateMotiveCards()
         {
-            Card card16 = new Card { ID = "motive1", Type = "Motive" };
-            Card card17 = new Card { ID = "motive2", Type = "Motive" };
-            Card card18 = new Card { ID = "motive3", Type = "Motive" };
-            Card card19 = new Card { ID = "motive4", Type = "Motive" };
-            Card card20 = new Card { ID = "motive5", Type = "Motive" };
-            Card card21 = new Card { ID = "motive6", Type = "Motive" };
+            Card card16 = new Card { ID = "motive1.png", Type = "Motive" };
+            Card card17 = new Card { ID = "motive2.png", Type = "Motive" };
+            Card card18 = new Card { ID = "motive3.png", Type = "Motive" };
+            Card card19 = new Card { ID = "motive4.png", Type = "Motive" };
+            Card card20 = new Card { ID = "motive5.png", Type = "Motive" };
+            Card card21 = new Card { ID = "motive6.png", Type = "Motive" };
 
             List<Card> thirdDeck = new List<Card>();
             thirdDeck.Add(card16);
@@ -134,26 +116,33 @@ namespace GameService.Services
             return thirdDeck;
         }
 
-        public void DealCards(string gamer1, string gamer2, string gamer3, List<Card> cards)
+        private void DealCards(List<string> gamers, List<Card> cards)
         {
-            List<Card> firstDeck = cards.GetRange(0, 6);
-            List<Card> secondDeck = cards.GetRange(6, 6);
-            List<Card> thirdDeck = cards.GetRange(12, 6);
+            int firstLowerLimit = 0;
+            int secondLowerLimit = 6;
+            int thirdLowerLimit = 12;
+            int numberOfCards = 6;
 
-            decks.Add(gamer1, firstDeck);
-            decks.Add(gamer2, secondDeck);
-            decks.Add(gamer3, thirdDeck);
+            List<Card> firstDeck = cards.GetRange(firstLowerLimit, numberOfCards);
+            List<Card> secondDeck = cards.GetRange(secondLowerLimit, numberOfCards);
+            List<Card> thirdDeck = cards.GetRange(thirdLowerLimit, numberOfCards);
+            
+
+            decks.Add(gamers[0], firstDeck);
+            decks.Add(gamers[1], secondDeck);
+            decks.Add(gamers[2], thirdDeck);
         }
 
-        public List<Card> ShuffleCards(List<Card> cards)
+        private List<Card> ShuffleCards(List<Card> cards)
         {
             Random random = new Random();
-            int index = cards.Count;    
+            int index = cards.Count;
+            int lowerLimit = 1;
 
-            while (index > 1) 
+            while (index > lowerLimit) 
             { 
                 index--;
-                int shuffle = random.Next(index + 1);
+                int shuffle = random.Next(index + lowerLimit);
                 Card selectCard = cards[shuffle];
                 cards[shuffle] = cards[index];
                 cards[index] = selectCard;
@@ -161,20 +150,5 @@ namespace GameService.Services
             return cards;
         }
 
-        public List<Card> GetDeck(string gamertag)
-        {
-            List<Card> gamerDeck = new List<Card>();
-            foreach (var gamer in decks)
-            {
-                if(gamer.Key == gamertag)
-                {
-                    foreach (var card in gamer.Value)
-                    {
-                        gamerDeck.Add(card);
-                    }
-                }     
-            }
-            return gamerDeck;
-        }
     }
 }
